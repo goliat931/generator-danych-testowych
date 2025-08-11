@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const genderSelect = document.getElementById('gender');
     const birthDateInput = document.getElementById('birthDate');
     const ageInput = document.getElementById('age');
+	const copyMessage = document.getElementById('copy-message');
 
     const weights = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
     const encodedMonths = {
@@ -13,6 +14,25 @@ document.addEventListener('DOMContentLoaded', () => {
         '2100-2199': 40,
         '2200-2299': 60
     };
+
+   // Nowa funkcja generująca losowy PESEL na start
+    function generateInitialPesel() {
+        const year = Math.floor(Math.random() * (2025 - 1900) + 1900);
+        const month = Math.floor(Math.random() * 12) + 1;
+        const day = Math.floor(Math.random() * 28) + 1;
+        const gender = Math.random() < 0.5 ? 'male' : 'female';
+        
+        try {
+            const newPesel = generatePesel(year, month, day, gender);
+            peselOutput.innerText = newPesel;
+        } catch (error) {
+            console.error("Błąd podczas generowania PESEL:", error);
+            peselOutput.innerText = "Błąd: " + error.message;
+        }
+    }
+    
+    // Wywołaj funkcję od razu po załadowaniu strony
+    generateInitialPesel();
 
     function getEncodedMonth(year, month) {
         if (year >= 1800 && year <= 1899) return String(month + encodedMonths['1800-1899']).padStart(2, '0');
@@ -98,4 +118,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+	function showCopyMessage() {
+    copyMessage.classList.add('show');
+    setTimeout(() => {
+        copyMessage.classList.remove('show');
+    }, 3000); // Dymek zniknie po 3 sekundach
+}
+peselOutput.addEventListener('click', () => {
+    const peselText = peselOutput.innerText;
+
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(peselText)
+            .then(() => {
+                showCopyMessage(); // Zastąpiono alert()
+            })
+            .catch(err => {
+                console.error('Błąd podczas kopiowania:', err);
+            });
+    } else {
+        // ... (kod do starszych przeglądarek) ...
+        showCopyMessage(); // Zastąpiono alert()
+    }
+});
 });
