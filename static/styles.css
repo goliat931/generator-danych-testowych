@@ -169,3 +169,26 @@ button {
         align-items: flex-start;
     }
 }
+
+#generateRegon9Btn, #generateRegon14Btn {
+    background-color: #5289bf; /* Kolor niebieski dla REGON */
+    margin-top: 10px;
+}
+
+#generateRegon9Btn:hover, #generateRegon14Btn:hover {
+    background-color: #12528a;
+}
+
+#regon9Output, #regon14Output {
+    color: #12528a;
+    background-color: #dcecfa;
+}
+
+#regon9Output:hover, #regon14Output:hover {
+    background-color: #c3e1fa;
+}
+
+/* Dostosowanie odstępów dla nowego kafelka */
+.generator-tile {
+    /* ... */
+}

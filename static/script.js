@@ -13,6 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateIdBtn = document.getElementById('generateIdBtn');
     const idOutput = document.getElementById('idOutput');
 
+    // Selektory dla generatora REGON
+    const generateRegon9Btn = document.getElementById('generateRegon9Btn');
+    const regon9Output = document.getElementById('regon9Output');
+    const generateRegon14Btn = document.getElementById('generateRegon14Btn');
+    const regon14Output = document.getElementById('regon14Output');
+
     // Dane do obliczeń PESEL
     const weightsPesel = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
     const encodedMonths = {
@@ -28,6 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
         Array.from({ length: 26 }, (_, i) => [String.fromCharCode(65 + i), 10 + i])
     );
     const weightsId = [7, 3, 1, 9, 7, 3, 1, 7, 3];
+
+    // Wagi do obliczeń REGON
+    const weightsRegon9 = [8, 9, 2, 3, 4, 5, 6, 7];
+    const weightsRegon14 = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8];
 
     // ----------------------------------------------------
     // 2. Funkcje pomocnicze
@@ -129,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 4. Logika generatora dowodu osobistego
+    // 4. Logika generatora dowodu osobistego i REGON
     // ----------------------------------------------------
 
     /**
@@ -175,6 +185,66 @@ document.addEventListener('DOMContentLoaded', () => {
             digitsPart.slice(1);
 
         return finalId;
+    }
+
+    /**
+     * Oblicza cyfrę kontrolną dla 9-cyfrowego numeru REGON.
+     * @param {string} regon8 Pierwsze 8 cyfr REGON-u.
+     * @returns {number} Obliczona cyfra kontrolna.
+     */
+    function calculateRegon9Checksum(regon8) {
+        let sum = 0;
+        for (let i = 0; i < 8; i++) {
+            sum += parseInt(regon8[i]) * weightsRegon9[i];
+        }
+        const checksum = sum % 11;
+        return checksum === 10 ? 0 : checksum;
+    }
+
+    /**
+     * Oblicza cyfrę kontrolną dla 14-cyfrowego numeru REGON.
+     * @param {string} regon13 Pierwsze 13 cyfr REGON-u.
+     * @returns {number} Obliczona cyfra kontrolna.
+     */
+    function calculateRegon14Checksum(regon13) {
+        let sum = 0;
+        for (let i = 0; i < 13; i++) {
+            sum += parseInt(regon13[i]) * weightsRegon14[i];
+        }
+        const checksum = sum % 11;
+        return checksum === 10 ? 0 : checksum;
+    }
+
+    /**
+     * Generuje poprawny 9-cyfrowy numer REGON.
+     * @returns {string} 9-cyfrowy numer REGON.
+     */
+    function generateRegon9() {
+        const digits = '0123456789';
+        let regon8 = '';
+        // 2 cyfry województwa + 6 cyfr numeru seryjnego
+        for (let i = 0; i < 8; i++) {
+            regon8 += digits.charAt(Math.floor(Math.random() * digits.length));
+        }
+        const controlDigit = calculateRegon9Checksum(regon8);
+        return `${regon8}${controlDigit}`;
+    }
+
+    /**
+     * Generuje poprawny 14-cyfrowy numer REGON.
+     * @returns {string} 14-cyfrowy numer REGON.
+     */
+    function generateRegon14() {
+        const regon9 = generateRegon9();
+        const digits = '0123456789';
+        let localDigits = '';
+        // 4 cyfry numeru lokalnego
+        for (let i = 0; i < 4; i++) {
+            localDigits += digits.charAt(Math.floor(Math.random() * digits.length));
+        }
+        const regon13 = `${regon9}${localDigits}`;
+        const controlDigit = calculateRegon14Checksum(regon13);
+        return `${regon13}${controlDigit}`;
     }
 
     // ----------------------------------------------------
@@ -268,6 +338,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.execCommand('copy');
                 document.body.removeChild(tempInput);
                 showCopyMessage('Numer dowodu skopiowany!');
+            }
+        });
+    }
+
+   // Generuj REGON na starcie strony
+    regon9Output.innerText = generateRegon9();
+    regon14Output.innerText = generateRegon14();
+
+    // Obsługa kliknięcia przycisku "Generuj REGON 9"
+    if (generateRegon9Btn) {
+        generateRegon9Btn.addEventListener('click', () => {
+            regon9Output.innerText = generateRegon9();
+        });
+    }
+
+    // Obsługa kliknięcia przycisku "Generuj REGON 14"
+    if (generateRegon14Btn) {
+        generateRegon14Btn.addEventListener('click', () => {
+            regon14Output.innerText = generateRegon14();
+        });
+    }
+
+    // Obsługa kliknięcia na pole REGON (kopiowanie)
+    if (regon9Output) {
+        regon9Output.addEventListener('click', () => {
+            const regonText = regon9Output.innerText;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(regonText)
+                    .then(() => showCopyMessage('REGON (9 cyfr) skopiowany!'))
+                    .catch(err => console.error('Błąd podczas kopiowania:', err));
+            } else {
+                // ... (kod dla starszych przeglądarek) ...
+                showCopyMessage('REGON (9 cyfr) skopiowany!');
+            }
+        });
+    }
+
+    if (regon14Output) {
+        regon14Output.addEventListener('click', () => {
+            const regonText = regon14Output.innerText;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(regonText)
+                    .then(() => showCopyMessage('REGON (14 cyfr) skopiowany!'))
+                    .catch(err => console.error('Błąd podczas kopiowania:', err));
+            } else {
+                // ... (kod dla starszych przeglądarek) ...
+                showCopyMessage('REGON (14 cyfr) skopiowany!');
             }
         });
     }
