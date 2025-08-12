@@ -9,29 +9,124 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 20px;
+    box-sizing: border-box;
 }
 
 h1 {
+    display: none; /* Ukrywamy nagłówek, by kafelki były bardziej widoczne */
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
+}
+
+.generator-tile {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+}
+
+h2 {
     color: #4a4a4a;
+    margin-top: 0;
     margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.output-label {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.generated-output {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+    background-color: #e9ecef;
+    padding: 15px 10px;
+    border-radius: 4px;
+    margin: 10px 0 20px 0;
+    word-wrap: break-word;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#peselOutput {
+    color: #28a745;
+    background-color: #e9f5e9;
+}
+
+#peselOutput:hover {
+    background-color: #d8f0d8;
+}
+
+#idOutput {
+    color: #007bff;
+    background-color: #e6f0ff;
+}
+
+#idOutput:hover {
+    background-color: #d6e8ff;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 16px;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+#generateBtn {
+    background-color: #28a745;
+}
+
+#generateBtn:hover {
+    background-color: #218838;
+}
+
+#generateIdBtn {
+    background-color: #007bff;
+}
+
+#generateIdBtn:hover {
+    background-color: #0056b3;
 }
 
 .generator-options {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
     margin-bottom: 20px;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
+    padding: 10px 0;
+}
+
+.option-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
 }
 
 .generator-options label {
     font-weight: bold;
     margin-bottom: 5px;
+    font-size: 0.9rem;
 }
 
 .generator-options select,
@@ -41,37 +136,6 @@ h1 {
     border-radius: 4px;
     width: 100%;
     box-sizing: border-box;
-}
-
-#generateBtn {
-    padding: 12px 24px;
-    font-size: 16px;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 100%;
-    max-width: 400px;
-}
-
-#generateBtn:hover {
-    background-color: #0056b3;
-}
-
-#peselOutput {
-    font-size: 24px;
-    font-weight: bold;
-    color: #007bff;
-    background-color: #e9ecef;
-    padding: 15px;
-    border-radius: 4px;
-    margin-top: 20px;
-    text-align: center;
-    width: 100%;
-    max-width: 400px;
-    word-wrap: break-word; /* Zapewnia, że długi numer PESEL się nie "rozjedzie" */
 }
 
 .copy-message {
@@ -97,35 +161,11 @@ h1 {
     opacity: 1;
 }
 
-#generateIdBtn {
-    padding: 12px 24px;
-    font-size: 16px;
-    color: #fff;
-    background-color: #28a745; /* Inny kolor dla odróżnienia */
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 100%;
-    max-width: 400px;
-    margin-bottom: 20px;
-}
-
-#generateIdBtn:hover {
-    background-color: #218838;
-}
-
-#idOutput {
-    font-size: 24px;
-    font-weight: bold;
-    color: #28a745;
-    background-color: #e9f5e9;
-    padding: 15px;
-    border-radius: 4px;
-    margin-top: 20px;
-    text-align: center;
-    width: 100%;
-    max-width: 400px;
-    word-wrap: break-word;
-    cursor: pointer;
+/* Responsywność */
+@media (min-width: 600px) {
+    .container {
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-start;
+    }
 }

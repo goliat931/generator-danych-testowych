@@ -7,36 +7,46 @@
     <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
-    <h1>Generator Dowodu osobistego</h1>
-    <button id="generateIdBtn">Generuj Dowód Osobisty</button>
-    <p>Wygenerowany Dowód Osobisty: <span id="idOutput"></span></p>
-
-	<div id="copy-message" class="copy-message">skopiowany!</div>
-
-
-    <h1>Generator Numeru PESEL</h1>
-
-    <div class="generator-options">
-        <label for="gender">Płeć:</label>
-        <select id="gender">
-            <option value="random">Losowa</option>
-            <option value="male">Mężczyzna</option>
-            <option value="female">Kobieta</option>
-        </select>
-        
-        <label for="birthDate">Data urodzenia:</label>
-        <input type="date" id="birthDate">
-
-        <label for="age">Wiek (opcjonalnie):</label>
-        <input type="number" id="age" min="0" max="120">
-    </div>
-
-    <button id="generateBtn">Generuj PESEL</button>
+    <div id="copy-message" class="copy-message">skopiowany!</div>
     
-	<p>Wygenerowany PESEL: <span id="peselOutput"></span></p>
+    <main class="container">
+        <div class="generator-tile">
+            <h2>Generator Dowodu Osobistego</h2>
+            <p class="output-label">Wygenerowany numer:</p>
+            <p class="generated-output" id="idOutput">Kliknij Generuj</p>
+            <button id="generateIdBtn">Generuj Dowód Osobisty</button>
+        </div>
 
-	<div id="copy-message" class="copy-message">skopiowany!</div>
+        <div class="generator-tile">
+            <h2>Generator Numeru PESEL</h2>
+            <p class="output-label">Wygenerowany numer:</p>
+            <p class="generated-output" id="peselOutput">Kliknij Generuj</p>
 
+            <div class="generator-options">
+                <div class="option-group">
+                    <label for="gender">Płeć:</label>
+                    <select id="gender">
+                        <option value="random">Losowa</option>
+                        <option value="male">Mężczyzna</option>
+                        <option value="female">Kobieta</option>
+                    </select>
+                </div>
+                
+                <div class="option-group">
+                    <label for="birthDate">Data urodzenia:</label>
+                    <input type="date" id="birthDate">
+                </div>
+
+                <div class="option-group">
+                    <label for="age">Wiek (opcjonalnie):</label>
+                    <input type="number" id="age" min="0" max="120">
+                </div>
+            </div>
+
+            <button id="generateBtn">Generuj PESEL</button>
+        </div>
+    </main>
+    
     <script src="static/script.js"></script>
 </body>
 </html>
