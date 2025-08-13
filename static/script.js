@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const genderSelect = document.getElementById('gender');
     const birthDateInput = document.getElementById('birthDate');
     const ageInput = document.getElementById('age');
-    const copyMessage = document.getElementById('copy-message');
+    const copyMessage = document.getElementById('copy-message');	
 
     // Selektory dla generatora dowodu osobistego
     const generateIdBtn = document.getElementById('generateIdBtn');
@@ -256,44 +256,52 @@ document.addEventListener('DOMContentLoaded', () => {
     idOutput.innerText = generateIdNumber();
 
     // Obsługa kliknięcia przycisku "Generuj PESEL"
-    if (generateBtn) {
-        generateBtn.addEventListener('click', () => {
-            let year, month, day, gender;
+	if (generateBtn) {
+    generateBtn.addEventListener('click', () => {
+        let year, month, day, gender;
 
-            const selectedGender = genderSelect.value;
-            const birthDateValue = birthDateInput.value;
-            const ageValue = ageInput.value;
+        const selectedGender = genderSelect.value;
+        const birthDateValue = birthDateInput.value;
+        const ageValue = ageInput.value;
 
-            if (selectedGender === 'random') {
-                gender = Math.random() < 0.5 ? 'male' : 'female';
-            } else {
-                gender = selectedGender;
-            }
+        // Ustalanie płci na podstawie wyboru, jeśli nie wybrano "Losowa"
+        if (selectedGender === 'random') {
+            gender = Math.random() < 0.5 ? 'male' : 'female';
+        } else {
+            gender = selectedGender;
+        }
 
-            if (birthDateValue) {
-                const date = new Date(birthDateValue);
-                year = date.getFullYear();
-                month = date.getMonth() + 1;
-                day = date.getDate();
-            } else if (ageValue) {
-                const currentYear = new Date().getFullYear();
-                year = currentYear - parseInt(ageValue);
-                month = Math.floor(Math.random() * 12) + 1;
-                day = Math.floor(Math.random() * 28) + 1;
-            } else {
-                generateRandomPesel();
-                return;
-            }
+        // Ustalanie daty urodzenia
+        if (birthDateValue) {
+            const date = new Date(birthDateValue);
+            year = date.getFullYear();
+            month = date.getMonth() + 1;
+            day = date.getDate();
+        } else if (ageValue) {
+            const currentYear = new Date().getFullYear();
+            year = currentYear - parseInt(ageValue);
+            month = Math.floor(Math.random() * 12) + 1;
+            day = Math.floor(Math.random() * 28) + 1;
+        } else {
+            // KLUCZOWA POPRAWKA: Jeśli żadne pola nie są wypełnione,
+            // generujemy losową datę, ale używamy wybranej płci.
+            year = Math.floor(Math.random() * (2025 - 1900) + 1900);
+            month = Math.floor(Math.random() * 12) + 1;
+            day = Math.floor(Math.random() * 28) + 1;
+            
+            // W tym przypadku zmienna 'gender' została już poprawnie ustawiona
+            // na podstawie wartości `selectedGender`.
+        }
 
-            try {
-                const newPesel = generatePesel(year, month, day, gender);
-                peselOutput.innerText = newPesel;
-            } catch (error) {
-                console.error("Błąd podczas generowania PESEL:", error);
-                peselOutput.innerText = "Błąd: " + error.message;
-            }
-        });
-    }
+        try {
+            const newPesel = generatePesel(year, month, day, gender);
+            peselOutput.innerText = newPesel;
+        } catch (error) {
+            console.error("Błąd podczas generowania PESEL:", error);
+            peselOutput.innerText = "Błąd: " + error.message;
+        }
+    });
+}
 
     // Obsługa kliknięcia na pole PESEL (kopiowanie)
     if (peselOutput) {
