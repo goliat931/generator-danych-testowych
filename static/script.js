@@ -3545,7 +3545,12 @@ function generateNrb(selectedBankCode, format, prefix) {
 
     // Dodajemy prefiks IBAN
     if (prefix === 'with-prefix') {
-        finalNrb = `PL${finalNrb}`;
+        // KLUCZOWA ZMIANA: Dodajemy spację po prefiksie, jeśli format to 'spaced'
+        if (format === 'spaced') {
+            finalNrb = `PL ${finalNrb}`;
+        } else {
+            finalNrb = `PL${finalNrb}`;
+        }
     }
 
     return finalNrb;
