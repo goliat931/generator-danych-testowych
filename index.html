@@ -55,8 +55,54 @@
 			<p class="generated-output" id="regon14Output">Kliknij Generuj</p>
 			<button id="generateRegon14Btn">Generuj REGON 14</button>
 		</div>
+		<div id="copy-message" class="copy-message">skopiowany!</div>
+
+	<main class="container">
+		<div class="generator-tile">
+			<h2>Generator Rachunku Bankowego</h2>
+			<p class="output-label">Wygenerowany rachunek:</p>
+			<p class="generated-output" id="nrbOutput">Kliknij Generuj</p>
+
+			<div class="generator-options">
+				<div class="option-group">
+					<label for="bankCode">Kod banku:</label>
+					<select id="bankCode">
+						<option value="random">Losowy</option>
+						<option value="1010">1010 - NBP</option>
+						<option value="1020">1020 - PKO BP</option>
+						<option value="1030">1030 - Bank Handlowy</option>
+						<option value="1050">1050 - ING</option>
+						<option value="1060">1060 - BPH</option>
+						<option value="1090">1090 - Santander</option>
+						<option value="1140">1140 - mBank</option>
+						<option value="1160">1160 - Millennium</option>
+						<option value="1240">1240 - Pekao SA</option>
+						<option value="1930">1930 - BPS</option>
+						<option value="2490">2490 - Alior Bank</option>
+						</select>
+				</div>
+				
+				<div class="option-group">
+					<label for="nrbFormat">Format:</label>
+					<select id="nrbFormat">
+						<option value="compact">Ciąg cyfr</option>
+						<option value="spaced">Ze spacjami (co 4 cyfry)</option>
+					</select>
+				</div>
+				
+				<div class="option-group">
+					<label for="ibanPrefix">Prefiks IBAN:</label>
+					<select id="ibanPrefix">
+						<option value="no-prefix">Bez prefiksu</option>
+						<option value="with-prefix">Z prefiksem "PL"</option>
+					</select>
+				</div>
+			</div>
+
+			<button id="generateNrbBtn">Generuj Rachunek</button>
+		</div>
     </main>
-    
+
     <script src="static/script.js"></script>
 </body>
 </html>

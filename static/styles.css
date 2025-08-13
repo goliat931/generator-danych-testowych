@@ -192,3 +192,20 @@ button {
 .generator-tile {
     /* ... */
 }
+
+#generateNrbBtn {
+    background-color: #f7a300; /* Kolor pomarańczowy dla NRB */
+}
+
+#generateNrbBtn:hover {
+    background-color: #d18b00;
+}
+
+#nrbOutput {
+    color: #f7a300;
+    background-color: #fff8e1;
+}
+
+#nrbOutput:hover {
+    background-color: #f0e6c9;
+}
