@@ -1,27 +1,108 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
+<html lang="pl" class=" yjbakpgs idc0_350 xxdmjez"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Danych Testowych</title>
+    <title>Generatory Danych</title>
     <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
-    <div id="copy-message" class="copy-message">skopiowany!</div>
-    
-    <main class="container">
+
+    <h1>Generatory Danych Testowych</h1>
+
+    <div class="container">
+
         <div class="generator-tile">
-            <h2>Generator Dowodu Osobistego</h2>
-            <p class="output-label">Wygenerowany numer:</p>
-            <p class="generated-output" id="idOutput">Kliknij Generuj</p>
-            <button id="generateIdBtn">Generuj Dowód Osobisty</button>
+            <h2>Generator PESEL</h2>
+            <div class="generated-output" id="peselOutput">03301150377</div>
+            <button id="openPeselOptionsBtn">Ustawienia</button>
+            <button id="generateBtn">Generuj</button>
         </div>
 
         <div class="generator-tile">
-            <h2>Generator Numeru PESEL</h2>
-            <p class="output-label">Wygenerowany numer:</p>
-            <p class="generated-output" id="peselOutput">Kliknij Generuj</p>
+            <h2>Generator Dowodu Osobistego</h2>
+            <div class="generated-output" id="idOutput">QFL626390</div>
+            <button id="generateIdBtn">Generuj</button>
+        </div>
 
+        
+
+        
+    <div class="generator-tile regon-tile" style="
+    max-width: 100%; /* Zmień wartość na 100% lub po prostu usuń tę linię */
+">
+            <h2>Generator REGON</h2>
+            <div class="regon-options">
+                <div>
+                    <div class="generated-output" id="regon9Output">717113746</div>
+                    <button id="generateRegon9Btn">Generuj REGON 9</button>
+                </div>
+                <div>
+                    <div class="generated-output" id="regon14Output">01246437498715</div>
+                    <button id="generateRegon14Btn">Generuj REGON 14</button>
+                </div>
+            </div>
+        </div><div class="generator-tile nrb-tile" style="
+    max-width: 100%; /* Zmień wartość na 100% lub po prostu usuń tę linię */
+">
+            <h2>Generator Rachunku Bankowego (NRB)</h2>
+            <div class="generated-output" id="nrbOutput">87968100020552006260082412</div>
+            <div class="generator-options">
+                <div class="option-group">
+                    <label for="bankCode">Kod banku:</label>
+                    <select id="bankCode">
+                        <option value="random">Losowy</option>
+                        <option value="1010">NBP</option>
+                        <option value="1020">PKO BP</option>
+                        <option value="1030">Bank Handlowy</option>
+                        <option value="1050">ING Bank Śląski</option>
+                        <option value="1060">Bank BPH</option>
+                        <option value="1090">Santander Bank Polska</option>
+                        <option value="1130">Bank Gospodarstwa Krajowego</option>
+                        <option value="1140">mBank</option>
+                        <option value="1160">Bank Millennium</option>
+                        <option value="1240">Pekao SA</option>
+                        <option value="1280">HSBC</option>
+                        <option value="1320">Bank Pocztowy</option>
+                        <option value="1540">BOŚ Bank</option>
+                        <option value="1580">Mercedes-Benz Bank Polska</option>
+                        <option value="1610">SGB - Bank</option>
+                        <option value="1680">Plus Bank</option>
+                        <option value="1840">Societe Generale</option>
+                        <option value="1870">Nest Bank</option>
+                        <option value="1930">Bank Polskiej Spółdzielczości</option>
+                        <option value="1940">Credit Agricole</option>
+                        <option value="2030">BNP Paribas</option>
+                        <option value="2120">Santander Consumer Bank</option>
+                        <option value="2160">Toyota Bank</option>
+                        <option value="2190">DNB Bank Polska</option>
+                        <option value="2480">VeloBank</option>
+                        <option value="2490">Alior Bank</option>
+                        <option value="2770">Volkswagen Bank</option>
+                        <option value="2790">Raiffeisen Digital Bank</option>
+                        <option value="2910">Aion Bank</option>
+                    </select>
+                </div>
+                <div class="option-group">
+                    <label for="nrbFormat">Format:</label>
+                    <select id="nrbFormat">
+                        <option value="compact">Bez spacji</option>
+                        <option value="spaced">Ze spacjami</option>
+                    </select>
+                </div>
+                <div class="option-group">
+                    <label for="ibanPrefix">Prefiks IBAN:</label>
+                    <select id="ibanPrefix">
+                        <option value="no-prefix">Bez PL</option>
+                        <option value="with-prefix">Z PL</option>
+                    </select>
+                </div>
+            </div>
+            <button id="generateNrbBtn">Generuj</button>
+        </div></div>
+
+    <div id="peselOptionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">×</span>
+            <h2>Ustawienia PESEL</h2>
             <div class="generator-options">
                 <div class="option-group">
                     <label for="gender">Płeć:</label>
@@ -31,78 +112,20 @@
                         <option value="female">Kobieta</option>
                     </select>
                 </div>
-                
                 <div class="option-group">
                     <label for="birthDate">Data urodzenia:</label>
                     <input type="date" id="birthDate">
                 </div>
-
                 <div class="option-group">
-                    <label for="age">Wiek (opcjonalnie):</label>
+                    <label for="age">Wiek (losowy miesiąc i dzień):</label>
                     <input type="number" id="age" min="0" max="120">
                 </div>
             </div>
-
-            <button id="generateBtn">Generuj PESEL</button>
         </div>
-		<div class="generator-tile">
-			<h2>Generator REGON</h2>
-			<p class="output-label">9-cyfrowy REGON:</p>
-			<p class="generated-output" id="regon9Output">Kliknij Generuj</p>
-			<button id="generateRegon9Btn">Generuj REGON 9</button>
+    </div>
 
-			<p class="output-label" style="margin-top: 20px;">14-cyfrowy REGON:</p>
-			<p class="generated-output" id="regon14Output">Kliknij Generuj</p>
-			<button id="generateRegon14Btn">Generuj REGON 14</button>
-		</div>
-		<div id="copy-message" class="copy-message">skopiowany!</div>
-
-	<main class="container">
-		<div class="generator-tile">
-			<h2>Generator Rachunku Bankowego</h2>
-			<p class="output-label">Wygenerowany rachunek:</p>
-			<p class="generated-output" id="nrbOutput">Kliknij Generuj</p>
-
-			<div class="generator-options">
-				<div class="option-group">
-					<label for="bankCode">Kod banku:</label>
-					<select id="bankCode">
-						<option value="random">Losowy</option>
-						<option value="1010">1010 - NBP</option>
-						<option value="1020">1020 - PKO BP</option>
-						<option value="1030">1030 - Bank Handlowy</option>
-						<option value="1050">1050 - ING</option>
-						<option value="1060">1060 - BPH</option>
-						<option value="1090">1090 - Santander</option>
-						<option value="1140">1140 - mBank</option>
-						<option value="1160">1160 - Millennium</option>
-						<option value="1240">1240 - Pekao SA</option>
-						<option value="1930">1930 - BPS</option>
-						<option value="2490">2490 - Alior Bank</option>
-						</select>
-				</div>
-				
-				<div class="option-group">
-					<label for="nrbFormat">Format:</label>
-					<select id="nrbFormat">
-						<option value="compact">Ciąg cyfr</option>
-						<option value="spaced">Ze spacjami (co 4 cyfry)</option>
-					</select>
-				</div>
-				
-				<div class="option-group">
-					<label for="ibanPrefix">Prefiks IBAN:</label>
-					<select id="ibanPrefix">
-						<option value="no-prefix">Bez prefiksu</option>
-						<option value="with-prefix">Z prefiksem "PL"</option>
-					</select>
-				</div>
-			</div>
-
-			<button id="generateNrbBtn">Generuj Rachunek</button>
-		</div>
-    </main>
+    <div id="copy-message" class="copy-message"></div>
 
     <script src="static/script.js"></script>
-</body>
-</html>
+
+</body></html>
