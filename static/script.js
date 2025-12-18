@@ -577,6 +577,96 @@
                 });
             }
 
+		// ====================================================
+		// Logika generatora imion i nazwisk
+		// ====================================================
+
+		const nameOutput = document.getElementById('nameOutput');
+		const genderSelectName = document.getElementById('genderSelect');
+		const generateNameBtn = document.getElementById('generateNameBtn');
+
+		let maleNames = [];
+		let maleSurnames = [];
+		let femaleNames = [];
+		let femaleSurnames = [];
+
+		// Załaduj dane z plików JSON
+		async function loadNameData() {
+			try {
+				const maleNamesResponse = await fetch('static/male_names.json');
+				maleNames = await maleNamesResponse.json();
+
+				const maleSurnamesResponse = await fetch('static/male_surnames.json');
+				maleSurnames = await maleSurnamesResponse.json();
+
+				const femaleNamesResponse = await fetch('static/female_names.json');
+				femaleNames = await femaleNamesResponse.json();
+
+				const femaleSurnamesResponse = await fetch('static/female_surnames.json');
+				femaleSurnames = await femaleSurnamesResponse.json();
+
+				// Generuj losowe imię i nazwisko na starcie
+				generateRandomName();
+			} catch (error) {
+				console.error('Błąd podczas ładowania danych imion:', error);
+				nameOutput.innerText = 'Błąd ładowania danych imion.';
+			}
+		}
+
+		/**
+		 * Generuje losową parę imienia i nazwiska na podstawie wybranej płci.
+		 */
+		function generateRandomName() {
+			let selectedGender = genderSelectName.value;
+
+			// Jeśli wybrano "Losowa", wybierz losowo
+			if (selectedGender === 'random') {
+				selectedGender = Math.random() < 0.5 ? 'male' : 'female';
+			}
+
+			let names, surnames;
+			if (selectedGender === 'male') {
+				names = maleNames;
+				surnames = maleSurnames;
+			} else {
+				names = femaleNames;
+				surnames = femaleSurnames;
+			}
+
+			// Sprawdź czy dane są załadowane
+			if (names.length === 0 || surnames.length === 0) {
+				nameOutput.innerText = 'Brak danych imion/nazwisk';
+				return;
+			}
+
+			const randomName = names[Math.floor(Math.random() * names.length)];
+			const randomSurname = surnames[Math.floor(Math.random() * surnames.length)];
+
+			nameOutput.innerText = `${randomName} ${randomSurname}`;
+		}
+
+		// Obsługa kliknięcia przycisku "Generuj" dla imion i nazwisk
+		if (generateNameBtn) {
+			generateNameBtn.addEventListener('click', generateRandomName);
+		}
+
+		// Obsługa kliknięcia na pole z imieniem (kopiowanie)
+		if (nameOutput) {
+			nameOutput.addEventListener('click', () => {
+				const nameText = nameOutput.innerText;
+				if (navigator.clipboard) {
+					navigator.clipboard.writeText(nameText)
+						.then(() => showCopyMessage('Imię i nazwisko skopiowane!'))
+						.catch(err => console.error('Błąd podczas kopiowania:', err));
+				} else {
+					showCopyMessage('Imię i nazwisko skopiowane!');
+				}
+			});
+		}
+
+		// Załaduj dane imion na starcie
+		loadNameData();
+
         })
         .catch(error => {
             console.error('Wystąpił błąd podczas ładowania danych banków:', error);
