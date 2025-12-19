@@ -24,7 +24,7 @@ h1 { display: none; }
     grid-template-columns: 1fr;
     gap: 25px;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 20px auto;
 }
 
@@ -63,7 +63,9 @@ h2 {
     padding: 20px 10px;
     width: 100%;
     text-align: center;
-    word-break: break-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     cursor: pointer;
     border-radius: 8px;
     display: flex;
@@ -195,6 +197,36 @@ button:hover { filter: brightness(0.9); }
     .container { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* --- STOPKA --- */
+footer {
+    width: 100%;
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 50px;
+    border-top: 1px solid #e0e0e0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+footer a {
+    color: #1976d2;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 10px;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: #1565c0;
+}
+
+footer a svg {
+    width: 18px;
+    height: 18px;
+}
+
 /* Style dla rozdzielonych pól imienia i nazwiska */
 .name-fields {
     display: grid;
@@ -231,3 +263,10 @@ select, input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; }
 
 /* Specyficzny układ dla REGON */
 .regon-tile .regon-options { display: flex; flex-direction: column; gap: 10px; }
+
+/* Specyficzny układ dla NRB */
+.nrb-tile .generated-output {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    overflow-x: auto;
+    white-space: nowrap;
+}
