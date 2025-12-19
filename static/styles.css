@@ -92,6 +92,7 @@ h2 {
 #idOutput { color: #1565c0; background-color: #e3f2fd; }
 #nrbOutput { color: #e65100; background-color: #fff3e0; }
 #nameOutput { color: #7b1fa2; background-color: #f3e5f5; }
+#surnameOutput { color: #7b1fa2; background-color: #f3e5f5; }
 #regon9Output, #regon14Output { color: #37474f; background-color: #eceff1; font-size: 1.8rem; }
 
 .generated-output:hover { filter: brightness(0.95); }
@@ -192,6 +193,34 @@ button:hover { filter: brightness(0.9); }
 
 @media (min-width: 1024px) {
     .container { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Style dla rozdzielonych pól imienia i nazwiska */
+.name-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.name-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field-label {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+    text-align: left;
+}
+
+.name-field .generated-output {
+    margin: 0;
+    padding: 12px 10px;
+    font-size: 1.8rem;
 }
 
 /* Opcje formularzy */

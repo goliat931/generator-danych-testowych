@@ -582,6 +582,7 @@
 		// ====================================================
 
 		const nameOutput = document.getElementById('nameOutput');
+		const surnameOutput = document.getElementById('surnameOutput');
 		const genderSelectName = document.getElementById('genderSelect');
 		const generateNameBtn = document.getElementById('generateNameBtn');
 
@@ -593,23 +594,24 @@
 		// Załaduj dane z plików JSON
 		async function loadNameData() {
 			try {
-				const maleNamesResponse = await fetch('static/male_names.json');
+				const maleNamesResponse = await fetch('static/pl_male_names.json');
 				maleNames = await maleNamesResponse.json();
 
-				const maleSurnamesResponse = await fetch('static/male_surnames.json');
+				const maleSurnamesResponse = await fetch('static/pl_male_surnames.json');
 				maleSurnames = await maleSurnamesResponse.json();
 
-				const femaleNamesResponse = await fetch('static/female_names.json');
+				const femaleNamesResponse = await fetch('static/pl_female_names.json');
 				femaleNames = await femaleNamesResponse.json();
 
-				const femaleSurnamesResponse = await fetch('static/female_surnames.json');
+				const femaleSurnamesResponse = await fetch('static/pl_female_surnames.json');
 				femaleSurnames = await femaleSurnamesResponse.json();
 
 				// Generuj losowe imię i nazwisko na starcie
 				generateRandomName();
 			} catch (error) {
 				console.error('Błąd podczas ładowania danych imion:', error);
-				nameOutput.innerText = 'Błąd ładowania danych imion.';
+				nameOutput.innerText = 'Błąd ładowania';
+				surnameOutput.innerText = 'Błąd ładowania';
 			}
 		}
 
@@ -635,14 +637,16 @@
 
 			// Sprawdź czy dane są załadowane
 			if (names.length === 0 || surnames.length === 0) {
-				nameOutput.innerText = 'Brak danych imion/nazwisk';
+				nameOutput.innerText = 'Brak danych';
+				surnameOutput.innerText = 'Brak danych';
 				return;
 			}
 
 			const randomName = names[Math.floor(Math.random() * names.length)];
 			const randomSurname = surnames[Math.floor(Math.random() * surnames.length)];
 
-			nameOutput.innerText = `${randomName} ${randomSurname}`;
+			nameOutput.innerText = randomName;
+			surnameOutput.innerText = randomSurname;
 		}
 
 		// Obsługa kliknięcia przycisku "Generuj" dla imion i nazwisk
@@ -656,10 +660,24 @@
 				const nameText = nameOutput.innerText;
 				if (navigator.clipboard) {
 					navigator.clipboard.writeText(nameText)
-						.then(() => showCopyMessage('Imię i nazwisko skopiowane!'))
+						.then(() => showCopyMessage('Imię skopiowane!'))
 						.catch(err => console.error('Błąd podczas kopiowania:', err));
 				} else {
-					showCopyMessage('Imię i nazwisko skopiowane!');
+					showCopyMessage('Imię skopiowane!');
+				}
+			});
+		}
+
+		// Obsługa kliknięcia na pole z nazwiskiem (kopiowanie)
+		if (surnameOutput) {
+			surnameOutput.addEventListener('click', () => {
+				const surnameText = surnameOutput.innerText;
+				if (navigator.clipboard) {
+					navigator.clipboard.writeText(surnameText)
+						.then(() => showCopyMessage('Nazwisko skopiowane!'))
+						.catch(err => console.error('Błąd podczas kopiowania:', err));
+				} else {
+					showCopyMessage('Nazwisko skopiowane!');
 				}
 			});
 		}
