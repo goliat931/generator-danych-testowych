@@ -270,3 +270,89 @@ select, input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; }
     overflow-x: auto;
     white-space: nowrap;
 }
+
+/* --- WALIDATOR --- */
+.validator-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.validator-input-group input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.validator-input-group input:focus {
+    outline: none;
+    border-color: #1976d2;
+}
+
+.validator-input-group button {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #1976d2;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    width: auto;
+    margin: 0;
+    transition: background-color 0.3s;
+}
+
+.validator-input-group button:hover {
+    background-color: #1565c0;
+}
+
+.validator-result {
+    padding: 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    min-height: 60px;
+    display: block;
+    text-align: center;
+    line-height: 1.8;
+    white-space: pre-line;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.validator-result.valid {
+    background-color: #edf7ed;
+    color: #2e7d32;
+    border: 2px solid #2e7d32;
+}
+
+.validator-result.invalid {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 2px solid #c62828;
+}
+
+.button-group {
+    margin: 30px 0;
+}
+
+.nav-button {
+    display: inline-block;
+    padding: 14px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #666;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+    background-color: #555;
+}
