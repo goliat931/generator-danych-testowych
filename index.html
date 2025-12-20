@@ -11,7 +11,13 @@
 
     <h1>Generatory Danych Testowych</h1>
 
-    <div class="button-group" style="text-align: center; margin-bottom: 20px;">
+    <div class="button-group" style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 20px;">
+        <div class="theme-switch">
+            <label for="themeToggle" class="theme-label">
+                <input type="checkbox" id="themeToggle" class="theme-checkbox">
+                <span class="theme-toggle-button">🌙</span>
+            </label>
+        </div>
         <a href="validator.html" class="nav-button">Walidatory Danych →</a>
     </div>
 
@@ -20,6 +26,7 @@
         <div class="generator-tile">
             <h2>Generator PESEL</h2>
             <div class="generated-output" id="peselOutput">03301150377</div>
+            <div class="output-info" id="peselInfo"></div>
             <button id="openPeselOptionsBtn">Ustawienia</button>
             <button id="generateBtn">Generuj</button>
         </div>
@@ -33,25 +40,25 @@
         
 
         
-    <div class="generator-tile regon-tile" style="
-    max-width: 100%; /* Zmień wartość na 100% lub po prostu usuń tę linię */
-">
+    <div class="generator-tile regon-tile">
             <h2>Generator REGON</h2>
-            <div class="regon-options">
-                <div>
-                    <div class="generated-output" id="regon9Output">717113746</div>
-                    <button id="generateRegon9Btn">Generuj REGON 9</button>
-                </div>
-                <div>
-                    <div class="generated-output" id="regon14Output">01246437498715</div>
-                    <button id="generateRegon14Btn">Generuj REGON 14</button>
+            <div class="generated-output" id="regonOutput">717113746</div>
+            <div class="generator-options">
+                <div class="option-group">
+                    <label for="regonType">Typ REGON:</label>
+                    <select id="regonType">
+                        <option value="9">REGON 9-cyfrowy</option>
+                        <option value="14">REGON 14-cyfrowy</option>
+                    </select>
                 </div>
             </div>
-        </div><div class="generator-tile nrb-tile" style="
-    max-width: 100%; /* Zmień wartość na 100% lub po prostu usuń tę linię */
-">
+            <button id="generateRegonBtn">Generuj</button>
+        </div>
+
+        <div class="generator-tile nrb-tile">
             <h2>Generator Rachunku Bankowego (NRB)</h2>
             <div class="generated-output" id="nrbOutput">87968100020552006260082412</div>
+            <div class="output-info" id="nrbInfo"></div>
             <div class="generator-options">
                 <div class="option-group">
                     <label for="bankCode">Kod banku:</label>

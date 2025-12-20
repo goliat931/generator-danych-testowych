@@ -1,5 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ====================================================
+    // 0. Inicjalizacja trybu ciemnego/jasnego
+    // ====================================================
+
+    function initTheme() {
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        // Ustaw domyślny temat na podstawie preferencji przeglądarki
+        let currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+        // Zastosuj temat
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            if (themeToggle) themeToggle.checked = true;
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            if (themeToggle) themeToggle.checked = false;
+        }
+
+        // Event listener dla switch'a
+        if (themeToggle) {
+            themeToggle.addEventListener('change', () => {
+                const newTheme = themeToggle.checked ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+        }
+    }
+
+    // Inicjalizuj temat przed załadowaniem reszty
+    initTheme();
+
+    // ====================================================
     // 1. Selektory DOM
     // ====================================================
 

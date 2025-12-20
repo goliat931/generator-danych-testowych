@@ -1,10 +1,45 @@
 	document.addEventListener('DOMContentLoaded', () => {
 		// ====================================================
+		// 0. Inicjalizacja trybu ciemnego/jasnego
+		// ====================================================
+
+		function initTheme() {
+			const themeToggle = document.getElementById('themeToggle');
+			const savedTheme = localStorage.getItem('theme');
+			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+			// Ustaw domyślny temat na podstawie preferencji przeglądarki
+			let currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+			// Zastosuj temat
+			if (currentTheme === 'dark') {
+				document.documentElement.setAttribute('data-theme', 'dark');
+				if (themeToggle) themeToggle.checked = true;
+			} else {
+				document.documentElement.setAttribute('data-theme', 'light');
+				if (themeToggle) themeToggle.checked = false;
+			}
+
+			// Event listener dla switch'a
+			if (themeToggle) {
+				themeToggle.addEventListener('change', () => {
+					const newTheme = themeToggle.checked ? 'dark' : 'light';
+					document.documentElement.setAttribute('data-theme', newTheme);
+					localStorage.setItem('theme', newTheme);
+				});
+			}
+		}
+
+		// Inicjalizuj temat przed załadowaniem reszty
+		initTheme();
+
+		// ====================================================
 		// 1. Zmienne globalne i selektory DOM
 		// ====================================================
 
 		// Nowe selektory dla modalu PESEL
 		const peselOutput = document.getElementById('peselOutput');
+		const peselInfo = document.getElementById('peselInfo');
 		const openPeselOptionsBtn = document.getElementById('openPeselOptionsBtn');
 		const generateBtn = document.getElementById('generateBtn');
 		const peselOptionsModal = document.getElementById('peselOptionsModal');
@@ -20,13 +55,13 @@
 		const idOutput = document.getElementById('idOutput');
 
 		// Elementy dla generatora REGON
-		const generateRegon9Btn = document.getElementById('generateRegon9Btn');
-		const regon9Output = document.getElementById('regon9Output');
-		const generateRegon14Btn = document.getElementById('generateRegon14Btn');
-		const regon14Output = document.getElementById('regon14Output');
+		const generateRegonBtn = document.getElementById('generateRegonBtn');
+		const regonOutput = document.getElementById('regonOutput');
+		const regonTypeSelect = document.getElementById('regonType');
 
 		// Elementy dla generatora rachunku bankowego
 		const generateNrbBtn = document.getElementById('generateNrbBtn');
+		const nrbInfo = document.getElementById('nrbInfo');
 		const nrbOutput = document.getElementById('nrbOutput');
 		const bankCodeSelect = document.getElementById('bankCode');
 		const nrbFormatSelect = document.getElementById('nrbFormat');
@@ -83,6 +118,77 @@
 			setTimeout(() => {
 				copyMessage.classList.remove('show');
 			}, 3000);
+		}
+
+		/**
+		 * Oblicza i wyświetla informacje z PESEL
+		 * @param {string} pesel Numer PESEL
+		 */
+		function displayPeselInfo(pesel) {
+			if (!pesel || pesel.length !== 11) return;
+
+			const rr = parseInt(pesel.substring(0, 2));
+			const mm = parseInt(pesel.substring(2, 4));
+			const dd = parseInt(pesel.substring(4, 6));
+			const gender = parseInt(pesel[9]) % 2 === 0 ? 'Kobieta' : 'Mężczyzna';
+
+			// Dekodowanie miesiąca na podstawie stulecia
+			let actualMonth = mm;
+			let year = rr;
+			if (mm > 80) {
+				actualMonth = mm - 80;
+				year = 1800 + rr;
+			} else if (mm > 60) {
+				actualMonth = mm - 60;
+				year = 2200 + rr;
+			} else if (mm > 40) {
+				actualMonth = mm - 40;
+				year = 2100 + rr;
+			} else if (mm > 20) {
+				actualMonth = mm - 20;
+				year = 2000 + rr;
+			} else {
+				year = 1900 + rr;
+			}
+
+			// Oblicz wiek
+			const birthDate = new Date(year, actualMonth - 1, dd);
+			const today = new Date();
+			let age = today.getFullYear() - birthDate.getFullYear();
+			const monthDiff = today.getMonth() - birthDate.getMonth();
+			if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+				age--;
+			}
+
+			// Sformatuj datę urodzenia
+			const birthDateStr = `${String(dd).padStart(2, '0')}-${String(actualMonth).padStart(2, '0')}-${year}`;
+
+			peselInfo.innerHTML = `Płeć: ${gender} | Data urodzenia: ${birthDateStr} | Wiek: ${age} lat`;
+		}
+
+		/**
+		 * Oblicza i wyświetla informacje z NRB
+		 * @param {string} nrb Numer rachunku
+		 */
+		function displayNrbInfo(nrb) {
+			if (!nrb || nrb.length < 10) {
+				nrbInfo.innerHTML = '';
+				return;
+			}
+
+			// Usuń PL i spacje
+			let cleanNrb = nrb.replace(/\s/g, '').replace('PL', '');
+			
+			// Odczyt kodu banku (pozycje 2-6)
+			const bankCode = cleanNrb.substring(2, 6);
+
+			// Szukaj kodu banku w tabeli
+			if (bankCodes[bankCode]) {
+				nrbInfo.innerHTML = `Bank: ${bankCodes[bankCode]}`;
+			} else {
+				// Jeśli nie znaleziono nazwy, wyświetl kod
+				nrbInfo.innerHTML = `Kod banku: ${bankCode}`;
+			}
 		}
 
 		// ====================================================
@@ -162,9 +268,11 @@
 			try {
 				const newPesel = generatePesel(year, month, day, gender);
 				peselOutput.innerText = newPesel;
+				displayPeselInfo(newPesel);
 			} catch (error) {
 				console.error("Błąd podczas generowania PESEL:", error);
 				peselOutput.innerText = "Błąd: " + error.message;
+				peselInfo.innerHTML = '';
 			}
 		}
 
@@ -411,9 +519,10 @@
 		// Generuj dane na starcie strony
 		generateRandomPesel();
 		idOutput.innerText = generateIdNumber();
-		regon9Output.innerText = generateRegon9();
-		regon14Output.innerText = generateRegon14();
-		nrbOutput.innerText = generateNrb(bankCodeSelect.value, nrbFormatSelect.value, ibanPrefixSelect.value);
+		regonOutput.innerText = generateRegon9();
+		const initialNrb = generateNrb(bankCodeSelect.value, nrbFormatSelect.value, ibanPrefixSelect.value);
+		nrbOutput.innerText = initialNrb;
+		displayNrbInfo(initialNrb);
 
 		// Obsługa kliknięcia przycisku "Ustawienia" (PESEL)
 		if (openPeselOptionsBtn) {
@@ -470,9 +579,11 @@
 				try {
 					const newPesel = generatePesel(year, month, day, gender);
 					peselOutput.innerText = newPesel;
+					displayPeselInfo(newPesel);
 				} catch (error) {
 					console.error("Błąd podczas generowania PESEL:", error);
 					peselOutput.innerText = "Błąd: " + error.message;
+					peselInfo.innerHTML = '';
 				}
 			});
 		}
@@ -512,43 +623,40 @@
 			});
 		}
 
-		// Obsługa kliknięcia przycisku "Generuj REGON 9"
-		if (generateRegon9Btn) {
-			generateRegon9Btn.addEventListener('click', () => {
-				regon9Output.innerText = generateRegon9();
-			});
-		}
-
-		// Obsługa kliknięcia przycisku "Generuj REGON 14"
-		if (generateRegon14Btn) {
-			generateRegon14Btn.addEventListener('click', () => {
-				regon14Output.innerText = generateRegon14();
-			});
-		}
-
-		// Obsługa kliknięcia na pole REGON (kopiowanie)
-		if (regon9Output) {
-			regon9Output.addEventListener('click', () => {
-				const regonText = regon9Output.innerText;
-				if (navigator.clipboard) {
-					navigator.clipboard.writeText(regonText)
-						.then(() => showCopyMessage('REGON (9 cyfr) skopiowany!'))
-						.catch(err => console.error('Błąd podczas kopiowania:', err));
+		// Obsługa kliknięcia przycisku "Generuj REGON"
+		if (generateRegonBtn) {
+			generateRegonBtn.addEventListener('click', () => {
+				const regonType = regonTypeSelect.value;
+				if (regonType === '9') {
+					regonOutput.innerText = generateRegon9();
 				} else {
-					showCopyMessage('REGON (9 cyfr) skopiowany!');
+					regonOutput.innerText = generateRegon14();
 				}
 			});
 		}
 
-		if (regon14Output) {
-			regon14Output.addEventListener('click', () => {
-				const regonText = regon14Output.innerText;
+		// Obsługa zmiany typu REGON
+		if (regonTypeSelect) {
+			regonTypeSelect.addEventListener('change', () => {
+				const regonType = regonTypeSelect.value;
+				if (regonType === '9') {
+					regonOutput.innerText = generateRegon9();
+				} else {
+					regonOutput.innerText = generateRegon14();
+				}
+			});
+		}
+
+		// Obsługa kliknięcia na pole REGON (kopiowanie)
+		if (regonOutput) {
+			regonOutput.addEventListener('click', () => {
+				const regonText = regonOutput.innerText;
 				if (navigator.clipboard) {
 					navigator.clipboard.writeText(regonText)
-						.then(() => showCopyMessage('REGON (14 cyfr) skopiowany!'))
+						.then(() => showCopyMessage('REGON skopiowany!'))
 						.catch(err => console.error('Błąd podczas kopiowania:', err));
 				} else {
-					showCopyMessage('REGON (14 cyfr) skopiowany!');
+					showCopyMessage('REGON skopiowany!');
 				}
 			});
 		}
@@ -559,7 +667,9 @@
 				const selectedBankCode = bankCodeSelect.value;
 				const selectedFormat = nrbFormatSelect.value;
 				const selectedPrefix = ibanPrefixSelect.value;
-				nrbOutput.innerText = generateNrb(selectedBankCode, selectedFormat, selectedPrefix);
+				const newNrb = generateNrb(selectedBankCode, selectedFormat, selectedPrefix);
+				nrbOutput.innerText = newNrb;
+				displayNrbInfo(newNrb);
 			});
 		}
 
