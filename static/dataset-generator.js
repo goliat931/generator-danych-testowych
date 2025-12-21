@@ -214,7 +214,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.getElementById('generateDatasetBtn').addEventListener('click', () => {
 		const recordCount = Math.min(parseInt(document.getElementById('recordCount').value) || 10, 100000);
 		const format = document.querySelector('input[name="export-format"]:checked').value;
-		const separator = document.querySelector('input[name="csv-separator"]:checked')?.value || ',';
+		let separator = document.querySelector('input[name="csv-separator"]:checked')?.value || ',';
+		
+		// Zamień "tab" na faktyczną tabulację
+		if (separator === 'tab') {
+			separator = '\t';
+		}
 
 		// Pobierz zaznaczone pola w kolejności
 		const fields = [];
