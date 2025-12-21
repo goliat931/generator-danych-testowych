@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="pl" class=" yjbakpgs idc0_350 xxdmjez"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +12,7 @@
 
     <h1>Generatory Danych Testowych</h1>
 
-    <div class="button-group" style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 20px;">
+    <div class="button-group">
         <div class="theme-switch">
             <label for="themeToggle" class="theme-label">
                 <input type="checkbox" id="themeToggle" class="theme-checkbox">
@@ -27,14 +28,17 @@
             <h2>Generator PESEL</h2>
             <div class="generated-output" id="peselOutput">03301150377</div>
             <div class="output-info" id="peselInfo"></div>
-            <button id="openPeselOptionsBtn">Ustawienia</button>
-            <button id="generateBtn">Generuj</button>
+
+            <div class="button-group">
+                <button type="button" id="openPeselOptionsBtn">Ustawienia</button>
+                <button type="button" id="generateBtn">Generuj</button>
+            </div>
         </div>
 
         <div class="generator-tile">
             <h2>Generator Dowodu Osobistego</h2>
             <div class="generated-output" id="idOutput">QFL626390</div>
-            <button id="generateIdBtn">Generuj</button>
+            <button type="button" id="generateIdBtn">Generuj</button>
         </div>
 
         
@@ -52,7 +56,7 @@
                     </select>
                 </div>
             </div>
-            <button id="generateRegonBtn">Generuj</button>
+            <button type="button"id="generateRegonBtn">Generuj</button>
         </div>
 
         <div class="generator-tile nrb-tile">
@@ -110,7 +114,7 @@
                     </select>
                 </div>
             </div>
-            <button id="generateNrbBtn">Generuj</button>
+            <button type="button"id="generateNrbBtn">Generuj</button>
         </div>
 
         <div class="generator-tile">
@@ -135,7 +139,7 @@
                     </select>
                 </div>
             </div>
-            <button id="generateNameBtn">Generuj</button>
+            <button type="button" id="generateNameBtn">Generuj</button>
         </div>
     </div>
 
