@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Zbiorów Danych</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="button-group">
+        <div class="theme-switch">
+            <label for="themeToggle" class="theme-label">
+                <input type="checkbox" id="themeToggle" class="theme-checkbox">
+                <span class="theme-toggle-button">🌙</span>
+            </label>
+        </div>
+        <a href="index.html" class="nav-button">← Powrót do Generatorów</a>
+    </div>
+
+    <div class="container">
+        <h1>Generator Zbiorów Danych</h1>
+        
+        <div class="dataset-generator-tile">
+            <h2>Konfiguracja Eksportu</h2>
+
+            <!-- Wybór danych -->
+            <div class="config-section">
+                <h3>Dane do wygenerowania</h3>
+                <div class="data-selection">
+                    <label class="draggable-item">
+                        <input type="checkbox" name="data-field" value="pesel" checked>
+                        <span class="drag-handle">⋮⋮</span> PESEL
+                    </label>
+                    <label class="draggable-item">
+                        <input type="checkbox" name="data-field" value="id" checked>
+                        <span class="drag-handle">⋮⋮</span> Dowód Osobisty
+                    </label>
+                    <label class="draggable-item">
+                        <input type="checkbox" name="data-field" value="regon" checked>
+                        <span class="drag-handle">⋮⋮</span> REGON
+                    </label>
+                    <label class="draggable-item">
+                        <input type="checkbox" name="data-field" value="nrb" checked>
+                        <span class="drag-handle">⋮⋮</span> NRB
+                    </label>
+                    <label class="draggable-item">
+                        <input type="checkbox" name="data-field" value="firstName" checked>
+                        <span class="drag-handle">⋮⋮</span> Imię
+                    </label>
+                    <label class="draggable-item">
+                        <input type="checkbox" name="data-field" value="surname" checked>
+                        <span class="drag-handle">⋮⋮</span> Nazwisko
+                    </label>
+                </div>
+            </div>
+
+            <!-- Ilość rekordów -->
+            <div class="config-section">
+                <label for="recordCount">Liczba rekordów:</label>
+                <input type="number" id="recordCount" min="1" max="100000" value="10" placeholder="Liczba wierszy">
+            </div>
+
+            <!-- Format eksportu -->
+            <div class="config-section">
+                <h3>Format eksportu</h3>
+                <div class="format-selection">
+                    <label>
+                        <input type="radio" name="export-format" value="csv" checked>
+                        CSV (Comma Separated Values)
+                    </label>
+                    <label>
+                        <input type="radio" name="export-format" value="json">
+                        JSON
+                    </label>
+                    <label>
+                        <input type="radio" name="export-format" value="xml">
+                        XML
+                    </label>
+                </div>
+            </div>
+
+            <!-- Separator dla CSV -->
+            <div class="config-section" id="separatorSection">
+                <h3>Separator (CSV)</h3>
+                <div class="separator-selection">
+                    <label>
+                        <input type="radio" name="csv-separator" value="," checked>
+                        Przecinek (,)
+                    </label>
+                    <label>
+                        <input type="radio" name="csv-separator" value=";">
+                        Średnik (;)
+                    </label>
+                    <label>
+                        <input type="radio" name="csv-separator" value="\t">
+                        Tabulacja (Tab)
+                    </label>
+                    <label>
+                        <input type="radio" name="csv-separator" value="|">
+                        Rura (|)
+                    </label>
+                </div>
+            </div>
+
+            <!-- Przyciski generowania i pobierania -->
+            <div class="button-group-dataset">
+                <button id="generateDatasetBtn">📋 Generuj</button>
+                <button id="downloadDatasetBtn" disabled>📥 Pobierz</button>
+            </div>
+        </div>
+
+        <div class="preview-tile">
+            <h2>Podgląd (pierwsze 5 wierszy)</h2>
+            <pre id="previewContent">Podgląd pojawi się tutaj po kliknięciu "Generuj"</pre>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Generator Danych Testowych • <a href="https://github.com" target="_blank">GitHub</a></p>
+    </footer>
+
+    <script src="static/dataset-generator.js"></script>
+</body>
+</html>
