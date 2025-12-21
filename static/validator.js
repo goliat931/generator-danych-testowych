@@ -34,6 +34,20 @@ document.addEventListener('DOMContentLoaded', () => {
     initTheme();
 
     // ====================================================
+    // 0.5 Załadowanie kodów bankowych z JSON
+    // ====================================================
+    
+    // Załaduj bank_codes.json
+    let bankCodes = {};
+    fetch('static/bank_codes.json')
+        .then(response => response.json())
+        .then(data => {
+            bankCodes = data;
+            console.log('Załadowano', Object.keys(bankCodes).length, 'kodów bankowych');
+        })
+        .catch(error => console.error('Błąd załadowania bank_codes.json:', error));
+
+    // ====================================================
     // 1. Selektory DOM
     // ====================================================
 
@@ -66,19 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const weightsId = [7, 3, 1, 9, 7, 3, 1, 7, 3];
     const weightsRegon9 = [8, 9, 2, 3, 4, 5, 6, 7];
     const weightsRegon14 = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8];
-
-    const bankCodes = {
-        '1010': 'NBP', '1020': 'PKO BP', '1030': 'Bank Handlowy',
-        '1050': 'ING Bank Śląski', '1060': 'Bank BPH', '1090': 'Santander Bank Polska',
-        '1130': 'Bank Gospodarstwa Krajowego', '1140': 'mBank', '1160': 'Bank Millennium',
-        '1240': 'Pekao SA', '1280': 'HSBC', '1320': 'Bank Pocztowy',
-        '1540': 'BOŚ Bank', '1580': 'Mercedes-Benz Bank Polska', '1610': 'SGB - Bank',
-        '1680': 'Plus Bank', '1840': 'Societe Generale', '1870': 'Nest Bank',
-        '1930': 'Bank Polskiej Spółdzielczości', '1940': 'Credit Agricole',
-        '2030': 'BNP Paribas', '2120': 'Santander Consumer Bank', '2160': 'Toyota Bank',
-        '2190': 'DNB Bank Polska', '2480': 'VeloBank', '2490': 'Alior Bank',
-        '2770': 'Volkswagen Bank', '2790': 'Raiffeisen Digital Bank', '2910': 'Aion Bank'
-    };
 
     const encodedMonths = {
         '1800-1899': 80,
@@ -381,14 +382,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
 
-        // Odczyt nazwy banku (pozycje 2-9)
-        const bankCode = nrb.substring(2, 10);
-        const firstFourDigits = bankCode.substring(0, 4);
+        // Odczyt nazwy banku (pozycje 3-10 to 8-cyfrowy identyfikator banku)
+        const bankCode8 = nrb.substring(2, 10);
+        const bankCode4 = bankCode8.substring(0, 4);
         let bankName = 'Nieznany bank';
 
-        // Szukaj kodu banku w tabeli
-        if (bankCodes[firstFourDigits]) {
-            bankName = bankCodes[firstFourDigits];
+        // Szukaj najpierw 8-cyfrowego kodu, potem 4-cyfrowego
+        if (bankCodes[bankCode8]) {
+            bankName = bankCodes[bankCode8];
+        } else if (bankCodes[bankCode4]) {
+            bankName = bankCodes[bankCode4];
         }
 
         const message = `✅ Numer rachunku bankowego jest poprawny!<br>

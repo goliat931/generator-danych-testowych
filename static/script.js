@@ -34,8 +34,21 @@
 		initTheme();
 
 		// ====================================================
-		// 1. Zmienne globalne i selektory DOM
+		// 0.5 Załadowanie kodów bankowych z JSON
 		// ====================================================
+		
+		// Załaduj bank_codes.json
+		fetch('static/bank_codes.json')
+			.then(response => response.json())
+			.then(data => {
+				bankCodes = data;
+				console.log('Załadowano', Object.keys(bankCodes).length, 'kodów bankowych');
+			})
+			.catch(error => console.error('Błąd załadowania bank_codes.json:', error));
+
+		// ====================================================
+		// 1. Zmienne globalne i selektory DOM
+		// ===================================================
 
 		// Nowe selektory dla modalu PESEL
 		const peselOutput = document.getElementById('peselOutput');
@@ -90,19 +103,8 @@
 		const weightsRegon9 = [8, 9, 2, 3, 4, 5, 6, 7];
 		const weightsRegon14 = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8];
 		
-		// Lista kodów banków
-		const bankCodes = {
-			'1010': 'NBP', '1020': 'PKO BP', '1030': 'Bank Handlowy',
-			'1050': 'ING Bank Śląski', '1060': 'Bank BPH', '1090': 'Santander Bank Polska',
-			'1130': 'Bank Gospodarstwa Krajowego', '1140': 'mBank', '1160': 'Bank Millennium',
-			'1240': 'Pekao SA', '1280': 'HSBC', '1320': 'Bank Pocztowy',
-			'1540': 'BOŚ Bank', '1580': 'Mercedes-Benz Bank Polska', '1610': 'SGB - Bank',
-			'1680': 'Plus Bank', '1840': 'Societe Generale', '1870': 'Nest Bank',
-			'1930': 'Bank Polskiej Spółdzielczości', '1940': 'Credit Agricole',
-			'2030': 'BNP Paribas', '2120': 'Santander Consumer Bank', '2160': 'Toyota Bank',
-			'2190': 'DNB Bank Polska', '2480': 'VeloBank', '2490': 'Alior Bank',
-			'2770': 'Volkswagen Bank', '2790': 'Raiffeisen Digital Bank', '2910': 'Aion Bank'
-		};
+		// Lista kodów banków (załadowana z JSON)
+		let bankCodes = {};
 
 		// ====================================================
 		// 2. Funkcje pomocnicze
@@ -179,15 +181,18 @@
 			// Usuń PL i spacje
 			let cleanNrb = nrb.replace(/\s/g, '').replace('PL', '');
 			
-			// Odczyt kodu banku (pozycje 2-6)
-			const bankCode = cleanNrb.substring(2, 6);
+			// Odczyt kodu banku: próbuj 8-cyfrowy (pozycje 3-10), potem 4-cyfrowy
+			const bankCode8 = cleanNrb.substring(2, 10);
+			const bankCode4 = bankCode8.substring(0, 4);
 
-			// Szukaj kodu banku w tabeli
-			if (bankCodes[bankCode]) {
-				nrbInfo.innerHTML = `Bank: ${bankCodes[bankCode]}`;
+			// Szukaj najpierw pełnego 8-cyfrowego kodu, potem 4-cyfrowego
+			if (bankCodes[bankCode8]) {
+				nrbInfo.innerHTML = `Bank: ${bankCodes[bankCode8]}`;
+			} else if (bankCodes[bankCode4]) {
+				nrbInfo.innerHTML = `Bank: ${bankCodes[bankCode4]}`;
 			} else {
-				// Jeśli nie znaleziono nazwy, wyświetl kod
-				nrbInfo.innerHTML = `Kod banku: ${bankCode}`;
+				// Jeśli nie znaleziono nazwy, wyświetl najdokładniejszy kod (8-cyfrowy)
+				nrbInfo.innerHTML = `Kod banku: ${bankCode8}`;
 			}
 		}
 
@@ -411,8 +416,8 @@
 		// ====================================================
 
 		// Zastąpienie twardo zakodowanej zmiennej
-		// Pobieranie danych banków z pliku plewibnra.txt
-		fetch('static/plewibnra.txt')
+		// Pobieranie danych banków z pliku plewibnra_utf8.txt
+		fetch('static/plewibnra_utf8.txt')
 			.then(response => {
 				// Sprawdź, czy odpowiedź jest poprawna
 				if (!response.ok) {
