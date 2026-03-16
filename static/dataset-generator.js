@@ -142,6 +142,149 @@ document.addEventListener('DOMContentLoaded', () => {
 		return surnames[Math.floor(Math.random() * surnames.length)];
 	}
 
+	function getRandomMaleName() {
+		return maleNames[Math.floor(Math.random() * maleNames.length)];
+	}
+
+	function getRandomFemaleName() {
+		return femaleNames[Math.floor(Math.random() * femaleNames.length)];
+	}
+
+	function randomInt(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+	function randomHex(length) {
+		const chars = '0123456789abcdef';
+		return Array.from({ length }, () => chars[randomInt(0, chars.length - 1)]).join('');
+	}
+
+	function formatDateYMD(date) {
+		const y = date.getFullYear();
+		const m = String(date.getMonth() + 1).padStart(2, '0');
+		const d = String(date.getDate()).padStart(2, '0');
+		return `${y}-${m}-${d}`;
+	}
+
+	function randomDateBetween(start, end) {
+		const startMs = start.getTime();
+		const endMs = end.getTime();
+		return new Date(randomInt(startMs, endMs));
+	}
+
+	function generatePeselFromDate(date, sex) {
+		const year = date.getFullYear();
+		let month = date.getMonth() + 1;
+		const day = date.getDate();
+
+		// Zakoduj miesiąc w zależności od stulecia
+		if (year >= 1800 && year <= 1899) month += 80;
+		else if (year >= 2000 && year <= 2099) month += 20;
+		else if (year >= 2100 && year <= 2199) month += 40;
+		else if (year >= 2200 && year <= 2299) month += 60;
+
+		const yearTwoDigits = String(year % 100).padStart(2, '0');
+		const monthTwoDigits = String(month).padStart(2, '0');
+		const dayTwoDigits = String(day).padStart(2, '0');
+
+		const serial = String(randomInt(0, 9999)).padStart(4, '0');
+		const genderDigit = sex === 'M' ? (randomInt(0, 4) * 2 + 1) : (randomInt(0, 4) * 2);
+		const base = `${yearTwoDigits}${monthTwoDigits}${dayTwoDigits}${serial}${genderDigit}`;
+
+		const weights = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
+		let sum = 0;
+		for (let i = 0; i < 10; i++) sum += parseInt(base[i], 10) * weights[i];
+		const checksum = (10 - (sum % 10)) % 10;
+
+		return base + checksum;
+	}
+
+	function generatePolishPostalCode() {
+		const part1 = String(randomInt(0, 99)).padStart(2, '0');
+		const part2 = String(randomInt(0, 999)).padStart(3, '0');
+		return `${part1}-${part2}`;
+	}
+
+	const polishCities = [
+		'Warszawa', 'Kraków', 'Łódź', 'Wrocław', 'Poznań', 'Gdańsk', 'Szczecin', 'Bydgoszcz',
+		'Lublin', 'Białystok', 'Katowice', 'Gdynia', 'Częstochowa', 'Radom', 'Toruń', 'Kielce',
+		'Rzeszów', 'Olsztyn', 'Zielona Góra', 'Opole', 'Bielsko-Biała'
+	];
+
+	function getRandomCity() {
+		return polishCities[Math.floor(Math.random() * polishCities.length)];
+	}
+
+	const streetNames = [
+		'Kwiatowa', 'Słoneczna', 'Wiosenna', 'Szkolna', 'Leśna', 'Polna', 'Słoneczna', 'Lipowa',
+		'Grunwaldzka', 'Kościuszki', 'Słowackiego', 'Pionierów', 'Rozwoju', 'Mickiewicza', 'Krótka'
+	];
+
+	function getRandomStreetName() {
+		const name = streetNames[Math.floor(Math.random() * streetNames.length)];
+		const prefix = Math.random() > 0.5 ? 'ul.' : '';
+		return `${prefix} ${name}`.trim();
+	}
+
+	function generatePhoneNumber() {
+		const prefix = randomInt(500, 899);
+		const rest = String(randomInt(0, 999999)).padStart(6, '0');
+		return `${prefix}${rest}`;
+	}
+
+	const mailDomains = ['wp.pl', 'onet.pl', 'o2.pl', 'interia.pl', 'gazeta.pl', 'tlen.pl'];
+
+	function generateEmail(first, last) {
+		const local = `${first}.${last}`.toLowerCase().replace(/[^a-z0-9]/g, '');
+		const randomSuffix = randomInt(1, 9999);
+		const domain = mailDomains[randomInt(0, mailDomains.length - 1)];
+		return `${local}${randomSuffix}@${domain}`;
+	}
+
+	function generateToken() {
+		const now = new Date();
+		const datePart = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+		return `token${datePart}${randomHex(8)}`;
+	}
+
+	function generateSeasonString() {
+		const month = new Date().getMonth() + 1;
+		if (month >= 3 && month <= 5) return 'Wiosna';
+		if (month >= 6 && month <= 8) return 'Lato';
+		if (month >= 9 && month <= 11) return 'Jesień';
+		return 'Zima';
+	}
+
+	function generateComment() {
+		const sentences = [
+			'Testowy komentarz.',
+			'Dane wygenerowano automatycznie.',
+			'Proszę nie używać tych danych w produkcji.',
+			'Wygenerowane dane służą wyłącznie do testów.',
+			'Przykładowy komentarz do zbioru danych.'
+		];
+		return sentences[Math.floor(Math.random() * sentences.length)];
+	}
+
+	function generateNip() {
+		const weights = [6, 5, 7, 2, 3, 4, 5, 6, 7];
+		while (true) {
+			const digits = Array.from({ length: 9 }, () => randomInt(0, 9));
+			const sum = digits.reduce((acc, d, i) => acc + d * weights[i], 0);
+			const check = sum % 11;
+			if (check < 10) {
+				return digits.join('') + check;
+			}
+		}
+	}
+
+	function generateCompanyName() {
+		const suffixes = ['Sp. z o.o.', 'S.A.', 'Sp. k.', 'Sp. j.', 'Fundacja', 'Stowarzyszenie'];
+		const name = getRandomSurname();
+		const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+		return `${name} ${suffix}`;
+	}
+
 	// ====================================================
 	// 4. Toggle separator section
 	// ====================================================
@@ -236,26 +379,125 @@ document.addEventListener('DOMContentLoaded', () => {
 		const data = [];
 		for (let i = 0; i < recordCount; i++) {
 			const record = {};
+
+			// Podstawowe wartości używane w wielu polach
+			const sex = 'M';
+			const birthdate = randomDateBetween(new Date(1950, 0, 1), new Date(2002, 11, 31));
+			const pesel = generatePeselFromDate(birthdate, sex);
+			const firstNameMale = getRandomMaleName();
+			const firstNameFemale = getRandomFemaleName();
+			const surname = getRandomSurname();
+			const idNumber = generateIdNumber();
+			const nrb = generateNrb();
+			const bankAccount = nrb;
+			const companyName = generateCompanyName();
+			const nip = generateNip();
+
 			fields.forEach(field => {
 				switch(field) {
 					case 'pesel':
-						record.pesel = generateRandomPesel();
+						record.pesel = pesel;
 						break;
 					case 'id':
-						record.id = generateIdNumber();
+						record.id = idNumber;
 						break;
 					case 'regon':
 						record.regon = generateRegon(Math.random() > 0.5 ? 9 : 14);
 						break;
-					case 'nrb':
-						record.nrb = generateNrb();
-						break;
 					case 'firstName':
-						record.firstName = getRandomName();
+						record.firstName = firstNameMale;
 						break;
 					case 'surname':
-						record.surname = getRandomSurname();
+						record.surname = surname;
 						break;
+					case 'imie':
+						record.imie = firstNameMale;
+						break;
+					case 'nazwa':
+						record.nazwa = surname;
+						break;
+					case 'imie_ojca':
+						record.imie_ojca = firstNameMale;
+						break;
+					case 'imie_matki':
+						record.imie_matki = firstNameFemale;
+						break;
+					case 'sex':
+						record.sex = sex;
+						break;
+					case 'citizenship':
+						record.citizenship = 'POL';
+						break;
+					case 'birthdate':
+						record.birthdate = formatDateYMD(birthdate);
+						break;
+					case 'birthCountry':
+						record.birthCountry = 'POL';
+						break;
+					case 'birthcity':
+						record.birthcity = getRandomCity();
+						break;
+					case 'document_type':
+						record.document_type = 'DOWOD_OSOBISTY';
+						break;
+					case 'dok_tozs':
+						record.dok_tozs = idNumber;
+						break;
+					case 'dok_expirydate': {
+						const expiry = randomDateBetween(new Date(), new Date(new Date().getFullYear() + 10, 11, 31));
+						record.dok_expirydate = formatDateYMD(expiry);
+						break;
+					}
+					case 'ulica':
+						record.ulica = getRandomStreetName();
+						break;
+					case 'nr_domu':
+						record.nr_domu = String(randomInt(1, 999));
+						break;
+					case 'nr_lokalu':
+						record.nr_lokalu = String(randomInt(1, 999));
+						break;
+					case 'kod_pocztowy':
+						record.kod_pocztowy = generatePolishPostalCode();
+						break;
+					case 'miasto':
+						record.miasto = getRandomCity();
+						break;
+					case 'kraj':
+						record.kraj = 'POL';
+						break;
+					case 'telk':
+						record.telk = generatePhoneNumber();
+						break;
+					case 'teld':
+						record.teld = generatePhoneNumber();
+						break;
+					case 'mail':
+						record.mail = generateEmail(firstNameMale, surname);
+						break;
+					case 'bankaccount':
+						record.bankaccount = bankAccount;
+						break;
+					case 'comment':
+						record.comment = generateComment();
+						break;
+					case 'season_string':
+						record.season_string = generateSeasonString();
+						break;
+					case 'token':
+						record.token = generateToken();
+						break;
+					case 'alnova_pid':
+						record.alnova_pid = String(randomInt(10000000, 99999999));
+						break;
+					case 'nip':
+						record.nip = nip;
+						break;
+					case 'companyname':
+						record.companyname = companyName;
+						break;
+					default:
+						record[field] = '';
 				}
 			});
 			data.push(record);

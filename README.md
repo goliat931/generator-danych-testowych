@@ -39,7 +39,7 @@ Każdy walidator wyświetla szczegółowe wyniki:
 Zaawansowana strona do generowania masowych zbiorów danych:
 
 **Funkcjonalność:**
-- 🔄 Wybór pól do wygenerowania (PESEL, ID, REGON, NRB, Imię, Nazwisko)
+- 🔄 Wybór pól do wygenerowania (PESEL, ID, REGON, Imię, Nazwisko oraz dodatkowe pola testowe jak token, alnova_pid, dane adresowe, mail, NIP, REGON, nazwisko firmy i inne)
 - ⬆️⬇️ Zmiana kolejności pól za pomocą drag & drop
 - 🔢 Konfiguracja liczby rekordów (1-100,000)
 - 📦 Wybór formatu eksportu:
