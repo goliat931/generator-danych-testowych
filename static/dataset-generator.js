@@ -29,7 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	initTheme();
 
 	// ====================================================
-	// 2. Zmienne globalne
+	// 2. Inicjalizacja Faker
+	// ====================================================
+	const { faker } = window;
+	faker.seed(Math.random() * 100000); // Zmień seed dla różnych danych za każdym razem
+
+	// ====================================================
+	// 3. Zmienne globalne
 	// ====================================================
 	let bankCodes = {};
 	let maleNames = [];
@@ -134,20 +140,20 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function getRandomName() {
-		const allNames = [...maleNames, ...femaleNames];
-		return allNames[Math.floor(Math.random() * allNames.length)];
+		return Math.random() > 0.5 ? faker.person.firstName('male') : faker.person.firstName('female');
 	}
 
 	function getRandomSurname() {
-		return surnames[Math.floor(Math.random() * surnames.length)];
+		// Kombinuj Faker z polskim słownikiem dla lepszych rezultatów
+		return Math.random() > 0.3 ? faker.person.lastName() : (surnames.length > 0 ? surnames[Math.floor(Math.random() * surnames.length)] : faker.person.lastName());
 	}
 
 	function getRandomMaleName() {
-		return maleNames[Math.floor(Math.random() * maleNames.length)];
+		return faker.person.firstName('male');
 	}
 
 	function getRandomFemaleName() {
-		return femaleNames[Math.floor(Math.random() * femaleNames.length)];
+		return faker.person.firstName('female');
 	}
 
 	function randomInt(min, max) {
@@ -167,9 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function randomDateBetween(start, end) {
-		const startMs = start.getTime();
-		const endMs = end.getTime();
-		return new Date(randomInt(startMs, endMs));
+		return faker.date.between({ from: start, to: end });
 	}
 
 	function generatePeselFromDate(date, sex) {
@@ -212,7 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	];
 
 	function getRandomCity() {
-		return polishCities[Math.floor(Math.random() * polishCities.length)];
+		// Kombinuj z polskimi miastami dla większej realistyczności
+		return Math.random() > 0.4 ? polishCities[Math.floor(Math.random() * polishCities.length)] : faker.location.city();
 	}
 
 	const streetNames = [
@@ -221,24 +226,24 @@ document.addEventListener('DOMContentLoaded', () => {
 	];
 
 	function getRandomStreetName() {
-		const name = streetNames[Math.floor(Math.random() * streetNames.length)];
+		// Kombinuj z polskimi ulicami dla realistyczności
+		const name = Math.random() > 0.4 ? streetNames[Math.floor(Math.random() * streetNames.length)] : faker.location.streetName();
 		const prefix = Math.random() > 0.5 ? 'ul.' : '';
 		return `${prefix} ${name}`.trim();
 	}
 
 	function generatePhoneNumber() {
-		const prefix = randomInt(500, 899);
-		const rest = String(randomInt(0, 999999)).padStart(6, '0');
-		return `${prefix}${rest}`;
+		return faker.phone.number('+48 ### ### ###');
 	}
 
 	const mailDomains = ['wp.pl', 'onet.pl', 'o2.pl', 'interia.pl', 'gazeta.pl', 'tlen.pl'];
 
 	function generateEmail(first, last) {
-		const local = `${first}.${last}`.toLowerCase().replace(/[^a-z0-9]/g, '');
-		const randomSuffix = randomInt(1, 9999);
+		// Użyj Faker do generowania emaila, ale z polskimi domenami
+		const localPart = `${first}.${last}`.toLowerCase().replace(/[^a-z0-9]/g, '');
 		const domain = mailDomains[randomInt(0, mailDomains.length - 1)];
-		return `${local}${randomSuffix}@${domain}`;
+		const randomSuffix = randomInt(0, 999);
+		return `${localPart}${randomSuffix}@${domain}`;
 	}
 
 	function generateToken() {
@@ -256,14 +261,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function generateComment() {
-		const sentences = [
-			'Testowy komentarz.',
-			'Dane wygenerowano automatycznie.',
-			'Proszę nie używać tych danych w produkcji.',
-			'Wygenerowane dane służą wyłącznie do testów.',
-			'Przykładowy komentarz do zbioru danych.'
+		const polishSentences = [
+			'Dane testowe wygenerowane automatycznie.',
+			'Proszę nie używać w produkcji.',
+			'Służy wyłącznie do celów testowania.',
+			'Przykładowy komentarz systemowy.',
+			'Wygenerowano dnia ' + new Date().toLocaleDateString('pl-PL') + '.'
 		];
-		return sentences[Math.floor(Math.random() * sentences.length)];
+		return polishSentences[Math.floor(Math.random() * polishSentences.length)];
 	}
 
 	function generateNip() {
@@ -279,8 +284,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function generateCompanyName() {
-		const suffixes = ['Sp. z o.o.', 'S.A.', 'Sp. k.', 'Sp. j.', 'Fundacja', 'Stowarzyszenie'];
-		const name = getRandomSurname();
+		// Kombinuj Faker z polskimi sufiksami
+		const name = faker.company.name();
+		const suffixes = ['Sp. z o.o.', 'S.A.', 'Sp. k.', 'Sp. j.'];
 		const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
 		return `${name} ${suffix}`;
 	}
