@@ -144,16 +144,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function getRandomSurname() {
-		// Kombinuj Faker z polskim słownikiem dla lepszych rezultatów
-		return Math.random() > 0.3 ? faker.person.lastName() : (surnames.length > 0 ? surnames[Math.floor(Math.random() * surnames.length)] : faker.person.lastName());
+		return surnames.length > 0 ? surnames[Math.floor(Math.random() * surnames.length)] : faker.person.lastName();
 	}
 
 	function getRandomMaleName() {
-		return faker.person.firstName('male');
+		return maleNames.length > 0 ? maleNames[Math.floor(Math.random() * maleNames.length)] : faker.person.firstName('male');
 	}
 
 	function getRandomFemaleName() {
-		return faker.person.firstName('female');
+		return femaleNames.length > 0 ? femaleNames[Math.floor(Math.random() * femaleNames.length)] : faker.person.firstName('female');
 	}
 
 	function randomInt(min, max) {

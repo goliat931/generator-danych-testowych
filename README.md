@@ -39,7 +39,7 @@ Każdy walidator wyświetla szczegółowe wyniki:
 Zaawansowana strona do generowania masowych zbiorów danych:
 
 **Funkcjonalność:**
-- 🔄 Wybór pól do wygenerowania (PESEL, ID, REGON, Imię, Nazwisko oraz dodatkowe pola testowe jak token, alnova_pid, dane adresowe, mail, NIP, REGON, nazwisko firmy i inne)
+- 🔄 Wybór pól do wygenerowania (PESEL, ID, REGON, Imię, Nazwisko oraz dodatkowe pola testowe: token z datą, dane osobowe, dane adresowe, email, NIP, nazwisko firmy, komentarze i inne)
 - ⬆️⬇️ Zmiana kolejności pól za pomocą drag & drop
 - 🔢 Konfiguracja liczby rekordów (1-100,000)
 - 📦 Wybór formatu eksportu:
@@ -114,7 +114,8 @@ Polskie imiona i nazwiska z rzeczywistych baz danych.
 ✅ Kopiowanie do schowka
 ✅ Export zbiorów w CSV/JSON/XML
 ✅ Drag & drop do zmiany kolejności pól
-✅ Bez wymaganych zewnętrznych zależności (vanilla JS)
+✅ Zintegrowana biblioteka **Faker.js** dla realistycznych danych testowych
+✅ Bez wymaganych zewnętrznych zależności (vanilla JS + Faker z CDN)
 
 ## Baza danych bankowych
 
@@ -122,3 +123,24 @@ Projekt zawiera plik `plewibnra_utf8.txt` z oficjalną listą polskich banków i
 - 3-cyfrowe kody banków
 - 8-cyfrowe kody oddziałów
 - Nazwy bankowych instytucji
+
+## Architektura generowania danych
+
+### Generatory autorskie (własne implementacje):
+- **PESEL** - algorytm z checksumem, kodowanie płci i stulecia
+- **Dowód Osobisty (ID)** - format ABC123456X z checksumem
+- **REGON** - 9 lub 14 cyfrowe numery z checksumem
+- **NRB (IBAN)** - format PL + 24 cyfry z checksumem IBAN, kody banków z bazy
+
+### Dane z plików JSON (polskie słowniki):
+- **Imiona** - maleNames, femaleNames (rzeczywiste imiona polskie)
+- **Nazwiska** - polskie nazwiska z bazy danych
+
+### Dane z biblioteki Faker.js (CDN):
+- **Miasta** - kombinacja polskich miast + Faker (60% polskie, 40% от Faker)
+- **Ulice** - kombinacja polskich nazw ulic + Faker
+- **Telefony** - format polski za pomocą Faker
+- **Email** - domeny polskie (wp.pl, onet.pl, o2.pl, interia.pl, gazeta.pl, tlen.pl)
+- **Nazwy firm** - Faker + polskie sufiksy (Sp. z o.o., S.A., Sp. k., Sp. j.)
+- **Daty** - losowe daty między wstawionymi przedziałami
+- **Inne** - komentarze, sezonowe dane itp.
