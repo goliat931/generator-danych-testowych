@@ -472,6 +472,10 @@ select:focus, input:focus {
     align-items: center;
     gap: 16px;
     margin: 30px 0;
+    width: 100%;
+    max-width: 1600px;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 .nav-button {
@@ -503,6 +507,7 @@ select:focus, input:focus {
     color: var(--text-primary);
     font-size: 1.4rem;
     margin-bottom: 20px;
+    margin-top: 0;
 }
 
 .dataset-generator-tile h3 {
@@ -510,6 +515,104 @@ select:focus, input:focus {
     font-size: 1.1rem;
     margin-top: 16px;
     margin-bottom: 12px;
+}
+
+/* Panel kontrolny na górze */
+.control-panel {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.control-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.control-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.control-field label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.control-field input[type="number"] {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.format-selection,
+.separator-selection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.format-option,
+.separator-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.format-option input[type="radio"],
+.separator-option input[type="radio"] {
+    cursor: pointer;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: #1976d2;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #1565c0;
+}
+
+.btn-secondary {
+    background-color: #4caf50;
+    color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background-color: #45a049;
+}
+
+.btn-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .config-section {
@@ -521,17 +624,6 @@ select:focus, input:focus {
     margin-bottom: 8px;
     color: var(--text-primary);
     font-weight: 600;
-}
-
-.config-section input[type="number"] {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 8px;
-    border: 2px solid var(--border-color);
-    border-radius: 6px;
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    font-size: 1rem;
 }
 
 .data-selection {
@@ -597,72 +689,26 @@ select:focus, input:focus {
     cursor: pointer;
 }
 
-#generateDatasetBtn {
-    flex: 1;
-    padding: 14px 20px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #fff;
-    background-color: #1976d2;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin: 0;
-    transition: background-color 0.3s;
-}
-
-#generateDatasetBtn:hover {
-    background-color: #1565c0;
-}
-
-#downloadDatasetBtn {
-    flex: 1;
-    padding: 14px 20px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #fff;
-    background-color: #2e7d32;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin: 0;
-    transition: background-color 0.3s, opacity 0.3s;
-}
-
-#downloadDatasetBtn:hover:not(:disabled) {
-    background-color: #27632a;
-}
-
-#downloadDatasetBtn:disabled {
-    background-color: #999;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.button-group-dataset {
-    display: flex;
-    gap: 12px;
-    margin: 8px 0;
-}
-
 .preview-tile {
     background-color: var(--bg-secondary);
     border: 2px solid var(--border-color);
     border-radius: 12px;
     padding: 24px;
+    width: 100%;
 }
 
 .preview-tile h2 {
     color: var(--text-primary);
     font-size: 1.4rem;
     margin-bottom: 16px;
+    margin-top: 0;
 }
 
 #previewContent {
     background-color: var(--bg-primary);
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    padding: 12px;
+    padding: 16px;
     color: var(--text-primary);
     font-family: 'Courier New', monospace;
     font-size: 0.9rem;
@@ -670,14 +716,61 @@ select:focus, input:focus {
     overflow-x: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
-    max-height: 400px;
+    max-height: 600px;
     overflow-y: auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+    .control-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 12px;
+    }
+
+    .container {
+        gap: 16px;
+    }
+
     .dataset-generator-tile,
     .preview-tile {
         padding: 16px;
+    }
+
+    .control-panel {
+        padding: 12px;
+    }
+
+    .control-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .control-buttons {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        padding: 14px;
+    }
+
+    .format-selection,
+    .separator-selection {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .format-option,
+    .separator-option {
+        padding: 8px 0;
     }
 
     .data-selection {
@@ -686,6 +779,68 @@ select:focus, input:focus {
 
     .draggable-item {
         padding: 10px;
+        font-size: 0.95rem;
+    }
+
+    #previewContent {
+        max-height: 400px;
+        font-size: 0.85rem;
+        padding: 12px;
+    }
+
+    .button-group {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .theme-switch {
+        flex-basis: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+    }
+
+    h1 { 
+        display: none; 
+    }
+
+    .container {
+        gap: 12px;
+    }
+
+    .dataset-generator-tile h2,
+    .preview-tile h2 {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+
+    .control-field label,
+    .config-section label {
+        font-size: 0.9rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        font-size: 0.9rem;
+        padding: 12px;
+    }
+
+    .format-option label,
+    .separator-option label {
+        font-size: 0.85rem;
+    }
+
+    #previewContent {
+        max-height: 300px;
+        font-size: 0.8rem;
+    }
+
+    .draggable-item {
+        padding: 8px;
+        font-size: 0.9rem;
     }
 }
 

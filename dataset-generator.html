@@ -41,11 +41,66 @@
         <h1>Generator Zbiorów Danych</h1>
         
         <div class="dataset-generator-tile">
-            <h2>Konfiguracja Eksportu</h2>
+            <h2>Generator Zbiorów Danych</h2>
+
+            <!-- Kontrola na górze: Liczba rekordów, Format, Separator, Generuj -->
+            <div class="control-panel">
+                <div class="control-row">
+                    <div class="control-field">
+                        <label for="recordCount">Liczba rekordów:</label>
+                        <input type="number" id="recordCount" min="1" max="100000" value="10" placeholder="1-100000">
+                    </div>
+
+                    <div class="control-field">
+                        <h3 style="margin: 0 0 8px 0;">Format eksportu</h3>
+                        <div class="format-selection">
+                            <label class="format-option">
+                                <input type="radio" name="export-format" value="csv" checked>
+                                CSV
+                            </label>
+                            <label class="format-option">
+                                <input type="radio" name="export-format" value="json">
+                                JSON
+                            </label>
+                            <label class="format-option">
+                                <input type="radio" name="export-format" value="xml">
+                                XML
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-field" id="separatorFieldWrapper">
+                        <h3 style="margin: 0 0 8px 0;">Separator (CSV)</h3>
+                        <div class="separator-selection">
+                            <label class="separator-option">
+                                <input type="radio" name="csv-separator" value="," checked>
+                                , (Przecinek)
+                            </label>
+                            <label class="separator-option">
+                                <input type="radio" name="csv-separator" value=";">
+                                ; (Średnik)
+                            </label>
+                            <label class="separator-option">
+                                <input type="radio" name="csv-separator" value="tab">
+                                ⇥ (Tab)
+                            </label>
+                            <label class="separator-option">
+                                <input type="radio" name="csv-separator" value="|">
+                                | (Rura)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-buttons">
+                    <button id="generateDatasetBtn" class="btn-primary">📋 Generuj</button>
+                    <button id="downloadDatasetBtn" class="btn-secondary" disabled>📥 Pobierz</button>
+                </div>
+            </div>
 
             <!-- Wybór danych -->
             <div class="config-section">
-                <h3>Dane do wygenerowania</h3>
+                <h3>Dane do wygenerowania (przeciągnij aby zmienić kolejność)</h3>
                 <div class="data-selection">
                     <label class="draggable-item">
                         <input type="checkbox" name="data-field" value="pesel" checked>
@@ -168,60 +223,6 @@
                         <span class="drag-handle">⋮⋮</span> token
                     </label>
                 </div>
-            </div>
-
-            <!-- Ilość rekordów -->
-            <div class="config-section">
-                <label for="recordCount">Liczba rekordów:</label>
-                <input type="number" id="recordCount" min="1" max="100000" value="10" placeholder="Liczba wierszy">
-            </div>
-
-            <!-- Format eksportu -->
-            <div class="config-section">
-                <h3>Format eksportu</h3>
-                <div class="format-selection">
-                    <label>
-                        <input type="radio" name="export-format" value="csv" checked>
-                        CSV (Comma Separated Values)
-                    </label>
-                    <label>
-                        <input type="radio" name="export-format" value="json">
-                        JSON
-                    </label>
-                    <label>
-                        <input type="radio" name="export-format" value="xml">
-                        XML
-                    </label>
-                </div>
-            </div>
-
-            <!-- Separator dla CSV -->
-            <div class="config-section" id="separatorSection">
-                <h3>Separator (CSV)</h3>
-                <div class="separator-selection">
-                    <label>
-                        <input type="radio" name="csv-separator" value="," checked>
-                        Przecinek (,)
-                    </label>
-                    <label>
-                        <input type="radio" name="csv-separator" value=";">
-                        Średnik (;)
-                    </label>
-                    <label>
-                        <input type="radio" name="csv-separator" value="tab">
-                        Tabulacja (Tab)
-                    </label>
-                    <label>
-                        <input type="radio" name="csv-separator" value="|">
-                        Rura (|)
-                    </label>
-                </div>
-            </div>
-
-            <!-- Przyciski generowania i pobierania -->
-            <div class="button-group-dataset">
-                <button id="generateDatasetBtn">📋 Generuj</button>
-                <button id="downloadDatasetBtn" disabled>📥 Pobierz</button>
             </div>
         </div>
 

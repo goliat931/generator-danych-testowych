@@ -338,8 +338,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	// ====================================================
 	document.querySelectorAll('input[name="export-format"]').forEach(radio => {
 		radio.addEventListener('change', () => {
-			const separatorSection = document.getElementById('separatorSection');
-			separatorSection.style.display = radio.value === 'csv' ? 'block' : 'none';
+			const separatorSection = document.getElementById('separatorFieldWrapper');
+			separatorSection.style.display = radio.value === 'csv' ? 'flex' : 'none';
 		});
 	});
 
