@@ -3,31 +3,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // 0. Inicjalizacja trybu ciemnego/jasnego
     // ====================================================
 
+    function getInitialTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            return savedTheme;
+        }
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return prefersDark ? 'dark' : 'light';
+    }
+
+    function applyTheme(theme, themeToggle) {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (themeToggle) {
+            themeToggle.checked = (theme === 'dark');
+        }
+    }
+
+    function setupThemeToggle(themeToggle) {
+        if (!themeToggle) return;
+
+        themeToggle.addEventListener('change', () => {
+            const newTheme = themeToggle.checked ? 'dark' : 'light';
+            applyTheme(newTheme, null); // Checkbox is already toggled
+            localStorage.setItem('theme', newTheme);
+        });
+    }
+
     function initTheme() {
         const themeToggle = document.getElementById('themeToggle');
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const currentTheme = getInitialTheme();
 
-        // Ustaw domyślny temat na podstawie preferencji przeglądarki
-        let currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-
-        // Zastosuj temat
-        if (currentTheme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            if (themeToggle) themeToggle.checked = true;
-        } else {
-            document.documentElement.setAttribute('data-theme', 'light');
-            if (themeToggle) themeToggle.checked = false;
-        }
-
-        // Event listener dla switch'a
-        if (themeToggle) {
-            themeToggle.addEventListener('change', () => {
-                const newTheme = themeToggle.checked ? 'dark' : 'light';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-            });
-        }
+        applyTheme(currentTheme, themeToggle);
+        setupThemeToggle(themeToggle);
     }
 
     // Inicjalizuj temat przed załadowaniem reszty
