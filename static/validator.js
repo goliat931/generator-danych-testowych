@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             bankCodes = data;
-            console.log('Załadowano', Object.keys(bankCodes).length, 'kodów bankowych');
         })
         .catch(error => console.error('Błąd załadowania bank_codes.json:', error));
 
