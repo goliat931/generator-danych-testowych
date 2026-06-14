@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showMessage(text, element, isSuccess = false) {
         element.className = 'validator-result ' + (isSuccess ? 'valid' : 'invalid');
-        element.innerHTML = text;
+        element.textContent = text;
     }
 
     function showCopyMessage(text) {
