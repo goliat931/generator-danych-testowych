@@ -1,0 +1,25 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "Ten projekt to prosta aplikacja webowa do generowania i walidacji losowych danych testowych Polski, takich jak numery PESEL, dowody osobiste, numery REGON i numery NRB.",
+  "main": "test_env.js",
+  "scripts": {
+    "test": "jest --env=jsdom"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/goliat931/generator-danych-testowych.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/goliat931/generator-danych-testowych/issues"
+  },
+  "homepage": "https://github.com/goliat931/generator-danych-testowych#readme",
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1"
+  }
+}

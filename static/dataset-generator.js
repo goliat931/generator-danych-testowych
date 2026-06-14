@@ -624,17 +624,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		return xml;
 	}
 
-	function escapeXml(str) {
-		const map = {
-			'&': '&amp;',
-			'<': '&lt;',
-			'>': '&gt;',
-			'"': '&quot;',
-			"'": '&apos;'
-		};
-		return str.replace(/[&<>"']/g, char => map[char]);
-	}
-
 	// ====================================================
 	// 9. Podgląd
 	// ====================================================
@@ -680,3 +669,21 @@ document.addEventListener('DOMContentLoaded', () => {
 		URL.revokeObjectURL(url);
 	}
 });
+
+function escapeXml(str) {
+	const map = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&apos;'
+	};
+	if (typeof str !== 'string') {
+		return str; // If not a string, return as is or handle it
+	}
+	return str.replace(/[&<>"']/g, char => map[char]);
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+	module.exports = { escapeXml };
+}
