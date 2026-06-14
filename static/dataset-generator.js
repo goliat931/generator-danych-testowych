@@ -327,11 +327,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
+	const COMPANY_SUFFIXES = ['Sp. z o.o.', 'S.A.', 'Sp. k.', 'Sp. j.', 'Fundacja', 'Stowarzyszenie'];
+
 	function generateCompanyName() {
 		// Generuj nazwę firmy z polskiego słownika + sufiksy
 		const name = getRandomSurname();
-		const suffixes = ['Sp. z o.o.', 'S.A.', 'Sp. k.', 'Sp. j.', 'Fundacja', 'Stowarzyszenie'];
-		const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+		const suffix = COMPANY_SUFFIXES[Math.floor(Math.random() * COMPANY_SUFFIXES.length)];
 		return `${name} ${suffix}`;
 	}
 
