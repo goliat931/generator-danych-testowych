@@ -458,4 +458,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') nrbValidateBtn.click();
     });
 
+    // Expose for testing
+    if (typeof window !== 'undefined') {
+        window.validateId = validateId;
+    }
+
 });
