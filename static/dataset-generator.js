@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		maleNames = mNames;
 		femaleNames = fNames;
 		surnames = [...new Set([...mSurnames, ...fSurnames])];
-		console.log('Załadowano wszystkie dane');
 	}).catch(err => console.error('Błąd załadowania danych:', err));
 
 	// ====================================================
