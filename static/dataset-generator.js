@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	// 2. Zmienne globalne
 	// ====================================================
 	let bankCodes = {};
+	let bankCodeKeys = [];
 	let maleNames = [];
 	let femaleNames = [];
 	let surnames = [];
@@ -45,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		fetch('static/pl_female_surnames.json').then(r => r.json())
 	]).then(([codes, mNames, fNames, mSurnames, fSurnames]) => {
 		bankCodes = codes;
+		bankCodeKeys = Object.keys(codes);
 		maleNames = mNames;
 		femaleNames = fNames;
 		surnames = [...new Set([...mSurnames, ...fSurnames])];
@@ -119,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function generateNrb() {
-		const bankCode = Object.keys(bankCodes)[Math.floor(Math.random() * Object.keys(bankCodes).length)];
+		const bankCode = bankCodeKeys[Math.floor(Math.random() * bankCodeKeys.length)];
 		const accountNumber = Array.from({ length: 16 }, () => Math.floor(Math.random() * 10)).join('');
 
 		let iban = '21' + bankCode + accountNumber;
