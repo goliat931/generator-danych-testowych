@@ -189,12 +189,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sformatuj datę urodzenia
         const birthDateStr = `${String(dd).padStart(2, '0')}-${String(actualMonth).padStart(2, '0')}-${year}`;
 
-        const message = `✅ Numer PESEL jest poprawny!<br>
-            Płeć: ${gender}<br>
-            Data urodzenia: ${birthDateStr}<br>
-            Wiek: ${age} lat`;
+        peselResult.textContent = '';
+        peselResult.appendChild(document.createTextNode('✅ Numer PESEL jest poprawny!'));
+        peselResult.appendChild(document.createElement('br'));
+        peselResult.appendChild(document.createTextNode(`Płeć: ${gender}`));
+        peselResult.appendChild(document.createElement('br'));
+        peselResult.appendChild(document.createTextNode(`Data urodzenia: ${birthDateStr}`));
+        peselResult.appendChild(document.createElement('br'));
+        peselResult.appendChild(document.createTextNode(`Wiek: ${age} lat`));
 
-        peselResult.innerHTML = message;
         peselResult.className = 'validator-result valid';
         return true;
     }
@@ -394,10 +397,11 @@ document.addEventListener('DOMContentLoaded', () => {
             bankName = bankCodes[bankCode4];
         }
 
-        const message = `✅ Numer rachunku bankowego jest poprawny!<br>
-            Bank: ${bankName}`;
+        nrbResult.textContent = '';
+        nrbResult.appendChild(document.createTextNode('✅ Numer rachunku bankowego jest poprawny!'));
+        nrbResult.appendChild(document.createElement('br'));
+        nrbResult.appendChild(document.createTextNode(`Bank: ${bankName}`));
 
-        nrbResult.innerHTML = message;
         nrbResult.className = 'validator-result valid';
         return true;
     }
