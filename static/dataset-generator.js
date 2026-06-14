@@ -681,4 +681,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.body.removeChild(link);
 		URL.revokeObjectURL(url);
 	}
+
+	// Eksport dla celów testowania
+	if (typeof window !== 'undefined') {
+		window.generateXml = generateXml;
+		window.escapeXml = escapeXml;
+	}
 });
+
+if (typeof module !== 'undefined' && module.exports) {
+	// Puste eksporty na poziomie modułu aby uniknąć błędów
+	module.exports = {};
+}
