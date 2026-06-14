@@ -189,12 +189,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sformatuj datę urodzenia
         const birthDateStr = `${String(dd).padStart(2, '0')}-${String(actualMonth).padStart(2, '0')}-${year}`;
 
-        const message = `✅ Numer PESEL jest poprawny!<br>
-            Płeć: ${gender}<br>
-            Data urodzenia: ${birthDateStr}<br>
-            Wiek: ${age} lat`;
+        const message = `✅ Numer PESEL jest poprawny!\nPłeć: ${gender}\nData urodzenia: ${birthDateStr}\nWiek: ${age} lat`;
 
-        peselResult.innerHTML = message;
+        peselResult.textContent = message;
         peselResult.className = 'validator-result valid';
         return true;
     }
@@ -394,10 +391,9 @@ document.addEventListener('DOMContentLoaded', () => {
             bankName = bankCodes[bankCode4];
         }
 
-        const message = `✅ Numer rachunku bankowego jest poprawny!<br>
-            Bank: ${bankName}`;
+        const message = `✅ Numer rachunku bankowego jest poprawny!\nBank: ${bankName}`;
 
-        nrbResult.innerHTML = message;
+        nrbResult.textContent = message;
         nrbResult.className = 'validator-result valid';
         return true;
     }
