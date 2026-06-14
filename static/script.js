@@ -42,7 +42,6 @@
 			.then(response => response.json())
 			.then(data => {
 				bankCodes = data;
-				console.log('Załadowano', Object.keys(bankCodes).length, 'kodów bankowych');
 			})
 			.catch(error => console.error('Błąd załadowania bank_codes.json:', error));
 
@@ -428,8 +427,6 @@
 			.then(plewibnraContent => {
 				// Tutaj umieść kod, który używa danych plewibnraContent
 				// do tworzenia opcji w Twoim selektorze <select id="bankCode">
-				console.log("Dane banków zostały pomyślnie pobrane.");
-				console.log(plewibnraContent.substring(0, 50) + "..."); // Przykładowe użycie
 				
 				// Poniżej Twój kod, który przetwarza ten tekst i tworzy z niego opcje <option>
 		function parsePlewiNrbCodes(fileContent) {
