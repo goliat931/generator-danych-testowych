@@ -217,7 +217,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const age = calculateAge(year, actualMonth, dd);
         const birthDateStr = `${String(dd).padStart(2, '0')}-${String(actualMonth).padStart(2, '0')}-${year}`;
 
-        setPeselSuccessResult(peselResult, gender, birthDateStr, age);
+        const message = `✅ Numer PESEL jest poprawny!\nPłeć: ${gender}\nData urodzenia: ${birthDateStr}\nWiek: ${age} lat`;
+
+        peselResult.textContent = message;
+        peselResult.className = 'validator-result valid';
         return true;
     }
 
@@ -416,10 +419,9 @@ document.addEventListener('DOMContentLoaded', () => {
             bankName = bankCodes[bankCode4];
         }
 
-        const message = `✅ Numer rachunku bankowego jest poprawny!<br>
-            Bank: ${bankName}`;
+        const message = `✅ Numer rachunku bankowego jest poprawny!\nBank: ${bankName}`;
 
-        nrbResult.innerHTML = message;
+        nrbResult.textContent = message;
         nrbResult.className = 'validator-result valid';
         return true;
     }

@@ -2,8 +2,83 @@
 // ====================================================
 // Logika generatora REGON (wyciągnięta dla testów)
 // ====================================================
+
+// Stałe do obliczeń dowodu osobistego
+const letterToNumber = Object.fromEntries(
+	Array.from({ length: 26 }, (_, i) => [String.fromCharCode(65 + i), 10 + i])
+);
+const weightsId = [7, 3, 1, 9, 7, 3, 1, 7, 3];
+
 const weightsRegon9 = [8, 9, 2, 3, 4, 5, 6, 7];
 const weightsRegon14 = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8];
+
+// ====================================================
+// 4. Logika generatora dowodu osobistego
+// ====================================================
+
+/**
+ * Oblicza cyfrę kontrolną dla dowodu osobistego.
+ * @param {string} fullNumber 8-znakowy numer dowodu (3 litery, 5 cyfr).
+ * @returns {number} Obliczona cyfra kontrolna.
+ */
+function calculateIdChecksum(fullNumber) {
+	const numericArray = fullNumber.split('').map(char =>
+		typeof char === 'string' && /[A-Z]/.test(char)
+			? letterToNumber[char]
+			: parseInt(char, 10)
+	);
+
+	let sum = 0;
+	for (let i = 0; i < weightsId.length; i++) {
+		sum += numericArray[i] * weightsId[i];
+	}
+	return sum % 10;
+}
+
+/**
+ * Generuje poprawny numer dowodu osobistego.
+ * @returns {string} 9-znakowy numer dowodu.
+ */
+function generateIdNumber() {
+	const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	const digits = '0123456789';
+
+	let letterPart = '';
+	for (let i = 0; i < 3; i++) {
+		letterPart += letters.charAt(Math.floor(Math.random() * letters.length));
+	}
+
+	let digitsPart = '';
+	for (let i = 0; i < 6; i++) {
+		digitsPart += digits.charAt(Math.floor(Math.random() * digits.length));
+	}
+
+	let idArrayChars = [
+		letterPart[0], letterPart[1], letterPart[2],
+		0,
+		...digitsPart.slice(1)
+	];
+
+	const numericArray = idArrayChars.map(char =>
+		typeof char === 'string' && /[A-Z]/.test(char)
+			? letterToNumber[char]
+			: parseInt(char, 10)
+	);
+
+	let sum = 0;
+	for (let i = 0; i < weightsId.length; i++) {
+		sum += numericArray[i] * weightsId[i];
+	}
+
+	const controlDigit = sum % 10;
+
+	const finalId =
+		letterPart +
+		controlDigit +
+		digitsPart.slice(1);
+
+	return finalId;
+}
 
 // ====================================================
 // 5. Logika generatora REGON
@@ -14,6 +89,72 @@ const weightsRegon14 = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8];
  * @param {string} regon8 Pierwsze 8 cyfr REGON-u.
  * @returns {number} Obliczona cyfra kontrolna.
  */
+// ====================================================
+// 3. Logika generatora PESEL
+// ====================================================
+
+/**
+ * Koduje miesiąc urodzenia zgodnie z stuleciem dla PESEL.
+ * @param {number} year Rok urodzenia.
+ * @param {number} month Miesiąc urodzenia (1-12).
+ * @returns {string} Dwucyfrowy, zakodowany miesiąc.
+ */
+function getEncodedMonth(year, month) {
+	if (year >= 1800 && year <= 1899) return String(month + encodedMonths['1800-1899']).padStart(2, '0');
+	if (year >= 1900 && year <= 1999) return String(month + encodedMonths['1900-1999']).padStart(2, '0');
+	if (year >= 2000 && year <= 2099) return String(month + encodedMonths['2000-2099']).padStart(2, '0');
+	if (year >= 2100 && year <= 2199) return String(month + encodedMonths['2100-2199']).padStart(2, '0');
+	if (year >= 2200 && year <= 2299) return String(month + encodedMonths['2200-2299']).padStart(2, '0');
+	throw new Error("Unsupported year for PESEL generation.");
+}
+
+/**
+ * Oblicza cyfrę kontrolną dla numeru PESEL.
+ * @param {string} peselWithoutK 10-cyfrowy numer PESEL bez cyfry kontrolnej.
+ * @returns {number} Obliczona cyfra kontrolna.
+ */
+function calculatePeselChecksum(peselWithoutK) {
+	let checksumSum = 0;
+	for (let i = 0; i < 10; i++) {
+checksumSum += parseInt(peselWithoutK[i]) * weightsPesel[i];
+	}
+	const lastDigitOfSum = checksumSum % 10;
+	return lastDigitOfSum === 0 ? 0 : 10 - lastDigitOfSum;
+}
+
+/**
+ * Generuje numer PESEL
+ * @param {number} year Rok urodzenia
+ * @param {number} month Miesiąc urodzenia
+ * @param {number} day Dzień urodzenia
+ * @param {string} gender Płeć ('male' lub 'female')
+ * @returns {string} Poprawny PESEL
+ */
+function generatePesel(year, month, day, gender) {
+	const rr = String(year).slice(-2);
+	const mm = getEncodedMonth(year, month);
+	const dd = String(day).padStart(2, '0');
+
+	const peselWithoutPpppK = `${rr}${mm}${dd}`;
+	let pppp;
+
+	if (gender === 'female') {
+const lastDigitOfPppp = [0, 2, 4, 6, 8][Math.floor(Math.random() * 5)];
+pppp = String(Math.floor(Math.random() * 1000)).padStart(3, '0') + lastDigitOfPppp;
+	} else if (gender === 'male') {
+const lastDigitOfPppp = [1, 3, 5, 7, 9][Math.floor(Math.random() * 5)];
+pppp = String(Math.floor(Math.random() * 1000)).padStart(3, '0') + lastDigitOfPppp;
+	} else {
+throw new Error("Invalid gender. Use 'male' or 'female'.");
+	}
+
+	const peselWithoutK = `${peselWithoutPpppK}${pppp}`;
+	const k = calculatePeselChecksum(peselWithoutK);
+
+	return `${peselWithoutK}${k}`;
+}
+
+
 function calculateRegon9Checksum(regon8) {
 	let sum = 0;
 	for (let i = 0; i < 8; i++) {
@@ -77,7 +218,11 @@ if (typeof module !== 'undefined' && module.exports) {
         calculateRegon9Checksum,
         calculateRegon14Checksum,
         weightsRegon9,
-        weightsRegon14
+        weightsRegon14,
+        generateIdNumber,
+        calculateIdChecksum,
+        letterToNumber,
+        weightsId
     };
 }
 	document.addEventListener('DOMContentLoaded', () => {
@@ -164,21 +309,6 @@ if (typeof module !== 'undefined' && module.exports) {
 		// Komunikat o skopiowaniu
 		const copyMessage = document.getElementById('copy-message');
 
-		// Stałe do obliczeń PESEL
-		const weightsPesel = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
-		const encodedMonths = {
-			'1800-1899': 80,
-			'1900-1999': 0,
-			'2000-2099': 20,
-			'2100-2199': 40,
-			'2200-2299': 60
-		};
-
-		// Stałe do obliczeń dowodu osobistego
-		const letterToNumber = Object.fromEntries(
-			Array.from({ length: 26 }, (_, i) => [String.fromCharCode(65 + i), 10 + i])
-		);
-		const weightsId = [7, 3, 1, 9, 7, 3, 1, 7, 3];
 
 		// Stałe do obliczeń REGON
 		
@@ -244,7 +374,7 @@ if (typeof module !== 'undefined' && module.exports) {
 			// Sformatuj datę urodzenia
 			const birthDateStr = `${String(dd).padStart(2, '0')}-${String(actualMonth).padStart(2, '0')}-${year}`;
 
-			peselInfo.innerHTML = `Płeć: ${gender} | Data urodzenia: ${birthDateStr} | Wiek: ${age} lat`;
+			peselInfo.textContent = `Płeć: ${gender} | Data urodzenia: ${birthDateStr} | Wiek: ${age} lat`;
 		}
 
 		/**
@@ -253,7 +383,7 @@ if (typeof module !== 'undefined' && module.exports) {
 		 */
 		function displayNrbInfo(nrb) {
 			if (!nrb || nrb.length < 10) {
-				nrbInfo.innerHTML = '';
+				nrbInfo.textContent = '';
 				return;
 			}
 
@@ -266,78 +396,13 @@ if (typeof module !== 'undefined' && module.exports) {
 
 			// Szukaj najpierw pełnego 8-cyfrowego kodu, potem 4-cyfrowego
 			if (bankCodes[bankCode8]) {
-				nrbInfo.innerHTML = `Bank: ${bankCodes[bankCode8]}`;
+				nrbInfo.textContent = `Bank: ${bankCodes[bankCode8]}`;
 			} else if (bankCodes[bankCode4]) {
-				nrbInfo.innerHTML = `Bank: ${bankCodes[bankCode4]}`;
+				nrbInfo.textContent = `Bank: ${bankCodes[bankCode4]}`;
 			} else {
 				// Jeśli nie znaleziono nazwy, wyświetl najdokładniejszy kod (8-cyfrowy)
-				nrbInfo.innerHTML = `Kod banku: ${bankCode8}`;
+				nrbInfo.textContent = `Kod banku: ${bankCode8}`;
 			}
-		}
-
-		// ====================================================
-		// 3. Logika generatora PESEL
-		// ====================================================
-
-		/**
-		 * Koduje miesiąc urodzenia zgodnie z stuleciem dla PESEL.
-		 * @param {number} year Rok urodzenia.
-		 * @param {number} month Miesiąc urodzenia (1-12).
-		 * @returns {string} Dwucyfrowy, zakodowany miesiąc.
-		 */
-		function getEncodedMonth(year, month) {
-			if (year >= 1800 && year <= 1899) return String(month + encodedMonths['1800-1899']).padStart(2, '0');
-			if (year >= 1900 && year <= 1999) return String(month + encodedMonths['1900-1999']).padStart(2, '0');
-			if (year >= 2000 && year <= 2099) return String(month + encodedMonths['2000-2099']).padStart(2, '0');
-			if (year >= 2100 && year <= 2199) return String(month + encodedMonths['2100-2199']).padStart(2, '0');
-			if (year >= 2200 && year <= 2299) return String(month + encodedMonths['2200-2299']).padStart(2, '0');
-			throw new Error("Unsupported year for PESEL generation.");
-		}
-
-		/**
-		 * Oblicza cyfrę kontrolną dla numeru PESEL.
-		 * @param {string} peselWithoutK 10-cyfrowy numer PESEL bez cyfry kontrolnej.
-		 * @returns {number} Obliczona cyfra kontrolna.
-		 */
-		function calculatePeselChecksum(peselWithoutK) {
-			let checksumSum = 0;
-			for (let i = 0; i < 10; i++) {
-				checksumSum += parseInt(peselWithoutK[i]) * weightsPesel[i];
-			}
-			const lastDigitOfSum = checksumSum % 10;
-			return lastDigitOfSum === 0 ? 0 : 10 - lastDigitOfSum;
-		}
-
-		/**
-		 * Generuje numer PESEL
-		 * @param {number} year Rok urodzenia
-		 * @param {number} month Miesiąc urodzenia
-		 * @param {number} day Dzień urodzenia
-		 * @param {string} gender Płeć ('male' lub 'female')
-		 * @returns {string} Poprawny PESEL
-		 */
-		function generatePesel(year, month, day, gender) {
-			const rr = String(year).slice(-2);
-			const mm = getEncodedMonth(year, month);
-			const dd = String(day).padStart(2, '0');
-
-			const peselWithoutPpppK = `${rr}${mm}${dd}`;
-			let pppp;
-
-			if (gender === 'female') {
-				const lastDigitOfPppp = [0, 2, 4, 6, 8][Math.floor(Math.random() * 5)];
-				pppp = String(Math.floor(Math.random() * 1000)).padStart(3, '0') + lastDigitOfPppp;
-			} else if (gender === 'male') {
-				const lastDigitOfPppp = [1, 3, 5, 7, 9][Math.floor(Math.random() * 5)];
-				pppp = String(Math.floor(Math.random() * 1000)).padStart(3, '0') + lastDigitOfPppp;
-			} else {
-				throw new Error("Invalid gender. Use 'male' or 'female'.");
-			}
-
-			const peselWithoutK = `${peselWithoutPpppK}${pppp}`;
-			const k = calculatePeselChecksum(peselWithoutK);
-
-			return `${peselWithoutK}${k}`;
 		}
 
 		/**
@@ -356,76 +421,8 @@ if (typeof module !== 'undefined' && module.exports) {
 			} catch (error) {
 				console.error("Błąd podczas generowania PESEL:", error);
 				peselOutput.innerText = "Błąd: " + error.message;
-				peselInfo.innerHTML = '';
+				peselInfo.textContent = '';
 			}
-		}
-
-		// ====================================================
-		// 4. Logika generatora dowodu osobistego
-		// ====================================================
-
-		/**
-		 * Oblicza cyfrę kontrolną dla dowodu osobistego.
-		 * @param {string} fullNumber 8-znakowy numer dowodu (3 litery, 5 cyfr).
-		 * @returns {number} Obliczona cyfra kontrolna.
-		 */
-		function calculateIdChecksum(fullNumber) {
-			const numericArray = fullNumber.split('').map(char =>
-				typeof char === 'string' && /[A-Z]/.test(char)
-					? letterToNumber[char]
-					: parseInt(char, 10)
-			);
-
-			let sum = 0;
-			for (let i = 0; i < weightsId.length; i++) {
-				sum += numericArray[i] * weightsId[i];
-			}
-			return sum % 10;
-		}
-
-		/**
-		 * Generuje poprawny numer dowodu osobistego.
-		 * @returns {string} 9-znakowy numer dowodu.
-		 */
-		function generateIdNumber() {
-			const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-			const digits = '0123456789';
-
-			let letterPart = '';
-			for (let i = 0; i < 3; i++) {
-				letterPart += letters.charAt(Math.floor(Math.random() * letters.length));
-			}
-
-			let digitsPart = '';
-			for (let i = 0; i < 6; i++) {
-				digitsPart += digits.charAt(Math.floor(Math.random() * digits.length));
-			}
-			
-			let idArrayChars = [
-				letterPart[0], letterPart[1], letterPart[2],
-				0,
-				...digitsPart.slice(1)
-			];
-
-			const numericArray = idArrayChars.map(char =>
-				typeof char === 'string' && /[A-Z]/.test(char)
-					? letterToNumber[char]
-					: parseInt(char, 10)
-			);
-
-			let sum = 0;
-			for (let i = 0; i < weightsId.length; i++) {
-				sum += numericArray[i] * weightsId[i];
-			}
-
-			const controlDigit = sum % 10;
-			
-			const finalId =
-				letterPart +
-				controlDigit +
-				digitsPart.slice(1);
-
-			return finalId;
 		}
 
 		// ====================================================
@@ -603,7 +600,7 @@ if (typeof module !== 'undefined' && module.exports) {
 				} catch (error) {
 					console.error("Błąd podczas generowania PESEL:", error);
 					peselOutput.innerText = "Błąd: " + error.message;
-					peselInfo.innerHTML = '';
+					peselInfo.textContent = '';
 				}
 			});
 		}
