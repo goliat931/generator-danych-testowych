@@ -445,7 +445,6 @@ if (typeof module !== 'undefined' && module.exports) {
 			.then(plewibnraContent => {
 				// Tutaj umieść kod, który używa danych plewibnraContent
 				// do tworzenia opcji w Twoim selektorze <select id="bankCode">
-				
 				// Poniżej Twój kod, który przetwarza ten tekst i tworzy z niego opcje <option>
 		function parsePlewiNrbCodes(fileContent) {
 			const lines = fileContent.split('\n');
