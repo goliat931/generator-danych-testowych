@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             bankCodes = data;
-            console.log('Załadowano', Object.keys(bankCodes).length, 'kodów bankowych');
         })
         .catch(error => console.error('Błąd załadowania bank_codes.json:', error));
 
@@ -189,12 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sformatuj datę urodzenia
         const birthDateStr = `${String(dd).padStart(2, '0')}-${String(actualMonth).padStart(2, '0')}-${year}`;
 
-        const message = `✅ Numer PESEL jest poprawny!<br>
-            Płeć: ${gender}<br>
-            Data urodzenia: ${birthDateStr}<br>
-            Wiek: ${age} lat`;
+        const message = `✅ Numer PESEL jest poprawny!\nPłeć: ${gender}\nData urodzenia: ${birthDateStr}\nWiek: ${age} lat`;
 
-        peselResult.innerHTML = message;
+        peselResult.textContent = message;
         peselResult.className = 'validator-result valid';
         return true;
     }
@@ -394,10 +390,9 @@ document.addEventListener('DOMContentLoaded', () => {
             bankName = bankCodes[bankCode4];
         }
 
-        const message = `✅ Numer rachunku bankowego jest poprawny!<br>
-            Bank: ${bankName}`;
+        const message = `✅ Numer rachunku bankowego jest poprawny!\nBank: ${bankName}`;
 
-        nrbResult.innerHTML = message;
+        nrbResult.textContent = message;
         nrbResult.className = 'validator-result valid';
         return true;
     }
@@ -457,5 +452,11 @@ document.addEventListener('DOMContentLoaded', () => {
     nrbInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') nrbValidateBtn.click();
     });
+
+    // Eksport funkcji do celów testowych
+    if (typeof window !== 'undefined') {
+        window.validateNrb = validateNrb;
+        window.setBankCodesForTest = (codes) => { bankCodes = codes; };
+    }
 
 });
