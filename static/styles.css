@@ -803,6 +803,18 @@ select:focus, input:focus {
     .theme-switch {
         flex-basis: 100%;
     }
+
+    .nav-links {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .nav-button {
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+    }
 }
 
 @media (max-width: 480px) {
