@@ -7,7 +7,7 @@ describe('validateNrb', () => {
     let window;
     let document;
 
-    beforeEach((done) => {
+    beforeEach(() => {
         const htmlPath = path.resolve(__dirname, '../validator.html');
         const jsPath = path.resolve(__dirname, '../static/validator.js');
 
@@ -30,7 +30,8 @@ describe('validateNrb', () => {
             Promise.resolve({
                 json: () => Promise.resolve({
                     "10100000": "Narodowy Bank Polski",
-                    "1020": "PKO BP"
+                    "1020": "PKO BP",
+                    "9681": "Test Bank"
                 })
             })
         );
@@ -39,27 +40,18 @@ describe('validateNrb', () => {
         scriptEl.textContent = js;
         document.body.appendChild(scriptEl);
 
-        setTimeout(() => {
-            if (window.validateNrb) {
-                // Set bank codes explicitly for testing just in case fetch resolves late
-                window.setBankCodesForTest({
-                    "10100000": "Narodowy Bank Polski",
-                    "1020": "PKO BP",
-                    "9681": "Test Bank"
-                });
-                done();
-            } else {
-                document.dispatchEvent(new window.Event('DOMContentLoaded'));
-                setTimeout(() => {
-                    window.setBankCodesForTest({
-                        "10100000": "Narodowy Bank Polski",
-                        "1020": "PKO BP",
-                        "9681": "Test Bank"
-                    });
-                    done();
-                }, 50);
-            }
-        }, 50);
+        // Synchronously trigger the DOMContentLoaded event to execute the script's wrapper
+        document.dispatchEvent(new window.Event('DOMContentLoaded'));
+
+        // Since fetch is mocked and asynchronous, the bank codes might not be
+        // populated immediately in the script. So we expose a way to set them.
+        if (window.setBankCodesForTest) {
+            window.setBankCodesForTest({
+                "10100000": "Narodowy Bank Polski",
+                "1020": "PKO BP",
+                "9681": "Test Bank"
+            });
+        }
     });
 
     afterEach(() => {
