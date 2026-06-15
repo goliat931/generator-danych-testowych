@@ -490,5 +490,6 @@ document.addEventListener('DOMContentLoaded', () => {
             decodePeselDate,
             calculateAge
         };
+        window.validateNrb = validateNrb;
     }
 });

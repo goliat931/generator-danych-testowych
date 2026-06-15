@@ -2,6 +2,15 @@
 // Logika generatora REGON (wyciągnięta dla testów)
 // ====================================================
 
+const weightsPesel = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
+const encodedMonths = {
+	'1800-1899': 80,
+	'1900-1999': 0,
+	'2000-2099': 20,
+	'2100-2199': 40,
+	'2200-2299': 60
+};
+
 // Stałe do obliczeń dowodu osobistego
 const letterToNumber = Object.fromEntries(
 	Array.from({ length: 26 }, (_, i) => [String.fromCharCode(65 + i), 10 + i])
@@ -219,7 +228,10 @@ if (typeof module !== 'undefined' && module.exports) {
         generateIdNumber,
         calculateIdChecksum,
         letterToNumber,
-        weightsId
+        weightsId,
+        generatePesel,
+        calculatePeselChecksum,
+        getEncodedMonth
     };
 }
 	document.addEventListener('DOMContentLoaded', () => {
@@ -426,21 +438,7 @@ if (typeof module !== 'undefined' && module.exports) {
 		// 6. Logika generatora rachunku bankowego (NRB/IBAN)
 		// ====================================================
 
-		// Zastąpienie twardo zakodowanej zmiennej
-		// Pobieranie danych banków z pliku plewibnra_utf8.txt
-		fetch('static/plewibnra_utf8.txt')
-			.then(response => {
-				// Sprawdź, czy odpowiedź jest poprawna
-				if (!response.ok) {
-					throw new Error('Nie udało się pobrać pliku z danymi banków.');
-				}
-				return response.text(); // Zwróć zawartość pliku jako tekst
-			})
-			.then(plewibnraContent => {
-				// Tutaj umieść kod, który używa danych plewibnraContent
-				// do tworzenia opcji w Twoim selektorze <select id="bankCode">
-				
-				// Poniżej Twój kod, który przetwarza ten tekst i tworzy z niego opcje <option>
+		let validNrbCodes = [];
 		function parsePlewiNrbCodes(fileContent) {
 			const lines = fileContent.split('\n');
 			const codes = new Set();
@@ -453,9 +451,6 @@ if (typeof module !== 'undefined' && module.exports) {
 			}
 			return Array.from(codes);
 		}
-        // Definicje funkcji i zmiennych zależących od pliku
-		const validNrbCodes = parsePlewiNrbCodes(plewibnraContent);
-
 		function calculateNrbChecksum(bban) {
 			const countryCode = '2521'; 
 			const numberToCheck = bban + countryCode + '00';
@@ -513,19 +508,6 @@ if (typeof module !== 'undefined' && module.exports) {
 
 
 
-            // Generowanie danych na starcie strony PRZENIESIONE DO TEGO BLOKU
-            nrbOutput.innerText = generateNrb(bankCodeSelect.value, nrbFormatSelect.value, ibanPrefixSelect.value);
-
-            // Obsługa kliknięcia przycisku "Generuj Rachunek" PRZENIESIONE DO TEGO BLOKU
-            if (generateNrbBtn) {
-                generateNrbBtn.addEventListener('click', () => {
-                    const selectedBankCode = bankCodeSelect.value;
-                    const selectedFormat = nrbFormatSelect.value;
-                    const selectedPrefix = ibanPrefixSelect.value;
-                    nrbOutput.innerText = generateNrb(selectedBankCode, selectedFormat, selectedPrefix);
-                });
-            }
-
 		// ====================================================
 		// 7. Obsługa zdarzeń (event listeners)
 		// ====================================================
@@ -534,9 +516,8 @@ if (typeof module !== 'undefined' && module.exports) {
 		generateRandomPesel();
 		idOutput.innerText = generateIdNumber();
 		regonOutput.innerText = generateRegon9();
-		const initialNrb = generateNrb(bankCodeSelect.value, nrbFormatSelect.value, ibanPrefixSelect.value);
-		nrbOutput.innerText = initialNrb;
-		displayNrbInfo(initialNrb);
+		nrbOutput.innerText = "Trwa ładowanie...";
+		displayNrbInfo("");
 
 		// Obsługa kliknięcia przycisku "Ustawienia" (PESEL)
 		if (openPeselOptionsBtn) {
@@ -809,193 +790,26 @@ if (typeof module !== 'undefined' && module.exports) {
 		// Załaduj dane imion na starcie
 		loadNameData();
 
-        })
-        .catch(error => {
-            console.error('Wystąpił błąd podczas ładowania danych banków:', error);
-            nrbOutput.innerText = 'Błąd ładowania danych banków.';
-        });
-      }
-
-      // Obsługa zmiany typu REGON
-      if (regonTypeSelect) {
-        regonTypeSelect.addEventListener("change", () => {
-          const regonType = regonTypeSelect.value;
-          if (regonType === "9") {
-            regonOutput.innerText = generateRegon9();
-          } else {
-            regonOutput.innerText = generateRegon14();
-          }
-        });
-      }
-
-      // Obsługa kliknięcia na pole REGON (kopiowanie)
-      if (regonOutput) {
-        regonOutput.addEventListener("click", () => {
-          const regonText = regonOutput.innerText;
-          if (navigator.clipboard) {
-            navigator.clipboard
-              .writeText(regonText)
-              .then(() => showCopyMessage("REGON skopiowany!"))
-              .catch((err) => console.error("Błąd podczas kopiowania:", err));
-          } else {
-            showCopyMessage("REGON skopiowany!");
-          }
-        });
-      }
-
-      // Obsługa kliknięcia przycisku "Generuj Rachunek"
-      if (generateNrbBtn) {
-        generateNrbBtn.addEventListener("click", () => {
-          const selectedBankCode = bankCodeSelect.value;
-          const selectedFormat = nrbFormatSelect.value;
-          const selectedPrefix = ibanPrefixSelect.value;
-          const newNrb = generateNrb(
-            selectedBankCode,
-            selectedFormat,
-            selectedPrefix,
-          );
-          nrbOutput.innerText = newNrb;
-          displayNrbInfo(newNrb);
-        });
-      }
-
-      // Obsługa kliknięcia na pole Rachunku Bankowego (kopiowanie) PRZENIESIONE DO TEGO BLOKU
-      if (nrbOutput) {
-        nrbOutput.addEventListener("click", () => {
-          const nrbText = nrbOutput.innerText;
-          if (navigator.clipboard) {
-            navigator.clipboard
-              .writeText(nrbText)
-              .then(() => showCopyMessage("Numer rachunku skopiowany!"))
-              .catch((err) => console.error("Błąd podczas kopiowania:", err));
-          } else {
-            showCopyMessage("Numer rachunku skopiowany!");
-          }
-        });
-      }
-
-      // ====================================================
-      // Logika generatora imion i nazwisk
-      // ====================================================
-
-      const nameOutput = document.getElementById("nameOutput");
-      const surnameOutput = document.getElementById("surnameOutput");
-      const genderSelectName = document.getElementById("genderSelect");
-      const generateNameBtn = document.getElementById("generateNameBtn");
-
-      let maleNames = [];
-      let maleSurnames = [];
-      let femaleNames = [];
-      let femaleSurnames = [];
-
-      // Załaduj dane z plików JSON
-      async function loadNameData() {
-        try {
-          const maleNamesResponse = await fetch("static/pl_male_names.json");
-          maleNames = await maleNamesResponse.json();
-
-          const maleSurnamesResponse = await fetch(
-            "static/pl_male_surnames.json",
-          );
-          maleSurnames = await maleSurnamesResponse.json();
-
-          const femaleNamesResponse = await fetch(
-            "static/pl_female_names.json",
-          );
-          femaleNames = await femaleNamesResponse.json();
-
-          const femaleSurnamesResponse = await fetch(
-            "static/pl_female_surnames.json",
-          );
-          femaleSurnames = await femaleSurnamesResponse.json();
-
-          // Generuj losowe imię i nazwisko na starcie
-          generateRandomName();
-        } catch (error) {
-          console.error("Błąd podczas ładowania danych imion:", error);
-          nameOutput.innerText = "Błąd ładowania";
-          surnameOutput.innerText = "Błąd ładowania";
-        }
-      }
-
-      /**
-       * Generuje losową parę imienia i nazwiska na podstawie wybranej płci.
-       */
-      function generateRandomName() {
-        let selectedGender = genderSelectName.value;
-
-        // Jeśli wybrano "Losowa", wybierz losowo
-        if (selectedGender === "random") {
-          selectedGender = Math.random() < 0.5 ? "male" : "female";
-        }
-
-        let names, surnames;
-        if (selectedGender === "male") {
-          names = maleNames;
-          surnames = maleSurnames;
-        } else {
-          names = femaleNames;
-          surnames = femaleSurnames;
-        }
-
-        // Sprawdź czy dane są załadowane
-        if (names.length === 0 || surnames.length === 0) {
-          nameOutput.innerText = "Brak danych";
-          surnameOutput.innerText = "Brak danych";
-          return;
-        }
-
-        const randomName = names[Math.floor(Math.random() * names.length)];
-        const randomSurname =
-          surnames[Math.floor(Math.random() * surnames.length)];
-
-        nameOutput.innerText = randomName;
-        surnameOutput.innerText = randomSurname;
-      }
-
-      // Obsługa kliknięcia przycisku "Generuj" dla imion i nazwisk
-      if (generateNameBtn) {
-        generateNameBtn.addEventListener("click", generateRandomName);
-      }
-
-      // Obsługa kliknięcia na pole z imieniem (kopiowanie)
-      if (nameOutput) {
-        nameOutput.addEventListener("click", () => {
-          const nameText = nameOutput.innerText;
-          if (navigator.clipboard) {
-            navigator.clipboard
-              .writeText(nameText)
-              .then(() => showCopyMessage("Imię skopiowane!"))
-              .catch((err) => console.error("Błąd podczas kopiowania:", err));
-          } else {
-            showCopyMessage("Imię skopiowane!");
-          }
-        });
-      }
-
-      // Obsługa kliknięcia na pole z nazwiskiem (kopiowanie)
-      if (surnameOutput) {
-        surnameOutput.addEventListener("click", () => {
-          const surnameText = surnameOutput.innerText;
-          if (navigator.clipboard) {
-            navigator.clipboard
-              .writeText(surnameText)
-              .then(() => showCopyMessage("Nazwisko skopiowane!"))
-              .catch((err) => console.error("Błąd podczas kopiowania:", err));
-          } else {
-            showCopyMessage("Nazwisko skopiowane!");
-          }
-        });
-      }
-
-      // Załaduj dane imion na starcie
-      loadNameData();
-    })
-    .catch((error) => {
-      console.error("Wystąpił błąd podczas ładowania danych banków:", error);
-      nrbOutput.innerText = "Błąd ładowania danych banków.";
-    });
-});
+		// Pobieranie danych banków z pliku plewibnra_utf8.txt
+		fetch('static/plewibnra_utf8.txt')
+			.then(response => {
+				// Sprawdź, czy odpowiedź jest poprawna
+				if (!response.ok) {
+					throw new Error('Nie udało się pobrać pliku z danymi banków.');
+				}
+				return response.text(); // Zwróć zawartość pliku jako tekst
+			})
+			.then(plewibnraContent => {
+				validNrbCodes = parsePlewiNrbCodes(plewibnraContent);
+				const initialNrb = generateNrb(bankCodeSelect.value, nrbFormatSelect.value, ibanPrefixSelect.value);
+				nrbOutput.innerText = initialNrb;
+				displayNrbInfo(initialNrb);
+			})
+			.catch(error => {
+				console.error('Wystąpił błąd podczas ładowania danych banków:', error);
+				nrbOutput.innerText = 'Błąd ładowania danych banków.';
+			});
+	});
 
 const storageKey = "theme-preference";
 
