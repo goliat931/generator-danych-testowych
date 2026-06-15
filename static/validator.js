@@ -1,53 +1,87 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // ====================================================
-  // 0. Inicjalizacja trybu ciemnego/jasnego / Dark/light mode initialization
-  // ====================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // ====================================================
+    // 0. Inicjalizacja trybu ciemnego/jasnego
+    // ====================================================
 
-  function initTheme() {
-    const themeToggle = document.getElementById("themeToggle");
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-
-    // Ustaw domyślny temat na podstawie preferencji przeglądarki / Set default theme based on browser preferences
-    let currentTheme = savedTheme || (prefersDark ? "dark" : "light");
-
-    // Zastosuj temat / Apply theme
-    if (currentTheme === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
-      if (themeToggle) themeToggle.checked = true;
-    } else {
-      document.documentElement.setAttribute("data-theme", "light");
-      if (themeToggle) themeToggle.checked = false;
+    function getInitialTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            return savedTheme;
+        }
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return prefersDark ? 'dark' : 'light';
     }
 
-    // Event listener dla switch'a / Event listener for the switch
-    if (themeToggle) {
-      themeToggle.addEventListener("change", () => {
-        const newTheme = themeToggle.checked ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-      });
+    function applyTheme(theme, themeToggle) {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (themeToggle) {
+            themeToggle.checked = (theme === 'dark');
+        }
     }
-  }
 
-  // Inicjalizuj temat przed załadowaniem reszty / Initialize theme before loading the rest
-  initTheme();
+    function setupThemeToggle(themeToggle) {
+        if (!themeToggle) return;
 
-  // ====================================================
-  // 0.5 Załadowanie kodów bankowych z JSON / Loading bank codes from JSON
-  // ====================================================
+        themeToggle.addEventListener('change', () => {
+            const newTheme = themeToggle.checked ? 'dark' : 'light';
+            applyTheme(newTheme, null); // Checkbox is already toggled
+            localStorage.setItem('theme', newTheme);
+        });
+    }
 
-  // Załaduj bank_codes.json / Load bank_codes.json
-  let bankCodes = {};
-  fetch("static/bank_codes.json")
-    .then((response) => response.json())
-    .then((data) => {
-      bankCodes = data;
-    })
-    .catch((error) =>
-      console.error("Błąd załadowania bank_codes.json:", error),
+    function initTheme() {
+        const themeToggle = document.getElementById('themeToggle');
+        const currentTheme = getInitialTheme();
+
+        applyTheme(currentTheme, themeToggle);
+        setupThemeToggle(themeToggle);
+    }
+
+    // Inicjalizuj temat przed załadowaniem reszty
+    initTheme();
+
+    // ====================================================
+    // 0.5 Załadowanie kodów bankowych z JSON
+    // ====================================================
+    
+    // Załaduj bank_codes.json
+    let bankCodes = {};
+    fetch('static/bank_codes.json')
+        .then(response => response.json())
+        .then(data => {
+            bankCodes = data;
+        })
+        .catch(error => console.error('Błąd załadowania bank_codes.json:', error));
+
+    // ====================================================
+    // 1. Selektory DOM
+    // ====================================================
+
+    const peselInput = document.getElementById('peselInput');
+    const peselValidateBtn = document.getElementById('peselValidateBtn');
+    const peselResult = document.getElementById('peselResult');
+
+    const idInput = document.getElementById('idInput');
+    const idValidateBtn = document.getElementById('idValidateBtn');
+    const idResult = document.getElementById('idResult');
+
+    const regonInput = document.getElementById('regonInput');
+    const regonValidateBtn = document.getElementById('regonValidateBtn');
+    const regonResult = document.getElementById('regonResult');
+
+    const nrbInput = document.getElementById('nrbInput');
+    const nrbValidateBtn = document.getElementById('nrbValidateBtn');
+    const nrbResult = document.getElementById('nrbResult');
+
+    const copyMessage = document.getElementById('copy-message');
+
+    // ====================================================
+    // 2. Stałe
+    // ====================================================
+
+    const weightsPesel = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
+    const letterToNumber = Object.fromEntries(
+        Array.from({ length: 26 }, (_, i) => [String.fromCharCode(65 + i), 10 + i])
     );
 
   // ====================================================
@@ -358,41 +392,137 @@ document.addEventListener("DOMContentLoaded", () => {
         message: "❌ Numer REGON musi mieć 9 lub 14 cyfr",
       };
     }
-  }
 
-  // ====================================================
-  // 7. Walidacja Rachunku Bankowego (NRB) / Bank Account (NRB) validation
-  // ====================================================
+    // ====================================================
+    // 7. Walidacja Rachunku Bankowego (NRB)
+    // ====================================================
 
-  /**
-   * Waliduje poprawność numeru rachunku bankowego / Validates bank account number correctness
-   * @param {string} nrb Numer rachunku do walidacji / Account number
-   * @returns {boolean}
-   */
-  function validateNrb(nrb) {
-    nrb = nrb.replace(/\s/g, "").toUpperCase();
-    if (nrb.startsWith("PL")) {
-      nrb = nrb.substring(2);
+    /**
+     * Waliduje poprawność numeru rachunku bankowego
+     * @param {string} nrb Numer rachunku do walidacji
+     * @returns {Object} Obiekt z wynikiem walidacji { isValid: boolean, error?: string, bankName?: string }
+     */
+    function validateNrb(nrb) {
+        // Usunięcie spacji i prefiksu PL
+        nrb = nrb.replace(/\s/g, '').toUpperCase();
+        if (nrb.startsWith('PL')) {
+            nrb = nrb.substring(2);
+        }
+
+        // Sprawdzenie długości
+        if (nrb.length !== 26) {
+            return { isValid: false, error: '❌ Numer rachunku musi mieć 26 cyfr' };
+        }
+
+        // Sprawdzenie czy to tylko cyfry
+        if (!/^\d{26}$/.test(nrb)) {
+            return { isValid: false, error: '❌ Numer rachunku może zawierać tylko cyfry (poza PL)' };
+        }
+
+        // Walidacja IBAN (checksum) - WAŻNE: obliczamy z '00' zamiast rzeczywistego checksuma
+        const countryCode = '2521'; // PL w ISO 7064
+        const bban = nrb.substring(2); // Opuść pierwsze 2 cyfry (checksum)
+        const numberToCheck = bban + countryCode + '00'; // Używamy '00' do obliczenia, tak jak w generatorze
+
+        let remainder = '';
+        let block;
+        for (let i = 0; i < numberToCheck.length; i += 7) {
+            block = remainder + numberToCheck.substring(i, i + 7);
+            remainder = (parseInt(block, 10) % 97).toString();
+        }
+
+        const controlNumber = 98 - parseInt(remainder, 10);
+        const expectedChecksum = String(controlNumber).padStart(2, '0');
+        const actualChecksum = nrb.substring(0, 2);
+
+        if (expectedChecksum !== actualChecksum) {
+            return { isValid: false, error: '❌ Numer rachunku jest niepoprawny (błędna suma kontrolna IBAN)' };
+        }
+
+        // Odczyt nazwy banku (pozycje 3-10 to 8-cyfrowy identyfikator banku)
+        const bankCode8 = nrb.substring(2, 10);
+        const bankCode4 = bankCode8.substring(0, 4);
+        let bankName = 'Nieznany bank';
+
+        // Szukaj najpierw 8-cyfrowego kodu, potem 4-cyfrowego
+        if (bankCodes[bankCode8]) {
+            bankName = bankCodes[bankCode8];
+        } else if (bankCodes[bankCode4]) {
+            bankName = bankCodes[bankCode4];
+        }
+
+        const message = `✅ Numer rachunku bankowego jest poprawny!\nBank: ${bankName}`;
+
+        nrbResult.textContent = message;
+        nrbResult.className = 'validator-result valid';
+        return true;
     }
 
-    if (nrb.length !== 26)
-      return { isValid: false, message: "❌ Numer rachunku musi mieć 26 cyfr" };
-    if (!/^\d{26}$/.test(nrb))
-      return {
-        isValid: false,
-        message: "❌ Numer rachunku może zawierać tylko cyfry (poza PL)",
-      };
+    // ====================================================
+    // 8. Event Listeners
+    // ====================================================
 
-    const countryCode = "2521";
-    const bban = nrb.substring(2);
-    const numberToCheck = bban + countryCode + "00";
+    peselValidateBtn.addEventListener('click', () => {
+        const pesel = peselInput.value.trim();
+        if (pesel) {
+            validatePesel(pesel);
+        } else {
+            showMessage('❌ Wpisz numer PESEL', peselResult, false);
+        }
+    });
 
-    let remainder = "";
-    let block;
-    for (let i = 0; i < numberToCheck.length; i += 7) {
-      block = remainder + numberToCheck.substring(i, i + 7);
-      remainder = (parseInt(block, 10) % 97).toString();
-    }
+    peselInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') peselValidateBtn.click();
+    });
+
+    idValidateBtn.addEventListener('click', () => {
+        const id = idInput.value.trim().toUpperCase();
+        if (id) {
+            validateId(id);
+        } else {
+            showMessage('❌ Wpisz numer dowodu', idResult, false);
+        }
+    });
+
+    idInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') idValidateBtn.click();
+    });
+
+    regonValidateBtn.addEventListener('click', () => {
+        const regon = regonInput.value.trim();
+        if (regon) {
+            validateRegon(regon);
+        } else {
+            showMessage('❌ Wpisz numer REGON', regonResult, false);
+        }
+    });
+
+    regonInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') regonValidateBtn.click();
+    });
+
+    nrbValidateBtn.addEventListener('click', () => {
+        const nrb = nrbInput.value.trim();
+        if (nrb) {
+            const result = validateNrb(nrb);
+            if (result.isValid) {
+                nrbResult.className = 'validator-result valid';
+                nrbResult.textContent = '';
+
+                const textNode1 = document.createTextNode('✅ Numer rachunku bankowego jest poprawny!');
+                const brNode = document.createElement('br');
+                const textNode2 = document.createTextNode(`Bank: ${result.bankName}`);
+
+                nrbResult.appendChild(textNode1);
+                nrbResult.appendChild(brNode);
+                nrbResult.appendChild(textNode2);
+            } else {
+                showMessage(result.error, nrbResult, false);
+            }
+        } else {
+            showMessage('❌ Wpisz numer rachunku', nrbResult, false);
+        }
+    });
 
     const controlNumber = 98 - parseInt(remainder, 10);
     const expectedChecksum = String(controlNumber).padStart(2, "0");
