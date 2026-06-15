@@ -457,4 +457,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') nrbValidateBtn.click();
     });
 
+    // Eksport funkcji do celów testowych
+    if (typeof window !== 'undefined') {
+        window.validateNrb = validateNrb;
+        window.setBankCodesForTest = (codes) => { bankCodes = codes; };
+    }
+
 });
