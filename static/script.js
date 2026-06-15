@@ -482,9 +482,6 @@ if (typeof module !== "undefined" && module.exports) {
 			}
 			return Array.from(codes);
 		}
-        // Definicje funkcji i zmiennych zależących od pliku
-		const validNrbCodes = parsePlewiNrbCodes(plewibnraContent);
-
 		function calculateNrbChecksum(bban) {
 			const countryCode = '2521'; 
 			const numberToCheck = bban + countryCode + '00';
@@ -542,19 +539,6 @@ if (typeof module !== "undefined" && module.exports) {
 
 
 
-            // Generowanie danych na starcie strony PRZENIESIONE DO TEGO BLOKU
-            nrbOutput.innerText = generateNrb(bankCodeSelect.value, nrbFormatSelect.value, ibanPrefixSelect.value);
-
-            // Obsługa kliknięcia przycisku "Generuj Rachunek" PRZENIESIONE DO TEGO BLOKU
-            if (generateNrbBtn) {
-                generateNrbBtn.addEventListener('click', () => {
-                    const selectedBankCode = bankCodeSelect.value;
-                    const selectedFormat = nrbFormatSelect.value;
-                    const selectedPrefix = ibanPrefixSelect.value;
-                    nrbOutput.innerText = generateNrb(selectedBankCode, selectedFormat, selectedPrefix);
-                });
-            }
-
 		// ====================================================
 		// 7. Obsługa zdarzeń (event listeners)
 		// ====================================================
@@ -563,9 +547,8 @@ if (typeof module !== "undefined" && module.exports) {
 		generateRandomPesel();
 		idOutput.innerText = generateIdNumber();
 		regonOutput.innerText = generateRegon9();
-		const initialNrb = generateNrb(bankCodeSelect.value, nrbFormatSelect.value, ibanPrefixSelect.value);
-		nrbOutput.innerText = initialNrb;
-		displayNrbInfo(initialNrb);
+		nrbOutput.innerText = "Trwa ładowanie...";
+		displayNrbInfo("");
 
 		// Obsługa kliknięcia przycisku "Ustawienia" (PESEL)
 		if (openPeselOptionsBtn) {
