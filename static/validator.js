@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Waliduje poprawność numeru rachunku bankowego
      * @param {string} nrb Numer rachunku do walidacji
-     * @returns {boolean}
+     * @returns {Object} Obiekt z wynikiem walidacji { isValid: boolean, error?: string, bankName?: string }
      */
     function validateNrb(nrb) {
         // Usunięcie spacji i prefiksu PL
@@ -383,14 +383,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Sprawdzenie długości
         if (nrb.length !== 26) {
-            showMessage('❌ Numer rachunku musi mieć 26 cyfr', nrbResult, false);
-            return false;
+            return { isValid: false, error: '❌ Numer rachunku musi mieć 26 cyfr' };
         }
 
         // Sprawdzenie czy to tylko cyfry
         if (!/^\d{26}$/.test(nrb)) {
-            showMessage('❌ Numer rachunku może zawierać tylko cyfry (poza PL)', nrbResult, false);
-            return false;
+            return { isValid: false, error: '❌ Numer rachunku może zawierać tylko cyfry (poza PL)' };
         }
 
         // Walidacja IBAN (checksum) - WAŻNE: obliczamy z '00' zamiast rzeczywistego checksuma
@@ -410,8 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const actualChecksum = nrb.substring(0, 2);
 
         if (expectedChecksum !== actualChecksum) {
-            showMessage('❌ Numer rachunku jest niepoprawny (błędna suma kontrolna IBAN)', nrbResult, false);
-            return false;
+            return { isValid: false, error: '❌ Numer rachunku jest niepoprawny (błędna suma kontrolna IBAN)' };
         }
 
         // Odczyt nazwy banku (pozycje 3-10 to 8-cyfrowy identyfikator banku)
@@ -479,7 +476,21 @@ document.addEventListener('DOMContentLoaded', () => {
     nrbValidateBtn.addEventListener('click', () => {
         const nrb = nrbInput.value.trim();
         if (nrb) {
-            validateNrb(nrb);
+            const result = validateNrb(nrb);
+            if (result.isValid) {
+                nrbResult.className = 'validator-result valid';
+                nrbResult.textContent = '';
+
+                const textNode1 = document.createTextNode('✅ Numer rachunku bankowego jest poprawny!');
+                const brNode = document.createElement('br');
+                const textNode2 = document.createTextNode(`Bank: ${result.bankName}`);
+
+                nrbResult.appendChild(textNode1);
+                nrbResult.appendChild(brNode);
+                nrbResult.appendChild(textNode2);
+            } else {
+                showMessage(result.error, nrbResult, false);
+            }
         } else {
             showMessage('❌ Wpisz numer rachunku', nrbResult, false);
         }
