@@ -1,4 +1,3 @@
-
 // ====================================================
 // Logika generatora REGON (wyciągnięta dla testów)
 // ====================================================
@@ -156,12 +155,12 @@ throw new Error("Invalid gender. Use 'male' or 'female'.");
 
 
 function calculateRegon9Checksum(regon8) {
-	let sum = 0;
-	for (let i = 0; i < 8; i++) {
-		sum += parseInt(regon8[i]) * weightsRegon9[i];
-	}
-	const checksum = sum % 11;
-	return checksum === 10 ? 0 : checksum;
+  let sum = 0;
+  for (let i = 0; i < 8; i++) {
+    sum += parseInt(regon8[i]) * weightsRegon9[i];
+  }
+  const checksum = sum % 11;
+  return checksum === 10 ? 0 : checksum;
 }
 
 /**
@@ -170,12 +169,12 @@ function calculateRegon9Checksum(regon8) {
  * @returns {number} Obliczona cyfra kontrolna.
  */
 function calculateRegon14Checksum(regon13) {
-	let sum = 0;
-	for (let i = 0; i < 13; i++) {
-		sum += parseInt(regon13[i]) * weightsRegon14[i];
-	}
-	const checksum = sum % 11;
-	return checksum === 10 ? 0 : checksum;
+  let sum = 0;
+  for (let i = 0; i < 13; i++) {
+    sum += parseInt(regon13[i]) * weightsRegon14[i];
+  }
+  const checksum = sum % 11;
+  return checksum === 10 ? 0 : checksum;
 }
 
 /**
@@ -183,13 +182,13 @@ function calculateRegon14Checksum(regon13) {
  * @returns {string} 9-cyfrowy numer REGON.
  */
 function generateRegon9() {
-	const digits = '0123456789';
-	let regon8 = '';
-	for (let i = 0; i < 8; i++) {
-		regon8 += digits.charAt(Math.floor(Math.random() * digits.length));
-	}
-	const controlDigit = calculateRegon9Checksum(regon8);
-	return `${regon8}${controlDigit}`;
+  const digits = "0123456789";
+  let regon8 = "";
+  for (let i = 0; i < 8; i++) {
+    regon8 += digits.charAt(Math.floor(Math.random() * digits.length));
+  }
+  const controlDigit = calculateRegon9Checksum(regon8);
+  return `${regon8}${controlDigit}`;
 }
 
 /**
@@ -197,18 +196,16 @@ function generateRegon9() {
  * @returns {string} 14-cyfrowy numer REGON.
  */
 function generateRegon14() {
-	const regon9 = generateRegon9();
-	const digits = '0123456789';
-	let localDigits = '';
-	for (let i = 0; i < 4; i++) {
-		localDigits += digits.charAt(Math.floor(Math.random() * digits.length));
-	}
-	const regon13 = `${regon9}${localDigits}`;
-	const controlDigit = calculateRegon14Checksum(regon13);
-	return `${regon13}${controlDigit}`;
+  const regon9 = generateRegon9();
+  const digits = "0123456789";
+  let localDigits = "";
+  for (let i = 0; i < 4; i++) {
+    localDigits += digits.charAt(Math.floor(Math.random() * digits.length));
+  }
+  const regon13 = `${regon9}${localDigits}`;
+  const controlDigit = calculateRegon14Checksum(regon13);
+  return `${regon13}${controlDigit}`;
 }
-
-
 
 // Exports for testing
 if (typeof module !== 'undefined' && module.exports) {
@@ -817,65 +814,238 @@ if (typeof module !== 'undefined' && module.exports) {
             console.error('Wystąpił błąd podczas ładowania danych banków:', error);
             nrbOutput.innerText = 'Błąd ładowania danych banków.';
         });
-	});
+      }
 
-	
-        const storageKey = 'theme-preference'
+      // Obsługa zmiany typu REGON
+      if (regonTypeSelect) {
+        regonTypeSelect.addEventListener("change", () => {
+          const regonType = regonTypeSelect.value;
+          if (regonType === "9") {
+            regonOutput.innerText = generateRegon9();
+          } else {
+            regonOutput.innerText = generateRegon14();
+          }
+        });
+      }
+
+      // Obsługa kliknięcia na pole REGON (kopiowanie)
+      if (regonOutput) {
+        regonOutput.addEventListener("click", () => {
+          const regonText = regonOutput.innerText;
+          if (navigator.clipboard) {
+            navigator.clipboard
+              .writeText(regonText)
+              .then(() => showCopyMessage("REGON skopiowany!"))
+              .catch((err) => console.error("Błąd podczas kopiowania:", err));
+          } else {
+            showCopyMessage("REGON skopiowany!");
+          }
+        });
+      }
+
+      // Obsługa kliknięcia przycisku "Generuj Rachunek"
+      if (generateNrbBtn) {
+        generateNrbBtn.addEventListener("click", () => {
+          const selectedBankCode = bankCodeSelect.value;
+          const selectedFormat = nrbFormatSelect.value;
+          const selectedPrefix = ibanPrefixSelect.value;
+          const newNrb = generateNrb(
+            selectedBankCode,
+            selectedFormat,
+            selectedPrefix,
+          );
+          nrbOutput.innerText = newNrb;
+          displayNrbInfo(newNrb);
+        });
+      }
+
+      // Obsługa kliknięcia na pole Rachunku Bankowego (kopiowanie) PRZENIESIONE DO TEGO BLOKU
+      if (nrbOutput) {
+        nrbOutput.addEventListener("click", () => {
+          const nrbText = nrbOutput.innerText;
+          if (navigator.clipboard) {
+            navigator.clipboard
+              .writeText(nrbText)
+              .then(() => showCopyMessage("Numer rachunku skopiowany!"))
+              .catch((err) => console.error("Błąd podczas kopiowania:", err));
+          } else {
+            showCopyMessage("Numer rachunku skopiowany!");
+          }
+        });
+      }
+
+      // ====================================================
+      // Logika generatora imion i nazwisk
+      // ====================================================
+
+      const nameOutput = document.getElementById("nameOutput");
+      const surnameOutput = document.getElementById("surnameOutput");
+      const genderSelectName = document.getElementById("genderSelect");
+      const generateNameBtn = document.getElementById("generateNameBtn");
+
+      let maleNames = [];
+      let maleSurnames = [];
+      let femaleNames = [];
+      let femaleSurnames = [];
+
+      // Załaduj dane z plików JSON
+      async function loadNameData() {
+        try {
+          const maleNamesResponse = await fetch("static/pl_male_names.json");
+          maleNames = await maleNamesResponse.json();
+
+          const maleSurnamesResponse = await fetch(
+            "static/pl_male_surnames.json",
+          );
+          maleSurnames = await maleSurnamesResponse.json();
+
+          const femaleNamesResponse = await fetch(
+            "static/pl_female_names.json",
+          );
+          femaleNames = await femaleNamesResponse.json();
+
+          const femaleSurnamesResponse = await fetch(
+            "static/pl_female_surnames.json",
+          );
+          femaleSurnames = await femaleSurnamesResponse.json();
+
+          // Generuj losowe imię i nazwisko na starcie
+          generateRandomName();
+        } catch (error) {
+          console.error("Błąd podczas ładowania danych imion:", error);
+          nameOutput.innerText = "Błąd ładowania";
+          surnameOutput.innerText = "Błąd ładowania";
+        }
+      }
+
+      /**
+       * Generuje losową parę imienia i nazwiska na podstawie wybranej płci.
+       */
+      function generateRandomName() {
+        let selectedGender = genderSelectName.value;
+
+        // Jeśli wybrano "Losowa", wybierz losowo
+        if (selectedGender === "random") {
+          selectedGender = Math.random() < 0.5 ? "male" : "female";
+        }
+
+        let names, surnames;
+        if (selectedGender === "male") {
+          names = maleNames;
+          surnames = maleSurnames;
+        } else {
+          names = femaleNames;
+          surnames = femaleSurnames;
+        }
+
+        // Sprawdź czy dane są załadowane
+        if (names.length === 0 || surnames.length === 0) {
+          nameOutput.innerText = "Brak danych";
+          surnameOutput.innerText = "Brak danych";
+          return;
+        }
+
+        const randomName = names[Math.floor(Math.random() * names.length)];
+        const randomSurname =
+          surnames[Math.floor(Math.random() * surnames.length)];
+
+        nameOutput.innerText = randomName;
+        surnameOutput.innerText = randomSurname;
+      }
+
+      // Obsługa kliknięcia przycisku "Generuj" dla imion i nazwisk
+      if (generateNameBtn) {
+        generateNameBtn.addEventListener("click", generateRandomName);
+      }
+
+      // Obsługa kliknięcia na pole z imieniem (kopiowanie)
+      if (nameOutput) {
+        nameOutput.addEventListener("click", () => {
+          const nameText = nameOutput.innerText;
+          if (navigator.clipboard) {
+            navigator.clipboard
+              .writeText(nameText)
+              .then(() => showCopyMessage("Imię skopiowane!"))
+              .catch((err) => console.error("Błąd podczas kopiowania:", err));
+          } else {
+            showCopyMessage("Imię skopiowane!");
+          }
+        });
+      }
+
+      // Obsługa kliknięcia na pole z nazwiskiem (kopiowanie)
+      if (surnameOutput) {
+        surnameOutput.addEventListener("click", () => {
+          const surnameText = surnameOutput.innerText;
+          if (navigator.clipboard) {
+            navigator.clipboard
+              .writeText(surnameText)
+              .then(() => showCopyMessage("Nazwisko skopiowane!"))
+              .catch((err) => console.error("Błąd podczas kopiowania:", err));
+          } else {
+            showCopyMessage("Nazwisko skopiowane!");
+          }
+        });
+      }
+
+      // Załaduj dane imion na starcie
+      loadNameData();
+    })
+    .catch((error) => {
+      console.error("Wystąpił błąd podczas ładowania danych banków:", error);
+      nrbOutput.innerText = "Błąd ładowania danych banków.";
+    });
+});
+
+const storageKey = "theme-preference";
 
 const onClick = () => {
   // flip current value
-  theme.value = theme.value === 'light'
-    ? 'dark'
-    : 'light'
+  theme.value = theme.value === "light" ? "dark" : "light";
 
-  setPreference()
-}
+  setPreference();
+};
 
 const getColorPreference = () => {
-  if (localStorage.getItem(storageKey))
-    return localStorage.getItem(storageKey)
+  if (localStorage.getItem(storageKey)) return localStorage.getItem(storageKey);
   else
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light'
-}
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+};
 
 const setPreference = () => {
-  localStorage.setItem(storageKey, theme.value)
-  reflectPreference()
-}
+  localStorage.setItem(storageKey, theme.value);
+  reflectPreference();
+};
 
 const reflectPreference = () => {
-  document.firstElementChild
-    .setAttribute('data-theme', theme.value)
+  document.firstElementChild.setAttribute("data-theme", theme.value);
 
   document
-    .querySelector('#theme-toggle')
-    ?.setAttribute('aria-label', theme.value)
-}
+    .querySelector("#theme-toggle")
+    ?.setAttribute("aria-label", theme.value);
+};
 
 const theme = {
   value: getColorPreference(),
-}
+};
 
 // set early so no page flashes / CSS is made aware
-reflectPreference()
+reflectPreference();
 
 window.onload = () => {
   // set on load so screen readers can see latest value on the button
-  reflectPreference()
+  reflectPreference();
 
   // now this script can find and listen for clicks on the control
-  document
-    .querySelector('#theme-toggle')
-    .addEventListener('click', onClick)
-}
+  document.querySelector("#theme-toggle").addEventListener("click", onClick);
+};
 
 // sync with system changes
 window
-  .matchMedia('(prefers-color-scheme: dark)')
-  .addEventListener('change', ({matches:isDark}) => {
-    theme.value = isDark ? 'dark' : 'light'
-    setPreference()
-  })
-        
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", ({ matches: isDark }) => {
+    theme.value = isDark ? "dark" : "light";
+    setPreference();
+  });
