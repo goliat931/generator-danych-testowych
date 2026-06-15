@@ -1,44 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ====================================================
-    // 0. Inicjalizacja trybu ciemnego/jasnego
-    // ====================================================
-
-    function getInitialTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            return savedTheme;
-        }
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        return prefersDark ? 'dark' : 'light';
-    }
-
-    function applyTheme(theme, themeToggle) {
-        document.documentElement.setAttribute('data-theme', theme);
-        if (themeToggle) {
-            themeToggle.checked = (theme === 'dark');
-        }
-    }
-
-    function setupThemeToggle(themeToggle) {
-        if (!themeToggle) return;
-
-        themeToggle.addEventListener('change', () => {
-            const newTheme = themeToggle.checked ? 'dark' : 'light';
-            applyTheme(newTheme, null); // Checkbox is already toggled
-            localStorage.setItem('theme', newTheme);
-        });
-    }
-
-    function initTheme() {
-        const themeToggle = document.getElementById('themeToggle');
-        const currentTheme = getInitialTheme();
-
-        applyTheme(currentTheme, themeToggle);
-        setupThemeToggle(themeToggle);
-    }
-
-    // Inicjalizuj temat przed załadowaniem reszty
-    initTheme();
 
     // ====================================================
     // 0.5 Załadowanie kodów bankowych z JSON
@@ -501,6 +462,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Expose for testing
+
+
+    // Expose for testing
     if (typeof window !== 'undefined') {
         window.__test_validator__ = {
             validatePesel,
@@ -508,5 +472,11 @@ document.addEventListener('DOMContentLoaded', () => {
             decodePeselDate,
             calculateAge
         };
+        window.validateNrb = validateNrb;
+        window.validatePesel = validatePesel;
+        window.validateRegon = validateRegon;
+        window.setBankCodesForTest = function(codes) { bankCodes = codes; };
     }
+
+
 });

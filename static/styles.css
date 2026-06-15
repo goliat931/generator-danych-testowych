@@ -175,6 +175,7 @@ button {
     cursor: pointer;
     width: 100%;
     margin: 8px 0;
+    transition: background-color 0.3s ease, filter 0.3s ease, transform 0.2s ease;
 }
 
 button:last-of-type { margin-top: auto; }
@@ -185,7 +186,7 @@ button:last-of-type { margin-top: auto; }
 #generateNameBtn { background-color: #8e24aa; }
 #generateRegonBtn { background-color: #546e7a; }
 
-button:hover { filter: brightness(0.9); }
+button:hover { filter: brightness(0.9); transform: scale(1.02); }
 
 /* --- MODAL (POPUP USTAWIEŃ) --- */
 .modal {
@@ -389,7 +390,7 @@ select:focus, input:focus {
     width: auto;
     margin: 8px 0;
     flex-shrink: 0;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, filter 0.3s ease, transform 0.2s ease;
 }
 
 .validator-input-group button:hover {
@@ -494,12 +495,12 @@ select:focus, input:focus {
     background-color: #666;
     border-radius: 6px;
     text-decoration: none;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, filter 0.3s ease, transform 0.2s ease;
 }
 
 .nav-button:hover {
     background-color: #555;
-}
+ transform: scale(1.02); }
 
 /* --- GENERATOR ZBIORÓW DANYCH --- */
 .dataset-generator-tile {
@@ -735,6 +736,7 @@ select:focus, input:focus {
     }
 }
 
+
 @media (max-width: 768px) {
     body {
         padding: 12px;
@@ -742,11 +744,15 @@ select:focus, input:focus {
 
     .container {
         gap: 16px;
+        grid-template-columns: 1fr;
     }
 
+    .generator-tile,
     .dataset-generator-tile,
     .preview-tile {
         padding: 16px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .control-panel {
