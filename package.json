@@ -2,9 +2,12 @@
   "name": "app",
   "version": "1.0.0",
   "description": "Ten projekt to prosta aplikacja webowa do generowania i walidacji losowych danych testowych Polski, takich jak numery PESEL, dowody osobiste, numery REGON i numery NRB.",
-  "main": "test_env.js",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
-    "test": "jest --env=jsdom"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

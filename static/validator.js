@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             bankCodes = data;
-            console.log('Załadowano', Object.keys(bankCodes).length, 'kodów bankowych');
         })
         .catch(error => console.error('Błąd załadowania bank_codes.json:', error));
 
@@ -95,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showMessage(text, element, isSuccess = false) {
         element.className = 'validator-result ' + (isSuccess ? 'valid' : 'invalid');
-        element.innerHTML = text;
+        element.textContent = text;
     }
 
     function showCopyMessage(text) {
@@ -457,5 +456,11 @@ document.addEventListener('DOMContentLoaded', () => {
     nrbInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') nrbValidateBtn.click();
     });
+
+    // Eksport funkcji do celów testowych
+    if (typeof window !== 'undefined') {
+        window.validateNrb = validateNrb;
+        window.setBankCodesForTest = (codes) => { bankCodes = codes; };
+    }
 
 });
