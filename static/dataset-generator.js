@@ -642,6 +642,40 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	});
 
+	// ====================================================
+	// 7. Generowanie CSV
+	// ====================================================
+	function generateCsv(data, fields, separator) {
+		const header = fields.join(separator);
+		const rows = data.map(record => 
+			fields.map(field => {
+				const value = record[field];
+				// Escape wartości zawierające separator, cudzysłowy lub nowe linie
+				if (typeof value === 'string' && (value.includes(separator) || value.includes('"') || value.includes('\n'))) {
+					return '"' + value.replace(/"/g, '""') + '"';
+				}
+				return value;
+			}).join(separator)
+		);
+		return [header, ...rows].join('\n');
+	}
+
+	// ====================================================
+	// 8. Generowanie XML
+	// ====================================================
+	function generateXml(data, fields) {
+		let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<records>\n';
+		data.forEach(record => {
+			xml += '  <record>\n';
+			fields.forEach(field => {
+				const value = record[field];
+				xml += `    <${field}>${escapeXml(value)}</${field}>\n`;
+			});
+			xml += '  </record>\n';
+		});
+		xml += '</records>';
+		return xml;
+	}
 
 	// ====================================================
 	// 9. Podgląd
@@ -687,4 +721,28 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.body.removeChild(link);
 		URL.revokeObjectURL(url);
 	}
+
+	// Eksport dla celów testowania
+	if (typeof window !== 'undefined') {
+		window.generateXml = generateXml;
+		window.escapeXml = escapeXml;
+	}
 });
+
+function escapeXml(str) {
+	const map = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&apos;'
+	};
+	if (typeof str !== 'string') {
+		return str; // If not a string, return as is or handle it
+	}
+	return str.replace(/[&<>"']/g, char => map[char]);
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+	module.exports = { escapeXml };
+}
