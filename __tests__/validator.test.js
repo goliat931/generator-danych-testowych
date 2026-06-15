@@ -66,18 +66,18 @@ describe('validateNrb', () => {
         const nrbResult = document.getElementById('nrbResult');
         const result = window.validateNrb('123'); // Too short
 
-        expect(result).toBe(false);
-        expect(nrbResult.className).toContain('invalid');
-        expect(nrbResult.innerHTML).toContain('Numer rachunku musi mieć 26 cyfr');
+        expect(result).toEqual(expect.objectContaining({ isValid: false }));
+
+        expect(result.message).toContain('Numer rachunku musi mieć 26 cyfr');
     });
 
     it('should return false for non-numeric characters', () => {
         const nrbResult = document.getElementById('nrbResult');
         const result = window.validateNrb('PL879681000205520062600824AB'); // 26 chars but contains letters
 
-        expect(result).toBe(false);
-        expect(nrbResult.className).toContain('invalid');
-        expect(nrbResult.innerHTML).toContain('Numer rachunku może zawierać tylko cyfry');
+        expect(result).toEqual(expect.objectContaining({ isValid: false }));
+
+        expect(result.message).toContain('Numer rachunku może zawierać tylko cyfry');
     });
 
     it('should return false for invalid checksum', () => {
@@ -85,9 +85,9 @@ describe('validateNrb', () => {
         // valid length, but checksum is incorrect
         const result = window.validateNrb('99114020040000300201355387');
 
-        expect(result).toBe(false);
-        expect(nrbResult.className).toContain('invalid');
-        expect(nrbResult.innerHTML).toContain('niepoprawny (błędna suma kontrolna IBAN)');
+        expect(result).toEqual(expect.objectContaining({ isValid: false }));
+
+        expect(result.message).toContain('niepoprawny (błędna suma kontrolna IBAN)');
     });
 
     it('should return true for a valid NRB', () => {
@@ -96,10 +96,10 @@ describe('validateNrb', () => {
         const validNrb = '87968100020552006260082412';
         const result = window.validateNrb(validNrb);
 
-        expect(result).toBe(true);
-        expect(nrbResult.className).toContain('valid');
-        expect(nrbResult.innerHTML).toContain('Numer rachunku bankowego jest poprawny!');
-        expect(nrbResult.innerHTML).toContain('Test Bank'); // 9681 is Bank
+        expect(result).toEqual(expect.objectContaining({ isValid: true }));
+
+        expect(result.message).toContain('Numer rachunku bankowego jest poprawny!');
+        expect(result.message).toContain('Test Bank'); // 9681 is Bank
     });
 
     it('should correctly strip PL prefix and spaces', () => {
@@ -108,8 +108,8 @@ describe('validateNrb', () => {
         const validNrb = 'PL 87 9681 0002 0552 0062 6008 2412';
         const result = window.validateNrb(validNrb);
 
-        expect(result).toBe(true);
-        expect(nrbResult.className).toContain('valid');
-        expect(nrbResult.innerHTML).toContain('Numer rachunku bankowego jest poprawny!');
+        expect(result).toEqual(expect.objectContaining({ isValid: true }));
+
+        expect(result.message).toContain('Numer rachunku bankowego jest poprawny!');
     });
 });

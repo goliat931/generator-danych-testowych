@@ -119,48 +119,48 @@ describe('Validator PESEL', () => {
 
     describe('validatePesel', () => {
         test('powinno odrzucić PESEL o nieprawidłowej długości', () => {
-            expect(validatePesel('123')).toBe(false);
-            expect(peselResult.textContent).toBe('❌ Numer PESEL musi mieć 11 cyfr');
-            expect(peselResult.className).toContain('invalid');
+            expect(validatePesel('123')).toEqual(expect.objectContaining({ isValid: false }));
+            expect(validatePesel('123').message).toBe('❌ Numer PESEL musi mieć 11 cyfr');
+
         });
 
         test('powinno odrzucić PESEL zawierający znaki nienumeryczne', () => {
-            expect(validatePesel('1234567890a')).toBe(false);
-            expect(peselResult.textContent).toBe('❌ Numer PESEL może zawierać tylko cyfry');
-            expect(peselResult.className).toContain('invalid');
+            expect(validatePesel('1234567890a')).toEqual(expect.objectContaining({ isValid: false }));
+            expect(validatePesel('1234567890a').message).toBe('❌ Numer PESEL może zawierać tylko cyfry');
+
         });
 
         test('powinno odrzucić PESEL z błędną sumą kontrolną', () => {
-            expect(validatePesel('44051401358')).toBe(false);
-            expect(peselResult.textContent).toBe('❌ Numer PESEL jest niepoprawny (błędna suma kontrolna)');
-            expect(peselResult.className).toContain('invalid');
+            expect(validatePesel('44051401358')).toEqual(expect.objectContaining({ isValid: false }));
+            expect(validatePesel('44051401358').message).toBe('❌ Numer PESEL jest niepoprawny (błędna suma kontrolna)');
+
         });
 
         test('powinno odrzucić PESEL z nieprawidłowym miesiącem', () => {
             // Month 13 -> 1900s, month 13 -> invalid
             // The checksum must be correct to reach the month validation
             // 0013010123 with weights [1, 3, 7, 9, 1, 3, 7, 9, 1, 3] -> checksum 3
-            expect(validatePesel('00130101233')).toBe(false);
-            expect(peselResult.textContent).toBe('❌ Numer PESEL jest niepoprawny (miesiąc)');
-            expect(peselResult.className).toContain('invalid');
+            expect(validatePesel('00130101233')).toEqual(expect.objectContaining({ isValid: false }));
+            expect(validatePesel('00130101233').message).toBe('❌ Numer PESEL jest niepoprawny (miesiąc)');
+
         });
 
         test('powinno odrzucić PESEL z nieprawidłowym dniem', () => {
             // 0001320123 with weights -> checksum 2
-            expect(validatePesel('00013201232')).toBe(false);
-            expect(peselResult.textContent).toBe('❌ Numer PESEL jest niepoprawny (dzień)');
-            expect(peselResult.className).toContain('invalid');
+            expect(validatePesel('00013201232')).toEqual(expect.objectContaining({ isValid: false }));
+            expect(validatePesel('00013201232').message).toBe('❌ Numer PESEL jest niepoprawny (dzień)');
+
         });
 
         test('powinno zaakceptować prawidłowy PESEL i wyświetlić metadane', () => {
             // Male, born 1944-05-14
             const validPesel = '44051401359';
-            expect(validatePesel(validPesel)).toBe(true);
-            expect(peselResult.textContent).toContain('✅ Numer PESEL jest poprawny!');
-            expect(peselResult.textContent).toContain('Płeć: Mężczyzna');
-            expect(peselResult.textContent).toContain('Data urodzenia: 14-05-1944');
-            expect(peselResult.textContent).toContain('Wiek: 80 lat');
-            expect(peselResult.className).toContain('valid');
+            expect(validatePesel(validPesel)).toEqual(expect.objectContaining({ isValid: true }));
+            expect(validatePesel('44051401359').message).toContain('✅ Numer PESEL jest poprawny!');
+            expect(validatePesel('44051401359').message).toContain('Płeć: Mężczyzna');
+            expect(validatePesel('44051401359').message).toContain('Data urodzenia: 14-05-1944');
+            expect(validatePesel('44051401359').message).toContain('Wiek: 80 lat');
+
         });
 
         test('powinno poprawnie zidentyfikować kobietę', () => {
@@ -170,8 +170,8 @@ describe('Validator PESEL', () => {
             // 8*1 + 5*3 + 0*7 + 2*9 + 2*1 + 3*3 + 0*7 + 1*9 + 2*1 + 4*3
             // 8 + 15 + 0 + 18 + 2 + 9 + 0 + 9 + 2 + 12 = 75. 10 - 5 = 5.
             const validPeselFemale = '85022301245';
-            expect(validatePesel(validPeselFemale)).toBe(true);
-            expect(peselResult.textContent).toContain('Płeć: Kobieta');
+            expect(validatePesel(validPeselFemale)).toEqual(expect.objectContaining({ isValid: true }));
+            expect(validatePesel('85022301245').message).toContain('Płeć: Kobieta');
         });
     });
 });
