@@ -1,3 +1,12 @@
+
+const weightsPesel = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
+const encodedMonths = {
+    '1800-1899': 80,
+    '1900-1999': 0,
+    '2000-2099': 20,
+    '2100-2199': 40,
+    '2200-2299': 60
+};
 // ====================================================
 // Logika generatora REGON (wyciągnięta dla testów) / REGON generator logic (extracted for tests)
 // ====================================================
@@ -969,103 +978,39 @@ if (typeof module !== "undefined" && module.exports) {
         const randomSurname =
           surnames[Math.floor(Math.random() * surnames.length)];
 
-        nameOutput.innerText = randomName;
-        surnameOutput.innerText = randomSurname;
-      }
+const theme = { value: window.getColorPreference ? window.getColorPreference() : 'light' };
 
-      // Obsługa kliknięcia przycisku "Generuj" dla imion i nazwisk
-      if (generateNameBtn) {
-        generateNameBtn.addEventListener("click", generateRandomName);
-      }
+if (window.reflectPreference) window.reflectPreference();
 
-      // Obsługa kliknięcia na pole z imieniem (kopiowanie)
-      if (nameOutput) {
-        nameOutput.addEventListener("click", () => {
-          const nameText = nameOutput.innerText;
-          if (navigator.clipboard) {
-            navigator.clipboard
-              .writeText(nameText)
-              .then(() => showCopyMessage("Imię skopiowane!"))
-              .catch((err) => console.error("Błąd podczas kopiowania:", err));
-          } else {
-            showCopyMessage("Imię skopiowane!");
-          }
+document.addEventListener('DOMContentLoaded', () => {
+    reflectPreference();
+    const themeToggle = document.querySelector('#theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            theme.value = theme.value === 'light' ? 'dark' : 'light';
+            setPreference();
+            const checkbox = document.querySelector('#themeToggle');
+            if (checkbox) checkbox.checked = theme.value === 'dark';
         });
-      }
+    }
 
-      // Obsługa kliknięcia na pole z nazwiskiem (kopiowanie)
-      if (surnameOutput) {
-        surnameOutput.addEventListener("click", () => {
-          const surnameText = surnameOutput.innerText;
-          if (navigator.clipboard) {
-            navigator.clipboard
-              .writeText(surnameText)
-              .then(() => showCopyMessage("Nazwisko skopiowane!"))
-              .catch((err) => console.error("Błąd podczas kopiowania:", err));
-          } else {
-            showCopyMessage("Nazwisko skopiowane!");
-          }
+    const checkbox = document.querySelector('#themeToggle');
+    if(checkbox) {
+        checkbox.addEventListener('change', () => {
+            theme.value = checkbox.checked ? 'dark' : 'light';
+            setPreference();
         });
-      }
-
-      // Załaduj dane imion na starcie
-      loadNameData();
-    })
-    .catch((error) => {
-      console.error("Wystąpił błąd podczas ładowania danych banków:", error);
-      nrbOutput.innerText = "Błąd ładowania danych banków.";
-    });
+    }
 });
 
-const storageKey = "theme-preference";
-
-const onClick = () => {
-  // flip current value
-  theme.value = theme.value === "light" ? "dark" : "light";
-
-  setPreference();
-};
-
-const getColorPreference = () => {
-  if (localStorage.getItem(storageKey)) return localStorage.getItem(storageKey);
-  else
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-};
-
-const setPreference = () => {
-  localStorage.setItem(storageKey, theme.value);
-  reflectPreference();
-};
-
-const reflectPreference = () => {
-  document.firstElementChild.setAttribute("data-theme", theme.value);
-
-  document
-    .querySelector("#theme-toggle")
-    ?.setAttribute("aria-label", theme.value);
-};
-
-const theme = {
-  value: getColorPreference(),
-};
-
-// set early so no page flashes / CSS is made aware
-reflectPreference();
-
-window.onload = () => {
-  // set on load so screen readers can see latest value on the button
-  reflectPreference();
-
-  // now this script can find and listen for clicks on the control
-  document.querySelector("#theme-toggle").addEventListener("click", onClick);
-};
-
-// sync with system changes
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", ({ matches: isDark }) => {
-    theme.value = isDark ? "dark" : "light";
-    setPreference();
-  });
+// Use optional chaining for test compatibility
+if (window.matchMedia) {
+    const matchMediaObj = window.matchMedia('(prefers-color-scheme: dark)');
+    if (matchMediaObj.addEventListener) {
+        matchMediaObj.addEventListener('change', ({ matches: isDark }) => {
+            theme.value = isDark ? 'dark' : 'light';
+            setPreference();
+        });
+    }
+}

@@ -53,31 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	// ====================================================
 	// 1. Inicjalizacja trybu ciemnego
 	// ====================================================
-	function initTheme() {
-		const themeToggle = document.getElementById('themeToggle');
-		const savedTheme = localStorage.getItem('theme');
-		const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-		let currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-
-		if (currentTheme === 'dark') {
-			document.documentElement.setAttribute('data-theme', 'dark');
-			if (themeToggle) themeToggle.checked = true;
-		} else {
-			document.documentElement.setAttribute('data-theme', 'light');
-			if (themeToggle) themeToggle.checked = false;
-		}
-
-		if (themeToggle) {
-			themeToggle.addEventListener('change', () => {
-				const newTheme = themeToggle.checked ? 'dark' : 'light';
-				document.documentElement.setAttribute('data-theme', newTheme);
-				localStorage.setItem('theme', newTheme);
-			});
-		}
-	}
-
-	initTheme();
 
 	// ====================================================
 	// 2. Zmienne globalne

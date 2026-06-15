@@ -11,7 +11,9 @@ describe('validateNrb', () => {
         const htmlPath = path.resolve(__dirname, '../validator.html');
         const jsPath = path.resolve(__dirname, '../static/validator.js');
 
+
         let html = fs.readFileSync(htmlPath, 'utf8');
+
         // Remove existing scripts and links to avoid network requests
         html = html.replace(/<script.*?>.*?<\/script>/ig, '');
         html = html.replace(/<link.*?>/ig, '');
