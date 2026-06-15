@@ -317,7 +317,7 @@ if (typeof module !== 'undefined' && module.exports) {
 			// Sformatuj datę urodzenia
 			const birthDateStr = `${String(dd).padStart(2, '0')}-${String(actualMonth).padStart(2, '0')}-${year}`;
 
-			peselInfo.innerHTML = `Płeć: ${gender} | Data urodzenia: ${birthDateStr} | Wiek: ${age} lat`;
+			peselInfo.textContent = `Płeć: ${gender} | Data urodzenia: ${birthDateStr} | Wiek: ${age} lat`;
 		}
 
 		/**
@@ -326,7 +326,7 @@ if (typeof module !== 'undefined' && module.exports) {
 		 */
 		function displayNrbInfo(nrb) {
 			if (!nrb || nrb.length < 10) {
-				nrbInfo.innerHTML = '';
+				nrbInfo.textContent = '';
 				return;
 			}
 
@@ -339,12 +339,12 @@ if (typeof module !== 'undefined' && module.exports) {
 
 			// Szukaj najpierw pełnego 8-cyfrowego kodu, potem 4-cyfrowego
 			if (bankCodes[bankCode8]) {
-				nrbInfo.innerHTML = `Bank: ${bankCodes[bankCode8]}`;
+				nrbInfo.textContent = `Bank: ${bankCodes[bankCode8]}`;
 			} else if (bankCodes[bankCode4]) {
-				nrbInfo.innerHTML = `Bank: ${bankCodes[bankCode4]}`;
+				nrbInfo.textContent = `Bank: ${bankCodes[bankCode4]}`;
 			} else {
 				// Jeśli nie znaleziono nazwy, wyświetl najdokładniejszy kod (8-cyfrowy)
-				nrbInfo.innerHTML = `Kod banku: ${bankCode8}`;
+				nrbInfo.textContent = `Kod banku: ${bankCode8}`;
 			}
 		}
 
@@ -429,7 +429,7 @@ if (typeof module !== 'undefined' && module.exports) {
 			} catch (error) {
 				console.error("Błąd podczas generowania PESEL:", error);
 				peselOutput.innerText = "Błąd: " + error.message;
-				peselInfo.innerHTML = '';
+				peselInfo.textContent = '';
 			}
 		}
 
@@ -608,7 +608,7 @@ if (typeof module !== 'undefined' && module.exports) {
 				} catch (error) {
 					console.error("Błąd podczas generowania PESEL:", error);
 					peselOutput.innerText = "Błąd: " + error.message;
-					peselInfo.innerHTML = '';
+					peselInfo.textContent = '';
 				}
 			});
 		}
