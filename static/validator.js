@@ -3,31 +3,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // 0. Inicjalizacja trybu ciemnego/jasnego
     // ====================================================
 
+    function getInitialTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            return savedTheme;
+        }
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return prefersDark ? 'dark' : 'light';
+    }
+
+    function applyTheme(theme, themeToggle) {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (themeToggle) {
+            themeToggle.checked = (theme === 'dark');
+        }
+    }
+
+    function setupThemeToggle(themeToggle) {
+        if (!themeToggle) return;
+
+        themeToggle.addEventListener('change', () => {
+            const newTheme = themeToggle.checked ? 'dark' : 'light';
+            applyTheme(newTheme, null); // Checkbox is already toggled
+            localStorage.setItem('theme', newTheme);
+        });
+    }
+
     function initTheme() {
         const themeToggle = document.getElementById('themeToggle');
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const currentTheme = getInitialTheme();
 
-        // Ustaw domyślny temat na podstawie preferencji przeglądarki
-        let currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-
-        // Zastosuj temat
-        if (currentTheme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            if (themeToggle) themeToggle.checked = true;
-        } else {
-            document.documentElement.setAttribute('data-theme', 'light');
-            if (themeToggle) themeToggle.checked = false;
-        }
-
-        // Event listener dla switch'a
-        if (themeToggle) {
-            themeToggle.addEventListener('change', () => {
-                const newTheme = themeToggle.checked ? 'dark' : 'light';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-            });
-        }
+        applyTheme(currentTheme, themeToggle);
+        setupThemeToggle(themeToggle);
     }
 
     // Inicjalizuj temat przed załadowaniem reszty
@@ -109,6 +116,75 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Walidacja PESEL
     // ====================================================
 
+    function isValidPeselChecksum(pesel) {
+        let checksumSum = 0;
+        for (let i = 0; i < 10; i++) {
+            checksumSum += parseInt(pesel[i]) * weightsPesel[i];
+        }
+        const lastDigitOfSum = checksumSum % 10;
+        const expectedChecksum = lastDigitOfSum === 0 ? 0 : 10 - lastDigitOfSum;
+        const actualChecksum = parseInt(pesel[10]);
+        return expectedChecksum === actualChecksum;
+    }
+
+    function decodePeselDate(pesel) {
+        const rr = parseInt(pesel.substring(0, 2));
+        const mm = parseInt(pesel.substring(2, 4));
+        const dd = parseInt(pesel.substring(4, 6));
+
+        let actualMonth = mm;
+        let year = rr;
+        if (mm > 80) {
+            actualMonth = mm - 80;
+            year = 1800 + rr;
+        } else if (mm > 60) {
+            actualMonth = mm - 60;
+            year = 2200 + rr;
+        } else if (mm > 40) {
+            actualMonth = mm - 40;
+            year = 2100 + rr;
+        } else if (mm > 20) {
+            actualMonth = mm - 20;
+            year = 2000 + rr;
+        } else {
+            year = 1900 + rr;
+        }
+        return { year, month: actualMonth, day: dd };
+    }
+
+    function calculateAge(year, month, day) {
+        const birthDate = new Date(year, month - 1, day);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
+    function setPeselSuccessResult(element, gender, birthDateStr, age) {
+        element.textContent = '';
+
+        const successLine = document.createTextNode('✅ Numer PESEL jest poprawny!');
+        const br1 = document.createElement('br');
+        const genderLine = document.createTextNode(`Płeć: ${gender}`);
+        const br2 = document.createElement('br');
+        const birthDateLine = document.createTextNode(`Data urodzenia: ${birthDateStr}`);
+        const br3 = document.createElement('br');
+        const ageLine = document.createTextNode(`Wiek: ${age} lat`);
+
+        element.appendChild(successLine);
+        element.appendChild(br1);
+        element.appendChild(genderLine);
+        element.appendChild(br2);
+        element.appendChild(birthDateLine);
+        element.appendChild(br3);
+        element.appendChild(ageLine);
+
+        element.className = 'validator-result valid';
+    }
+
     /**
      * Waliduje poprawność numeru PESEL
      * @param {string} pesel Numer PESEL do walidacji
@@ -127,44 +203,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
 
-        // Walidacja sumy kontrolnej
-        let checksumSum = 0;
-        for (let i = 0; i < 10; i++) {
-            checksumSum += parseInt(pesel[i]) * weightsPesel[i];
-        }
-        const lastDigitOfSum = checksumSum % 10;
-        const expectedChecksum = lastDigitOfSum === 0 ? 0 : 10 - lastDigitOfSum;
-        const actualChecksum = parseInt(pesel[10]);
-
-        if (expectedChecksum !== actualChecksum) {
+        if (!isValidPeselChecksum(pesel)) {
             showMessage('❌ Numer PESEL jest niepoprawny (błędna suma kontrolna)', peselResult, false);
             return false;
         }
 
-        // Dodatkowa walidacja daty urodzenia i odczyt danych
-        const rr = parseInt(pesel.substring(0, 2));
-        const mm = parseInt(pesel.substring(2, 4));
-        const dd = parseInt(pesel.substring(4, 6));
-        const gender = parseInt(pesel[9]) % 2 === 0 ? 'Kobieta' : 'Mężczyzna';
-
-        // Dekodowanie miesiąca na podstawie stulecia
-        let actualMonth = mm;
-        let year = rr;
-        if (mm > 80) {
-            actualMonth = mm - 80;
-            year = 1800 + rr;
-        } else if (mm > 60) {
-            actualMonth = mm - 60;
-            year = 2200 + rr;
-        } else if (mm > 40) {
-            actualMonth = mm - 40;
-            year = 2100 + rr;
-        } else if (mm > 20) {
-            actualMonth = mm - 20;
-            year = 2000 + rr;
-        } else {
-            year = 1900 + rr;
-        }
+        const { year, month: actualMonth, day: dd } = decodePeselDate(pesel);
 
         if (actualMonth < 1 || actualMonth > 12) {
             showMessage('❌ Numer PESEL jest niepoprawny (miesiąc)', peselResult, false);
@@ -176,24 +220,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
 
-        // Oblicz wiek
-        const birthDate = new Date(year, actualMonth - 1, dd);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-
-        // Sformatuj datę urodzenia
+        const gender = parseInt(pesel[9]) % 2 === 0 ? 'Kobieta' : 'Mężczyzna';
+        const age = calculateAge(year, actualMonth, dd);
         const birthDateStr = `${String(dd).padStart(2, '0')}-${String(actualMonth).padStart(2, '0')}-${year}`;
 
-        const message = `✅ Numer PESEL jest poprawny!<br>
-            Płeć: ${gender}<br>
-            Data urodzenia: ${birthDateStr}<br>
-            Wiek: ${age} lat`;
+        const message = `✅ Numer PESEL jest poprawny!\nPłeć: ${gender}\nData urodzenia: ${birthDateStr}\nWiek: ${age} lat`;
 
-        peselResult.innerHTML = message;
+        peselResult.textContent = message;
         peselResult.className = 'validator-result valid';
         return true;
     }
@@ -390,7 +423,11 @@ document.addEventListener('DOMContentLoaded', () => {
             bankName = bankCodes[bankCode4];
         }
 
-        return { isValid: true, bankName: bankName };
+        const message = `✅ Numer rachunku bankowego jest poprawny!\nBank: ${bankName}`;
+
+        nrbResult.textContent = message;
+        nrbResult.className = 'validator-result valid';
+        return true;
     }
 
     // ====================================================
@@ -463,4 +500,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') nrbValidateBtn.click();
     });
 
+    // Expose for testing
+    if (typeof window !== 'undefined') {
+        window.__test_validator__ = {
+            validatePesel,
+            isValidPeselChecksum,
+            decodePeselDate,
+            calculateAge
+        };
+    }
 });
