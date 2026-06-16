@@ -248,13 +248,13 @@ button:hover {
 }
 
 .modal-content {
-  background-color: #fff;
+  background-color: var(--bg-secondary);
   margin: 10% auto;
   padding: 30px;
   border-radius: 12px;
   width: 90%;
   max-width: 450px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px var(--shadow-color);
   animation: animatetop 0.4s;
   position: relative;
 }
@@ -274,14 +274,14 @@ button:hover {
   position: absolute;
   right: 20px;
   top: 15px;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;
 }
 
 .close-btn:hover {
-  color: #000;
+  color: var(--text-primary);
 }
 
 /* --- KOMUNIKAT O SKOPIOWANIU (TOAST) --- */
