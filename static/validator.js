@@ -1,4 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
+  function initTheme() {
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    let currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+    const applyTheme = (theme) => {
+      document.documentElement.setAttribute('data-theme', theme);
+      if (themeToggleBtn) {
+        themeToggleBtn.setAttribute('aria-label', theme);
+      }
+    };
+
+    applyTheme(currentTheme);
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+        localStorage.setItem('theme', currentTheme);
+        applyTheme(currentTheme);
+      });
+    }
+  }
+  initTheme();
+
   let bankCodes = {};
   fetch("static/bank_codes.json")
     .then((response) => response.json())

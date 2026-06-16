@@ -53,6 +53,32 @@ document.addEventListener('DOMContentLoaded', () => {
 	// ====================================================
 	// 1. Inicjalizacja trybu ciemnego
 	// ====================================================
+	function initTheme() {
+		const themeToggleBtn = document.getElementById('theme-toggle');
+		const savedTheme = localStorage.getItem('theme');
+		const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+		let currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+		const applyTheme = (theme) => {
+			document.documentElement.setAttribute('data-theme', theme);
+			if (themeToggleBtn) {
+				themeToggleBtn.setAttribute('aria-label', theme);
+			}
+		};
+
+		applyTheme(currentTheme);
+
+		if (themeToggleBtn) {
+			themeToggleBtn.addEventListener('click', (e) => {
+				e.preventDefault();
+				currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+				localStorage.setItem('theme', currentTheme);
+				applyTheme(currentTheme);
+			});
+		}
+	}
+	initTheme();
 
 	// ====================================================
 	// 2. Zmienne globalne
@@ -703,21 +729,3 @@ document.addEventListener('DOMContentLoaded', () => {
 		window.escapeXml = escapeXml;
 	}
 });
-
-function escapeXml(str) {
-  const map = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&apos;",
-  };
-  if (typeof str !== "string") {
-    return str; // If not a string, return as is or handle it
-  }
-  return str.replace(/[&<>"']/g, (char) => map[char]);
-}
-
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = { escapeXml };
-}
