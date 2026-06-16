@@ -1,206 +1,292 @@
-<!DOCTYPE html>
-<html lang="pl" class=" yjbakpgs idc0_350 xxdmjez">
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!doctype html>
+<html lang="pl" class="yjbakpgs idc0_350 xxdmjez">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Generatory Danych</title>
-    <link rel="stylesheet" href="static/styles.css">
-    <link rel="icon" type="image/x-icon" href="static/logo.ico">
-    <link rel="canonical" href="goliat931.github.io/generator-danych-testowych" />
-    <meta name="description" content="Ten projekt to prosta aplikacja webowa do generowania losowych danych testowych, takich jak numery PESEL i dowody osobiste." />
-</head>
-<body>
-
+    <link rel="stylesheet" href="static/styles.css" />
+    <link rel="icon" type="image/x-icon" href="static/logo.ico" />
+    <link
+      rel="canonical"
+      href="goliat931.github.io/generator-danych-testowych"
+    />
+    <meta
+      name="description"
+      content="Ten projekt to prosta aplikacja webowa do generowania losowych danych testowych, takich jak numery PESEL i dowody osobiste."
+    />
+  </head>
+  <body>
     <h1>Generatory Danych Testowych</h1>
 
     <div class="button-group">
-        <div class="theme-switch">
-            <label for="themeToggle" class="theme-label">
-                <button class="theme-toggle" id="theme-toggle" title="Toggles light & dark" aria-label="auto" aria-live="polite">
-                    <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
-                        <mask class="moon" id="moon-mask">
-                        <rect x="0" y="0" width="100%" height="100%" fill="white" />
-                        <circle cx="24" cy="10" r="6" fill="black" />
-                        </mask>
-                        <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)" fill="currentColor" />
-                        <g class="sun-beams" stroke="currentColor">
-                        <line x1="12" y1="1" x2="12" y2="3" />
-                        <line x1="12" y1="21" x2="12" y2="23" />
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                        <line x1="1" y1="12" x2="3" y2="12" />
-                        <line x1="21" y1="12" x2="23" y2="12" />
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                        </g>
-                    </svg>
-                </button>
-            </label>
-        </div>
-        <div class="nav-links">
-            <a href="validator.html" class="nav-button">Walidatory Danych</a>
-            <a href="dataset-generator.html" class="nav-button">Generator Zbiorów</a>
-        </div>
+      <div class="theme-switch">
+        <label for="themeToggle" class="theme-label">
+          <button
+            class="theme-toggle"
+            id="theme-toggle"
+            title="Toggles light & dark"
+            aria-label="auto"
+            aria-live="polite"
+          >
+            <svg
+              class="sun-and-moon"
+              aria-hidden="true"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <mask class="moon" id="moon-mask">
+                <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                <circle cx="24" cy="10" r="6" fill="black" />
+              </mask>
+              <circle
+                class="sun"
+                cx="12"
+                cy="12"
+                r="6"
+                mask="url(#moon-mask)"
+                fill="currentColor"
+              />
+              <g class="sun-beams" stroke="currentColor">
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </g>
+            </svg>
+          </button>
+        </label>
+      </div>
+      <div class="nav-links">
+        <a href="validator.html" class="nav-button">Walidatory Danych</a>
+        <a href="dataset-generator.html" class="nav-button"
+          >Generator Zbiorów</a
+        >
+      </div>
     </div>
 
     <div class="container">
-
-        <div class="generator-tile">
-            <h2>Generator PESEL</h2>
-            <div class="generated-output" id="peselOutput">03301150377</div>
-            <div class="output-info" id="peselInfo"></div>
-
-            <div class="button-group">
-                <button type="button" id="openPeselOptionsBtn">Ustawienia</button>
-                <button type="button" id="generateBtn">Generuj</button>
-            </div>
+      <div class="generator-tile">
+        <h2>Generator PESEL</h2>
+        <div
+          class="generated-output"
+          id="peselOutput"
+          tabindex="0"
+          role="button"
+          aria-label="Skopiuj PESEL do schowka / Copy PESEL to clipboard"
+          title="Skopiuj do schowka / Copy to clipboard"
+        >
+          03301150377
         </div>
+        <div class="output-info" id="peselInfo"></div>
 
-        <div class="generator-tile">
-            <h2>Generator Dowodu Osobistego</h2>
-            <div class="generated-output" id="idOutput">QFL626390</div>
-            <button type="button" id="generateIdBtn">Generuj</button>
+        <div class="button-group">
+          <button type="button" id="openPeselOptionsBtn">Ustawienia</button>
+          <button type="button" id="generateBtn">Generuj</button>
         </div>
+      </div>
 
-        
-
-        
-    <div class="generator-tile regon-tile">
-            <h2>Generator REGON</h2>
-            <div class="generated-output" id="regonOutput">717113746</div>
-            <div class="generator-options">
-                <div class="option-group">
-                    <label for="regonType">Typ REGON:</label>
-                    <select id="regonType">
-                        <option value="9">REGON 9-cyfrowy</option>
-                        <option value="14">REGON 14-cyfrowy</option>
-                    </select>
-                </div>
-            </div>
-            <button type="button"id="generateRegonBtn">Generuj</button>
+      <div class="generator-tile">
+        <h2>Generator Dowodu Osobistego</h2>
+        <div
+          class="generated-output"
+          id="idOutput"
+          tabindex="0"
+          role="button"
+          aria-label="Skopiuj dowód osobisty do schowka / Copy ID to clipboard"
+          title="Skopiuj do schowka / Copy to clipboard"
+        >
+          QFL626390
         </div>
+        <button type="button" id="generateIdBtn">Generuj</button>
+      </div>
 
-        <div class="generator-tile nrb-tile">
-            <h2>Generator Rachunku Bankowego (NRB)</h2>
-            <div class="generated-output" id="nrbOutput">87968100020552006260082412</div>
-            <div class="output-info" id="nrbInfo"></div>
-            <div class="generator-options">
-                <div class="option-group">
-                    <label for="bankCode">Kod banku:</label>
-                    <select id="bankCode">
-                        <option value="random">Losowy</option>
-                        <option value="1010">NBP</option>
-                        <option value="1020">PKO BP</option>
-                        <option value="1030">Bank Handlowy</option>
-                        <option value="1050">ING Bank Śląski</option>
-                        <option value="1060">Bank BPH</option>
-                        <option value="1090">Santander Bank Polska</option>
-                        <option value="1130">Bank Gospodarstwa Krajowego</option>
-                        <option value="1140">mBank</option>
-                        <option value="1160">Bank Millennium</option>
-                        <option value="1240">Pekao SA</option>
-                        <option value="1280">HSBC</option>
-                        <option value="1320">Bank Pocztowy</option>
-                        <option value="1540">BOŚ Bank</option>
-                        <option value="1580">Mercedes-Benz Bank Polska</option>
-                        <option value="1610">SGB - Bank</option>
-                        <option value="1680">Plus Bank</option>
-                        <option value="1840">Societe Generale</option>
-                        <option value="1870">Nest Bank</option>
-                        <option value="1930">Bank Polskiej Spółdzielczości</option>
-                        <option value="1940">Credit Agricole</option>
-                        <option value="2030">BNP Paribas</option>
-                        <option value="2120">Santander Consumer Bank</option>
-                        <option value="2160">Toyota Bank</option>
-                        <option value="2190">DNB Bank Polska</option>
-                        <option value="2480">VeloBank</option>
-                        <option value="2490">Alior Bank</option>
-                        <option value="2770">Volkswagen Bank</option>
-                        <option value="2790">Raiffeisen Digital Bank</option>
-                        <option value="2910">Aion Bank</option>
-                    </select>
-                </div>
-                <div class="option-group">
-                    <label for="nrbFormat">Format:</label>
-                    <select id="nrbFormat">
-                        <option value="compact">Bez spacji</option>
-                        <option value="spaced">Ze spacjami</option>
-                    </select>
-                </div>
-                <div class="option-group">
-                    <label for="ibanPrefix">Prefiks IBAN:</label>
-                    <select id="ibanPrefix">
-                        <option value="no-prefix">Bez PL</option>
-                        <option value="with-prefix">Z PL</option>
-                    </select>
-                </div>
-            </div>
-            <button type="button"id="generateNrbBtn">Generuj</button>
+      <div class="generator-tile regon-tile">
+        <h2>Generator REGON</h2>
+        <div
+          class="generated-output"
+          id="regonOutput"
+          tabindex="0"
+          role="button"
+          aria-label="Skopiuj REGON do schowka / Copy REGON to clipboard"
+          title="Skopiuj do schowka / Copy to clipboard"
+        >
+          717113746
         </div>
+        <div class="generator-options">
+          <div class="option-group">
+            <label for="regonType">Typ REGON:</label>
+            <select id="regonType">
+              <option value="9">REGON 9-cyfrowy</option>
+              <option value="14">REGON 14-cyfrowy</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" id="generateRegonBtn">Generuj</button>
+      </div>
 
-        <div class="generator-tile">
-            <h2>Generator Imion i Nazwisk</h2>
-            <div class="name-fields">
-                <div class="name-field">
-                    <p class="field-label">Imię:</p>
-                    <div class="generated-output" id="nameOutput">Jan</div>
-                </div>
-                <div class="name-field">
-                    <p class="field-label">Nazwisko:</p>
-                    <div class="generated-output" id="surnameOutput">Kowalski</div>
-                </div>
-            </div>
-            <div class="generator-options">
-                <div class="option-group">
-                    <label for="genderSelect">Płeć:</label>
-                    <select id="genderSelect">
-                        <option value="random">Losowa</option>
-                        <option value="male">Mężczyzna</option>
-                        <option value="female">Kobieta</option>
-                    </select>
-                </div>
-            </div>
-            <button type="button" id="generateNameBtn">Generuj</button>
+      <div class="generator-tile nrb-tile">
+        <h2>Generator Rachunku Bankowego (NRB)</h2>
+        <div
+          class="generated-output"
+          id="nrbOutput"
+          tabindex="0"
+          role="button"
+          aria-label="Skopiuj rachunek bankowy do schowka / Copy bank account to clipboard"
+          title="Skopiuj do schowka / Copy to clipboard"
+        >
+          87968100020552006260082412
         </div>
+        <div class="output-info" id="nrbInfo"></div>
+        <div class="generator-options">
+          <div class="option-group">
+            <label for="bankCode">Kod banku:</label>
+            <select id="bankCode">
+              <option value="random">Losowy</option>
+              <option value="1010">NBP</option>
+              <option value="1020">PKO BP</option>
+              <option value="1030">Bank Handlowy</option>
+              <option value="1050">ING Bank Śląski</option>
+              <option value="1060">Bank BPH</option>
+              <option value="1090">Santander Bank Polska</option>
+              <option value="1130">Bank Gospodarstwa Krajowego</option>
+              <option value="1140">mBank</option>
+              <option value="1160">Bank Millennium</option>
+              <option value="1240">Pekao SA</option>
+              <option value="1280">HSBC</option>
+              <option value="1320">Bank Pocztowy</option>
+              <option value="1540">BOŚ Bank</option>
+              <option value="1580">Mercedes-Benz Bank Polska</option>
+              <option value="1610">SGB - Bank</option>
+              <option value="1680">Plus Bank</option>
+              <option value="1840">Societe Generale</option>
+              <option value="1870">Nest Bank</option>
+              <option value="1930">Bank Polskiej Spółdzielczości</option>
+              <option value="1940">Credit Agricole</option>
+              <option value="2030">BNP Paribas</option>
+              <option value="2120">Santander Consumer Bank</option>
+              <option value="2160">Toyota Bank</option>
+              <option value="2190">DNB Bank Polska</option>
+              <option value="2480">VeloBank</option>
+              <option value="2490">Alior Bank</option>
+              <option value="2770">Volkswagen Bank</option>
+              <option value="2790">Raiffeisen Digital Bank</option>
+              <option value="2910">Aion Bank</option>
+            </select>
+          </div>
+          <div class="option-group">
+            <label for="nrbFormat">Format:</label>
+            <select id="nrbFormat">
+              <option value="compact">Bez spacji</option>
+              <option value="spaced">Ze spacjami</option>
+            </select>
+          </div>
+          <div class="option-group">
+            <label for="ibanPrefix">Prefiks IBAN:</label>
+            <select id="ibanPrefix">
+              <option value="no-prefix">Bez PL</option>
+              <option value="with-prefix">Z PL</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" id="generateNrbBtn">Generuj</button>
+      </div>
+
+      <div class="generator-tile">
+        <h2>Generator Imion i Nazwisk</h2>
+        <div class="name-fields">
+          <div class="name-field">
+            <p class="field-label">Imię:</p>
+            <div
+              class="generated-output"
+              id="nameOutput"
+              tabindex="0"
+              role="button"
+              aria-label="Skopiuj imię do schowka / Copy name to clipboard"
+              title="Skopiuj do schowka / Copy to clipboard"
+            >
+              Jan
+            </div>
+          </div>
+          <div class="name-field">
+            <p class="field-label">Nazwisko:</p>
+            <div
+              class="generated-output"
+              id="surnameOutput"
+              tabindex="0"
+              role="button"
+              aria-label="Skopiuj nazwisko do schowka / Copy surname to clipboard"
+              title="Skopiuj do schowka / Copy to clipboard"
+            >
+              Kowalski
+            </div>
+          </div>
+        </div>
+        <div class="generator-options">
+          <div class="option-group">
+            <label for="genderSelect">Płeć:</label>
+            <select id="genderSelect">
+              <option value="random">Losowa</option>
+              <option value="male">Mężczyzna</option>
+              <option value="female">Kobieta</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" id="generateNameBtn">Generuj</button>
+      </div>
     </div>
 
     <div id="peselOptionsModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">×</span>
-            <h2>Ustawienia PESEL</h2>
-            <div class="generator-options">
-                <div class="option-group">
-                    <label for="gender">Płeć:</label>
-                    <select id="gender">
-                        <option value="random">Losowa</option>
-                        <option value="male">Mężczyzna</option>
-                        <option value="female">Kobieta</option>
-                    </select>
-                </div>
-                <div class="option-group">
-                    <label for="birthDate">Data urodzenia:</label>
-                    <input type="date" id="birthDate">
-                </div>
-                <div class="option-group">
-                    <label for="age">Wiek (losowy miesiąc i dzień):</label>
-                    <input type="number" id="age" min="0" max="120">
-                </div>
-            </div>
+      <div class="modal-content">
+        <span class="close-btn">×</span>
+        <h2>Ustawienia PESEL</h2>
+        <div class="generator-options">
+          <div class="option-group">
+            <label for="gender">Płeć:</label>
+            <select id="gender">
+              <option value="random">Losowa</option>
+              <option value="male">Mężczyzna</option>
+              <option value="female">Kobieta</option>
+            </select>
+          </div>
+          <div class="option-group">
+            <label for="birthDate">Data urodzenia:</label>
+            <input type="date" id="birthDate" />
+          </div>
+          <div class="option-group">
+            <label for="age">Wiek (losowy miesiąc i dzień):</label>
+            <input type="number" id="age" min="0" max="120" />
+          </div>
         </div>
+      </div>
     </div>
 
     <div id="copy-message" class="copy-message"></div>
 
     <footer>
-        Stworzony przez: <strong>Dawid Karczewski</strong>
-        <a href="https://github.com/goliat931/generator-danych-testowych" target="_blank" rel="noopener noreferrer">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-            Projekt na GitHub
-        </a>
+      Stworzony przez: <strong>Dawid Karczewski</strong>
+      <a
+        href="https://github.com/goliat931/generator-danych-testowych"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+          />
+        </svg>
+        Projekt na GitHub
+      </a>
     </footer>
 
     <script src="static/script.js"></script>
-
-</body></html>
+  </body>
+</html>
