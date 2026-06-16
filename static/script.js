@@ -1,22 +1,3 @@
-
-const weightsPesel = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
-const encodedMonths = {
-    '1800-1899': 80,
-    '1900-1999': 0,
-    '2000-2099': 20,
-    '2100-2199': 40,
-    '2200-2299': 60
-};
-// ====================================================
-// Logika generatora REGON (wyciągnięta dla testów) / REGON generator logic (extracted for tests)
-// ====================================================
-
-// Stałe do obliczeń dowodu osobistego / Constants for ID card calculations
-const letterToNumber = Object.fromEntries(
-  Array.from({ length: 26 }, (_, i) => [String.fromCharCode(65 + i), 10 + i]),
-);
-const weightsId = [7, 3, 1, 9, 7, 3, 1, 7, 3];
-
 const weightsPesel = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
 const encodedMonths = {
   "1800-1899": 80,
@@ -26,25 +7,19 @@ const encodedMonths = {
   "2200-2299": 60,
 };
 
+const letterToNumber = Object.fromEntries(
+  Array.from({ length: 26 }, (_, i) => [String.fromCharCode(65 + i), 10 + i])
+);
+const weightsId = [7, 3, 1, 9, 7, 3, 1, 7, 3];
+
 const weightsRegon9 = [8, 9, 2, 3, 4, 5, 6, 7];
 const weightsRegon14 = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8];
 
-// ====================================================
-// 4. Logika generatora dowodu osobistego / ID card generator logic
-// ====================================================
-
-/**
- * Oblicza cyfrę kontrolną dla dowodu osobistego. / Calculates the control digit for the ID card.
- * @param {string} fullNumber 8-znakowy numer dowodu (3 litery, 5 cyfr). / 8-character ID number (3 letters, 5 digits).
- * @returns {number} Obliczona cyfra kontrolna. / Calculated control digit.
- */
 function calculateIdChecksum(fullNumber) {
   const numericArray = fullNumber
     .split("")
     .map((char) =>
-      typeof char === "string" && /[A-Z]/.test(char)
-        ? letterToNumber[char]
-        : parseInt(char, 10),
+      /[A-Z]/.test(char) ? letterToNumber[char] : parseInt(char, 10)
     );
 
   let sum = 0;
@@ -54,10 +29,6 @@ function calculateIdChecksum(fullNumber) {
   return sum % 10;
 }
 
-/**
- * Generuje poprawny numer dowodu osobistego. / Generates a valid ID card number.
- * @returns {string} 9-znakowy numer dowodu. / 9-character ID number.
- */
 function generateIdNumber() {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const digits = "0123456789";
@@ -81,9 +52,7 @@ function generateIdNumber() {
   ];
 
   const numericArray = idArrayChars.map((char) =>
-    typeof char === "string" && /[A-Z]/.test(char)
-      ? letterToNumber[char]
-      : parseInt(char, 10),
+    /[A-Z]/.test(char) ? letterToNumber[char] : parseInt(char, 10)
   );
 
   let sum = 0;
@@ -92,31 +61,9 @@ function generateIdNumber() {
   }
 
   const controlDigit = sum % 10;
-
-  const finalId = letterPart + controlDigit + digitsPart.slice(1);
-
-  return finalId;
+  return letterPart + controlDigit + digitsPart.slice(1);
 }
 
-// ====================================================
-// 5. Logika generatora REGON / REGON generator logic
-// ====================================================
-
-/**
- * Oblicza cyfrę kontrolną dla 9-cyfrowego numeru REGON. / Calculates the control digit for a 9-digit REGON number.
- * @param {string} regon8 Pierwsze 8 cyfr REGON-u. / First 8 digits of REGON.
- * @returns {number} Obliczona cyfra kontrolna. / Calculated control digit.
- */
-// ====================================================
-// 3. Logika generatora PESEL / PESEL generator logic
-// ====================================================
-
-/**
- * Koduje miesiąc urodzenia zgodnie z stuleciem dla PESEL. / Encodes the birth month according to the century for PESEL.
- * @param {number} year Rok urodzenia. / Year of birth.
- * @param {number} month Miesiąc urodzenia (1-12). / Month of birth (1-12).
- * @returns {string} Dwucyfrowy, zakodowany miesiąc. / Two-digit encoded month.
- */
 function getEncodedMonth(year, month) {
   if (year >= 1800 && year <= 1899)
     return String(month + encodedMonths["1800-1899"]).padStart(2, "0");
@@ -131,11 +78,6 @@ function getEncodedMonth(year, month) {
   throw new Error("Unsupported year for PESEL generation.");
 }
 
-/**
- * Oblicza cyfrę kontrolną dla numeru PESEL. / Calculates the control digit for a PESEL number.
- * @param {string} peselWithoutK 10-cyfrowy numer PESEL bez cyfry kontrolnej. / 10-digit PESEL number without control digit.
- * @returns {number} Obliczona cyfra kontrolna. / Calculated control digit.
- */
 function calculatePeselChecksum(peselWithoutK) {
   let checksumSum = 0;
   for (let i = 0; i < 10; i++) {
@@ -145,14 +87,6 @@ function calculatePeselChecksum(peselWithoutK) {
   return lastDigitOfSum === 0 ? 0 : 10 - lastDigitOfSum;
 }
 
-/**
- * Generuje numer PESEL / Generates a PESEL number
- * @param {number} year Rok urodzenia / Year of birth
- * @param {number} month Miesiąc urodzenia / Month of birth
- * @param {number} day Dzień urodzenia / Day of birth
- * @param {string} gender Płeć ('male' lub 'female') / Gender ('male' or 'female')
- * @returns {string} Poprawny PESEL / Valid PESEL
- */
 function generatePesel(year, month, day, gender) {
   const rr = String(year).slice(-2);
   const mm = getEncodedMonth(year, month);
@@ -163,14 +97,10 @@ function generatePesel(year, month, day, gender) {
 
   if (gender === "female") {
     const lastDigitOfPppp = [0, 2, 4, 6, 8][Math.floor(Math.random() * 5)];
-    pppp =
-      String(Math.floor(Math.random() * 1000)).padStart(3, "0") +
-      lastDigitOfPppp;
+    pppp = String(Math.floor(Math.random() * 1000)).padStart(3, "0") + lastDigitOfPppp;
   } else if (gender === "male") {
     const lastDigitOfPppp = [1, 3, 5, 7, 9][Math.floor(Math.random() * 5)];
-    pppp =
-      String(Math.floor(Math.random() * 1000)).padStart(3, "0") +
-      lastDigitOfPppp;
+    pppp = String(Math.floor(Math.random() * 1000)).padStart(3, "0") + lastDigitOfPppp;
   } else {
     throw new Error("Invalid gender. Use 'male' or 'female'.");
   }
@@ -190,11 +120,6 @@ function calculateRegon9Checksum(regon8) {
   return checksum === 10 ? 0 : checksum;
 }
 
-/**
- * Oblicza cyfrę kontrolną dla 14-cyfrowego numeru REGON. / Calculates the control digit for a 14-digit REGON number.
- * @param {string} regon13 Pierwsze 13 cyfr REGON-u. / First 13 digits of REGON.
- * @returns {number} Obliczona cyfra kontrolna. / Calculated control digit.
- */
 function calculateRegon14Checksum(regon13) {
   let sum = 0;
   for (let i = 0; i < 13; i++) {
@@ -204,10 +129,6 @@ function calculateRegon14Checksum(regon13) {
   return checksum === 10 ? 0 : checksum;
 }
 
-/**
- * Generuje poprawny 9-cyfrowy numer REGON. / Generates a valid 9-digit REGON number.
- * @returns {string} 9-cyfrowy numer REGON. / 9-digit REGON number.
- */
 function generateRegon9() {
   const digits = "0123456789";
   let regon8 = "";
@@ -218,10 +139,6 @@ function generateRegon9() {
   return `${regon8}${controlDigit}`;
 }
 
-/**
- * Generuje poprawny 14-cyfrowy numer REGON. / Generates a valid 14-digit REGON number.
- * @returns {string} 14-cyfrowy numer REGON. / 14-digit REGON number.
- */
 function generateRegon14() {
   const regon9 = generateRegon9();
   const digits = "0123456789";
@@ -234,7 +151,6 @@ function generateRegon14() {
   return `${regon13}${controlDigit}`;
 }
 
-// Exports for testing
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     generateRegon9,
@@ -252,727 +168,507 @@ if (typeof module !== "undefined" && module.exports) {
     calculatePeselChecksum,
   };
 }
-	document.addEventListener('DOMContentLoaded', () => {
-		// ====================================================
-		// 0. Inicjalizacja trybu ciemnego/jasnego
-		// ====================================================
 
-		function initTheme() {
-			const themeToggle = document.getElementById('themeToggle');
-			const savedTheme = localStorage.getItem('theme');
-			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+document.addEventListener('DOMContentLoaded', () => {
+    let bankCodes = {};
+    let validNrbCodes = [];
 
-			// Ustaw domyślny temat na podstawie preferencji przeglądarki
-			let currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    function initTheme() {
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-			// Zastosuj temat
-			if (currentTheme === 'dark') {
-				document.documentElement.setAttribute('data-theme', 'dark');
-				if (themeToggle) themeToggle.checked = true;
-			} else {
-				document.documentElement.setAttribute('data-theme', 'light');
-				if (themeToggle) themeToggle.checked = false;
-			}
+        let currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
 
-			// Event listener dla switch'a
-			if (themeToggle) {
-				themeToggle.addEventListener('change', () => {
-					const newTheme = themeToggle.checked ? 'dark' : 'light';
-					document.documentElement.setAttribute('data-theme', newTheme);
-					localStorage.setItem('theme', newTheme);
-				});
-			}
-		}
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            if (themeToggle) themeToggle.checked = true;
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            if (themeToggle) themeToggle.checked = false;
+        }
 
-		// Inicjalizuj temat przed załadowaniem reszty
-		initTheme();
+        if (themeToggle) {
+            themeToggle.addEventListener('change', () => {
+                const newTheme = themeToggle.checked ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+        }
+    }
 
-		// ====================================================
-		// 0.5 Załadowanie kodów bankowych z JSON
-		// ====================================================
-		
-		// Załaduj bank_codes.json
-		fetch('static/bank_codes.json')
-			.then(response => response.json())
-			.then(data => {
-				bankCodes = data;
-			})
-			.catch(error => console.error('Błąd załadowania bank_codes.json:', error));
+    initTheme();
 
-		// ====================================================
-		// 1. Zmienne globalne i selektory DOM
-		// ===================================================
+    fetch('static/bank_codes.json')
+        .then(response => response.json())
+        .then(data => {
+            bankCodes = data;
+        })
+        .catch(error => console.error('Błąd załadowania bank_codes.json:', error));
 
-		// Nowe selektory dla modalu PESEL
-		const peselOutput = document.getElementById('peselOutput');
-		const peselInfo = document.getElementById('peselInfo');
-		const openPeselOptionsBtn = document.getElementById('openPeselOptionsBtn');
-		const generateBtn = document.getElementById('generateBtn');
-		const peselOptionsModal = document.getElementById('peselOptionsModal');
-		const closeBtn = peselOptionsModal.querySelector('.close-btn');
+    const peselOutput = document.getElementById('peselOutput');
+    const peselInfo = document.getElementById('peselInfo');
+    const openPeselOptionsBtn = document.getElementById('openPeselOptionsBtn');
+    const generateBtn = document.getElementById('generateBtn');
+    const peselOptionsModal = document.getElementById('peselOptionsModal');
+    const closeBtn = peselOptionsModal ? peselOptionsModal.querySelector('.close-btn') : null;
 
-		// Selektory dla pól wewnątrz modalu PESEL
-		const genderSelect = document.getElementById('gender');
-		const birthDateInput = document.getElementById('birthDate');
-		const ageInput = document.getElementById('age');
+    const genderSelect = document.getElementById('gender');
+    const birthDateInput = document.getElementById('birthDate');
+    const ageInput = document.getElementById('age');
 
-		// Elementy dla generatora dowodu osobistego
-		const generateIdBtn = document.getElementById('generateIdBtn');
-		const idOutput = document.getElementById('idOutput');
+    const generateIdBtn = document.getElementById('generateIdBtn');
+    const idOutput = document.getElementById('idOutput');
 
-		// Elementy dla generatora REGON
-		const generateRegonBtn = document.getElementById('generateRegonBtn');
-		const regonOutput = document.getElementById('regonOutput');
-		const regonTypeSelect = document.getElementById('regonType');
+    const generateRegonBtn = document.getElementById('generateRegonBtn');
+    const regonOutput = document.getElementById('regonOutput');
+    const regonTypeSelect = document.getElementById('regonType');
 
-		// Elementy dla generatora rachunku bankowego
-		const generateNrbBtn = document.getElementById('generateNrbBtn');
-		const nrbInfo = document.getElementById('nrbInfo');
-		const nrbOutput = document.getElementById('nrbOutput');
-		const bankCodeSelect = document.getElementById('bankCode');
-		const nrbFormatSelect = document.getElementById('nrbFormat');
-		const ibanPrefixSelect = document.getElementById('ibanPrefix');
+    const generateNrbBtn = document.getElementById('generateNrbBtn');
+    const nrbInfo = document.getElementById('nrbInfo');
+    const nrbOutput = document.getElementById('nrbOutput');
+    const bankCodeSelect = document.getElementById('bankCode');
+    const nrbFormatSelect = document.getElementById('nrbFormat');
+    const ibanPrefixSelect = document.getElementById('ibanPrefix');
 
-		// Komunikat o skopiowaniu
-		const copyMessage = document.getElementById('copy-message');
+    const copyMessage = document.getElementById('copy-message');
 
+    function showCopyMessage(text) {
+        if (!copyMessage) return;
+        copyMessage.innerText = text;
+        copyMessage.classList.add('show');
+        setTimeout(() => {
+            copyMessage.classList.remove('show');
+        }, 3000);
+    }
 
-		// Stałe do obliczeń REGON
-		
-		// Lista kodów banków (załadowana z JSON)
-		let bankCodes = {};
+    function displayPeselInfo(pesel) {
+        if (!pesel || pesel.length !== 11 || !peselInfo) return;
 
-		// ====================================================
-		// 2. Funkcje pomocnicze
-		// ====================================================
+        const rr = parseInt(pesel.substring(0, 2));
+        const mm = parseInt(pesel.substring(2, 4));
+        const dd = parseInt(pesel.substring(4, 6));
+        const gender = parseInt(pesel[9]) % 2 === 0 ? 'Kobieta' : 'Mężczyzna';
 
-		/**
-		 * Wyświetla komunikat w dymku na określony czas.
-		 * @param {string} text Tekst do wyświetlenia w dymku.
-		 */
-		function showCopyMessage(text) {
-			copyMessage.innerText = text;
-			copyMessage.classList.add('show');
-			setTimeout(() => {
-				copyMessage.classList.remove('show');
-			}, 3000);
-		}
+        let actualMonth = mm;
+        let year = rr;
+        if (mm > 80) {
+            actualMonth = mm - 80;
+            year = 1800 + rr;
+        } else if (mm > 60) {
+            actualMonth = mm - 60;
+            year = 2200 + rr;
+        } else if (mm > 40) {
+            actualMonth = mm - 40;
+            year = 2100 + rr;
+        } else if (mm > 20) {
+            actualMonth = mm - 20;
+            year = 2000 + rr;
+        } else {
+            year = 1900 + rr;
+        }
 
-		/**
-		 * Oblicza i wyświetla informacje z PESEL
-		 * @param {string} pesel Numer PESEL
-		 */
-		function displayPeselInfo(pesel) {
-			if (!pesel || pesel.length !== 11) return;
+        const birthDate = new Date(year, actualMonth - 1, dd);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
 
-			const rr = parseInt(pesel.substring(0, 2));
-			const mm = parseInt(pesel.substring(2, 4));
-			const dd = parseInt(pesel.substring(4, 6));
-			const gender = parseInt(pesel[9]) % 2 === 0 ? 'Kobieta' : 'Mężczyzna';
+        const birthDateStr = `${String(dd).padStart(2, '0')}-${String(actualMonth).padStart(2, '0')}-${year}`;
 
-			// Dekodowanie miesiąca na podstawie stulecia
-			let actualMonth = mm;
-			let year = rr;
-			if (mm > 80) {
-				actualMonth = mm - 80;
-				year = 1800 + rr;
-			} else if (mm > 60) {
-				actualMonth = mm - 60;
-				year = 2200 + rr;
-			} else if (mm > 40) {
-				actualMonth = mm - 40;
-				year = 2100 + rr;
-			} else if (mm > 20) {
-				actualMonth = mm - 20;
-				year = 2000 + rr;
-			} else {
-				year = 1900 + rr;
-			}
+        peselInfo.textContent = `Płeć: ${gender} | Data urodzenia: ${birthDateStr} | Wiek: ${age} lat`;
+    }
 
-			// Oblicz wiek
-			const birthDate = new Date(year, actualMonth - 1, dd);
-			const today = new Date();
-			let age = today.getFullYear() - birthDate.getFullYear();
-			const monthDiff = today.getMonth() - birthDate.getMonth();
-			if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-				age--;
-			}
+    function displayNrbInfo(nrb) {
+        if (!nrbInfo) return;
+        if (!nrb || nrb.length < 10) {
+            nrbInfo.textContent = '';
+            return;
+        }
 
-			// Sformatuj datę urodzenia
-			const birthDateStr = `${String(dd).padStart(2, '0')}-${String(actualMonth).padStart(2, '0')}-${year}`;
+        let cleanNrb = nrb.replace(/\s/g, '').replace('PL', '');
+        const bankCode8 = cleanNrb.substring(2, 10);
+        const bankCode4 = bankCode8.substring(0, 4);
 
-			peselInfo.textContent = `Płeć: ${gender} | Data urodzenia: ${birthDateStr} | Wiek: ${age} lat`;
-		}
+        if (bankCodes[bankCode8]) {
+            nrbInfo.textContent = `Bank: ${bankCodes[bankCode8]}`;
+        } else if (bankCodes[bankCode4]) {
+            nrbInfo.textContent = `Bank: ${bankCodes[bankCode4]}`;
+        } else {
+            nrbInfo.textContent = `Kod banku: ${bankCode8}`;
+        }
+    }
 
-		/**
-		 * Oblicza i wyświetla informacje z NRB
-		 * @param {string} nrb Numer rachunku
-		 */
-		function displayNrbInfo(nrb) {
-			if (!nrb || nrb.length < 10) {
-				nrbInfo.textContent = '';
-				return;
-			}
+    function generateRandomPesel() {
+        const year = Math.floor(Math.random() * (2025 - 1900) + 1900);
+        const month = Math.floor(Math.random() * 12) + 1;
+        const day = Math.floor(Math.random() * 28) + 1;
+        const gender = Math.random() < 0.5 ? 'male' : 'female';
+        
+        try {
+            const newPesel = generatePesel(year, month, day, gender);
+            if (peselOutput) peselOutput.innerText = newPesel;
+            displayPeselInfo(newPesel);
+        } catch (error) {
+            console.error("Błąd podczas generowania PESEL:", error);
+            if (peselOutput) peselOutput.innerText = "Błąd: " + error.message;
+            if (peselInfo) peselInfo.textContent = '';
+        }
+    }
 
-			// Usuń PL i spacje
-			let cleanNrb = nrb.replace(/\s/g, '').replace('PL', '');
-			
-			// Odczyt kodu banku: próbuj 8-cyfrowy (pozycje 3-10), potem 4-cyfrowy
-			const bankCode8 = cleanNrb.substring(2, 10);
-			const bankCode4 = bankCode8.substring(0, 4);
-
-			// Szukaj najpierw pełnego 8-cyfrowego kodu, potem 4-cyfrowego
-			if (bankCodes[bankCode8]) {
-				nrbInfo.textContent = `Bank: ${bankCodes[bankCode8]}`;
-			} else if (bankCodes[bankCode4]) {
-				nrbInfo.textContent = `Bank: ${bankCodes[bankCode4]}`;
-			} else {
-				// Jeśli nie znaleziono nazwy, wyświetl najdokładniejszy kod (8-cyfrowy)
-				nrbInfo.textContent = `Kod banku: ${bankCode8}`;
-			}
-		}
-
-		/**
-		 * Generuje losowy PESEL na starcie strony.
-		 */
-		function generateRandomPesel() {
-			const year = Math.floor(Math.random() * (2025 - 1900) + 1900);
-			const month = Math.floor(Math.random() * 12) + 1;
-			const day = Math.floor(Math.random() * 28) + 1;
-			const gender = Math.random() < 0.5 ? 'male' : 'female';
-			
-			try {
-				const newPesel = generatePesel(year, month, day, gender);
-				peselOutput.innerText = newPesel;
-				displayPeselInfo(newPesel);
-			} catch (error) {
-				console.error("Błąd podczas generowania PESEL:", error);
-				peselOutput.innerText = "Błąd: " + error.message;
-				peselInfo.textContent = '';
-			}
-		}
-
-		// ====================================================
-		// 6. Logika generatora rachunku bankowego (NRB/IBAN)
-		// ====================================================
-
-		// Zastąpienie twardo zakodowanej zmiennej
-		// Pobieranie danych banków z pliku plewibnra_utf8.txt
-		fetch('static/plewibnra_utf8.txt')
-			.then(response => {
-				// Sprawdź, czy odpowiedź jest poprawna
-				if (!response.ok) {
-					throw new Error('Nie udało się pobrać pliku z danymi banków.');
-				}
-				return response.text(); // Zwróć zawartość pliku jako tekst
-			})
-			.then(plewibnraContent => {
-				// Tutaj umieść kod, który używa danych plewibnraContent
-				// do tworzenia opcji w Twoim selektorze <select id="bankCode">
-				// Poniżej Twój kod, który przetwarza ten tekst i tworzy z niego opcje <option>
-		function parsePlewiNrbCodes(fileContent) {
-			const lines = fileContent.split('\n');
-			const codes = new Set();
-			const regex = /\t(\d{8})\t/; 
-			for (const line of lines) {
-				const match = line.match(regex);
-				if (match) {
-					codes.add(match[1]);
-				}
-			}
-			return Array.from(codes);
-		}
-		function calculateNrbChecksum(bban) {
-			const countryCode = '2521'; 
-			const numberToCheck = bban + countryCode + '00';
-			
-			let remainder = '';
-			let block;
-			for (let i = 0; i < numberToCheck.length; i += 7) {
-				block = remainder + numberToCheck.substring(i, i + 7);
-				remainder = (parseInt(block, 10) % 97).toString();
-			}
-			const controlNumber = 98 - parseInt(remainder, 10);
-			return String(controlNumber).padStart(2, '0');
-		}
-
-		function generateNrb(selectedBankCode, format, prefix) {
-			let bankAndBranchCode;
-			const digits = '0123456789';
-
-			if (selectedBankCode === 'random') {
-				if (validNrbCodes.length === 0) {
-					return "Brak poprawnych kodów do wygenerowania. Sprawdź plik.";
-				}
-				bankAndBranchCode = validNrbCodes[Math.floor(Math.random() * validNrbCodes.length)];
-			} else {
-				const filteredCodes = validNrbCodes.filter(code => code.startsWith(selectedBankCode));
-				if (filteredCodes.length === 0) {
-					return "Brak poprawnych kodów dla wybranego banku.";
-				}
-				bankAndBranchCode = filteredCodes[Math.floor(Math.random() * filteredCodes.length)];
-			}
-
-			let customerNumber = '';
-			for (let i = 0; i < 16; i++) {
-				customerNumber += digits.charAt(Math.floor(Math.random() * digits.length));
-			}
-			
-			const fullNumberWithoutChecksum = bankAndBranchCode + customerNumber;
-			const checksum = calculateNrbChecksum(fullNumberWithoutChecksum);
-			let finalNrb = `${checksum}${fullNumberWithoutChecksum}`;
-
-			if (format === 'spaced') {
-				finalNrb = `${finalNrb.substring(0, 2)} ${finalNrb.substring(2, 6)} ${finalNrb.substring(6, 10)} ${finalNrb.substring(10, 14)} ${finalNrb.substring(14, 18)} ${finalNrb.substring(18, 22)} ${finalNrb.substring(22, 26)}`;
-			}
-
-			if (prefix === 'with-prefix') {
-				if (format === 'spaced') {
-					finalNrb = `PL ${finalNrb}`;
-				} else {
-					finalNrb = `PL${finalNrb}`;
-				}
-			}
-			return finalNrb;
-		}
-
-
-
-
-		// ====================================================
-		// 7. Obsługa zdarzeń (event listeners)
-		// ====================================================
-
-		// Generuj dane na starcie strony
-		generateRandomPesel();
-		idOutput.innerText = generateIdNumber();
-		regonOutput.innerText = generateRegon9();
-		nrbOutput.innerText = "Trwa ładowanie...";
-		displayNrbInfo("");
-
-		// Obsługa kliknięcia przycisku "Ustawienia" (PESEL)
-		if (openPeselOptionsBtn) {
-			openPeselOptionsBtn.addEventListener('click', () => {
-				peselOptionsModal.style.display = 'block';
-			});
-		}
-
-		// Obsługa zamykania modalu
-		if (closeBtn) {
-			closeBtn.addEventListener('click', () => {
-				peselOptionsModal.style.display = 'none';
-			});
-		}
-
-		window.addEventListener('click', (event) => {
-			if (event.target == peselOptionsModal) {
-				peselOptionsModal.style.display = 'none';
-			}
-		});
-
-		// KLUCZOWA ZMIANA: Obsługa przycisku "Generuj PESEL" na kafelku
-		// Teraz generuje PESEL z domyślnymi lub ostatnio użytymi ustawieniami
-		if (generateBtn) {
-			generateBtn.addEventListener('click', () => {
-				let year, month, day, gender;
-
-				const selectedGender = genderSelect.value;
-				const birthDateValue = birthDateInput.value;
-				const ageValue = ageInput.value;
-
-				if (selectedGender === 'random') {
-					gender = Math.random() < 0.5 ? 'male' : 'female';
-				} else {
-					gender = selectedGender;
-				}
-
-				if (birthDateValue) {
-					const date = new Date(birthDateValue);
-					year = date.getFullYear();
-					month = date.getMonth() + 1;
-					day = date.getDate();
-				} else if (ageValue) {
-					const currentYear = new Date().getFullYear();
-					year = currentYear - parseInt(ageValue);
-					month = Math.floor(Math.random() * 12) + 1;
-					day = Math.floor(Math.random() * 28) + 1;
-				} else {
-					year = Math.floor(Math.random() * (2025 - 1900) + 1900);
-					month = Math.floor(Math.random() * 12) + 1;
-					day = Math.floor(Math.random() * 28) + 1;
-				}
-
-				try {
-					const newPesel = generatePesel(year, month, day, gender);
-					peselOutput.innerText = newPesel;
-					displayPeselInfo(newPesel);
-				} catch (error) {
-					console.error("Błąd podczas generowania PESEL:", error);
-					peselOutput.innerText = "Błąd: " + error.message;
-					peselInfo.textContent = '';
-				}
-			});
-		}
-
-		// Obsługa kliknięcia na pole PESEL (kopiowanie)
-		if (peselOutput) {
-			peselOutput.addEventListener('click', () => {
-				const peselText = peselOutput.innerText;
-				if (navigator.clipboard) {
-					navigator.clipboard.writeText(peselText)
-						.then(() => showCopyMessage('Numer PESEL skopiowany!'))
-						.catch(err => console.error('Błąd podczas kopiowania:', err));
-				} else {
-					showCopyMessage('Numer PESEL skopiowany!');
-				}
-			});
-		}
-
-		// Obsługa kliknięcia przycisku "Generuj Dowód Osobisty"
-		if (generateIdBtn) {
-			generateIdBtn.addEventListener('click', () => {
-				idOutput.innerText = generateIdNumber();
-			});
-		}
-
-		// Obsługa kliknięcia na pole Dowodu Osobistego (kopiowanie)
-		if (idOutput) {
-			idOutput.addEventListener('click', () => {
-				const idText = idOutput.innerText;
-				if (navigator.clipboard) {
-					navigator.clipboard.writeText(idText)
-						.then(() => showCopyMessage('Numer dowodu skopiowany!'))
-						.catch(err => console.error('Błąd podczas kopiowania:', err));
-				} else {
-					showCopyMessage('Numer dowodu skopiowany!');
-				}
-			});
-		}
-
-		// Obsługa kliknięcia przycisku "Generuj REGON"
-		if (generateRegonBtn) {
-			generateRegonBtn.addEventListener('click', () => {
-				const regonType = regonTypeSelect.value;
-				if (regonType === '9') {
-					regonOutput.innerText = generateRegon9();
-				} else {
-					regonOutput.innerText = generateRegon14();
-				}
-			});
-		}
-
-		// Obsługa zmiany typu REGON
-		if (regonTypeSelect) {
-			regonTypeSelect.addEventListener('change', () => {
-				const regonType = regonTypeSelect.value;
-				if (regonType === '9') {
-					regonOutput.innerText = generateRegon9();
-				} else {
-					regonOutput.innerText = generateRegon14();
-				}
-			});
-		}
-
-		// Obsługa kliknięcia na pole REGON (kopiowanie)
-		if (regonOutput) {
-			regonOutput.addEventListener('click', () => {
-				const regonText = regonOutput.innerText;
-				if (navigator.clipboard) {
-					navigator.clipboard.writeText(regonText)
-						.then(() => showCopyMessage('REGON skopiowany!'))
-						.catch(err => console.error('Błąd podczas kopiowania:', err));
-				} else {
-					showCopyMessage('REGON skopiowany!');
-				}
-			});
-		}
-
-		// Obsługa kliknięcia przycisku "Generuj Rachunek"
-		if (generateNrbBtn) {
-			generateNrbBtn.addEventListener('click', () => {
-				const selectedBankCode = bankCodeSelect.value;
-				const selectedFormat = nrbFormatSelect.value;
-				const selectedPrefix = ibanPrefixSelect.value;
-				const newNrb = generateNrb(selectedBankCode, selectedFormat, selectedPrefix);
-				nrbOutput.innerText = newNrb;
-				displayNrbInfo(newNrb);
-			});
-		}
-
-            // Obsługa kliknięcia na pole Rachunku Bankowego (kopiowanie) PRZENIESIONE DO TEGO BLOKU
-            if (nrbOutput) {
-                nrbOutput.addEventListener('click', () => {
-                    const nrbText = nrbOutput.innerText;
-                    if (navigator.clipboard) {
-                        navigator.clipboard.writeText(nrbText)
-                            .then(() => showCopyMessage('Numer rachunku skopiowany!'))
-                            .catch(err => console.error('Błąd podczas kopiowania:', err));
-                    } else {
-                        showCopyMessage('Numer rachunku skopiowany!');
-                    }
-                });
+    function parsePlewiNrbCodes(fileContent) {
+        const lines = fileContent.split('\n');
+        const codes = new Set();
+        const regex = /\t(\d{8})\t/; 
+        for (const line of lines) {
+            const match = line.match(regex);
+            if (match) {
+                codes.add(match[1]);
             }
+        }
+        return Array.from(codes);
+    }
 
-		// ====================================================
-		// Logika generatora imion i nazwisk
-		// ====================================================
+    function calculateNrbChecksum(bban) {
+        const countryCode = '2521'; 
+        const numberToCheck = bban + countryCode + '00';
+        
+        let remainder = '';
+        let block;
+        for (let i = 0; i < numberToCheck.length; i += 7) {
+            block = remainder + numberToCheck.substring(i, i + 7);
+            remainder = (parseInt(block, 10) % 97).toString();
+        }
+        const controlNumber = 98 - parseInt(remainder, 10);
+        return String(controlNumber).padStart(2, '0');
+    }
 
-		const nameOutput = document.getElementById('nameOutput');
-		const surnameOutput = document.getElementById('surnameOutput');
-		const genderSelectName = document.getElementById('genderSelect');
-		const generateNameBtn = document.getElementById('generateNameBtn');
+    function generateNrb(selectedBankCode, format, prefix) {
+        let bankAndBranchCode;
+        const digits = '0123456789';
 
-		let maleNames = [];
-		let maleSurnames = [];
-		let femaleNames = [];
-		let femaleSurnames = [];
+        if (selectedBankCode === 'random') {
+            if (validNrbCodes.length === 0) {
+                return "Brak poprawnych kodów do wygenerowania. Sprawdź plik.";
+            }
+            bankAndBranchCode = validNrbCodes[Math.floor(Math.random() * validNrbCodes.length)];
+        } else {
+            const filteredCodes = validNrbCodes.filter(code => code.startsWith(selectedBankCode));
+            if (filteredCodes.length === 0) {
+                return "Brak poprawnych kodów dla wybranego banku.";
+            }
+            bankAndBranchCode = filteredCodes[Math.floor(Math.random() * filteredCodes.length)];
+        }
 
-		// Załaduj dane z plików JSON
-		async function loadNameData() {
-			try {
-				const maleNamesResponse = await fetch('static/pl_male_names.json');
-				maleNames = await maleNamesResponse.json();
+        let customerNumber = '';
+        for (let i = 0; i < 16; i++) {
+            customerNumber += digits.charAt(Math.floor(Math.random() * digits.length));
+        }
+        
+        const fullNumberWithoutChecksum = bankAndBranchCode + customerNumber;
+        const checksum = calculateNrbChecksum(fullNumberWithoutChecksum);
+        let finalNrb = `${checksum}${fullNumberWithoutChecksum}`;
 
-				const maleSurnamesResponse = await fetch('static/pl_male_surnames.json');
-				maleSurnames = await maleSurnamesResponse.json();
+        if (format === 'spaced') {
+            finalNrb = `${finalNrb.substring(0, 2)} ${finalNrb.substring(2, 6)} ${finalNrb.substring(6, 10)} ${finalNrb.substring(10, 14)} ${finalNrb.substring(14, 18)} ${finalNrb.substring(18, 22)} ${finalNrb.substring(22, 26)}`;
+        }
 
-				const femaleNamesResponse = await fetch('static/pl_female_names.json');
-				femaleNames = await femaleNamesResponse.json();
+        if (prefix === 'with-prefix') {
+            if (format === 'spaced') {
+                finalNrb = `PL ${finalNrb}`;
+            } else {
+                finalNrb = `PL${finalNrb}`;
+            }
+        }
+        return finalNrb;
+    }
 
-				const femaleSurnamesResponse = await fetch('static/pl_female_surnames.json');
-				femaleSurnames = await femaleSurnamesResponse.json();
-
-				// Generuj losowe imię i nazwisko na starcie
-				generateRandomName();
-			} catch (error) {
-				console.error('Błąd podczas ładowania danych imion:', error);
-				nameOutput.innerText = 'Błąd ładowania';
-				surnameOutput.innerText = 'Błąd ładowania';
-			}
-		}
-
-		/**
-		 * Generuje losową parę imienia i nazwiska na podstawie wybranej płci.
-		 */
-		function generateRandomName() {
-			let selectedGender = genderSelectName.value;
-
-			// Jeśli wybrano "Losowa", wybierz losowo
-			if (selectedGender === 'random') {
-				selectedGender = Math.random() < 0.5 ? 'male' : 'female';
-			}
-
-			let names, surnames;
-			if (selectedGender === 'male') {
-				names = maleNames;
-				surnames = maleSurnames;
-			} else {
-				names = femaleNames;
-				surnames = femaleSurnames;
-			}
-
-			// Sprawdź czy dane są załadowane
-			if (names.length === 0 || surnames.length === 0) {
-				nameOutput.innerText = 'Brak danych';
-				surnameOutput.innerText = 'Brak danych';
-				return;
-			}
-
-			const randomName = names[Math.floor(Math.random() * names.length)];
-			const randomSurname = surnames[Math.floor(Math.random() * surnames.length)];
-
-			nameOutput.innerText = randomName;
-			surnameOutput.innerText = randomSurname;
-		}
-
-		// Obsługa kliknięcia przycisku "Generuj" dla imion i nazwisk
-		if (generateNameBtn) {
-			generateNameBtn.addEventListener('click', generateRandomName);
-		}
-
-		// Obsługa kliknięcia na pole z imieniem (kopiowanie)
-		if (nameOutput) {
-			nameOutput.addEventListener('click', () => {
-				const nameText = nameOutput.innerText;
-				if (navigator.clipboard) {
-					navigator.clipboard.writeText(nameText)
-						.then(() => showCopyMessage('Imię skopiowane!'))
-						.catch(err => console.error('Błąd podczas kopiowania:', err));
-				} else {
-					showCopyMessage('Imię skopiowane!');
-				}
-			});
-		}
-
-		// Obsługa kliknięcia na pole z nazwiskiem (kopiowanie)
-		if (surnameOutput) {
-			surnameOutput.addEventListener('click', () => {
-				const surnameText = surnameOutput.innerText;
-				if (navigator.clipboard) {
-					navigator.clipboard.writeText(surnameText)
-						.then(() => showCopyMessage('Nazwisko skopiowane!'))
-						.catch(err => console.error('Błąd podczas kopiowania:', err));
-				} else {
-					showCopyMessage('Nazwisko skopiowane!');
-				}
-			});
-		}
-
-		// Załaduj dane imion na starcie
-		loadNameData();
-
+    fetch('static/plewibnra_utf8.txt')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Nie udało się pobrać pliku z danymi banków.');
+            }
+            return response.text();
+        })
+        .then(plewibnraContent => {
+            validNrbCodes = parsePlewiNrbCodes(plewibnraContent);
+            if (nrbOutput) {
+                nrbOutput.innerText = generateNrb(bankCodeSelect ? bankCodeSelect.value : 'random', nrbFormatSelect ? nrbFormatSelect.value : 'continuous', ibanPrefixSelect ? ibanPrefixSelect.value : 'no-prefix');
+                displayNrbInfo(nrbOutput.innerText);
+            }
         })
         .catch(error => {
             console.error('Wystąpił błąd podczas ładowania danych banków:', error);
-            nrbOutput.innerText = 'Błąd ładowania danych banków.';
+            if (nrbOutput) nrbOutput.innerText = 'Błąd ładowania danych banków.';
         });
-      }
 
-      // Obsługa zmiany typu REGON
-      if (regonTypeSelect) {
-        regonTypeSelect.addEventListener("change", () => {
-          const regonType = regonTypeSelect.value;
-          if (regonType === "9") {
-            regonOutput.innerText = generateRegon9();
-          } else {
-            regonOutput.innerText = generateRegon14();
-          }
+    generateRandomPesel();
+    if (idOutput) idOutput.innerText = generateIdNumber();
+    if (regonOutput) regonOutput.innerText = generateRegon9();
+    if (nrbOutput && nrbOutput.innerText === "Trwa ładowanie...") {
+        nrbOutput.innerText = "Trwa ładowanie...";
+        displayNrbInfo("");
+    }
+
+    if (openPeselOptionsBtn) {
+        openPeselOptionsBtn.addEventListener('click', () => {
+            if (peselOptionsModal) peselOptionsModal.style.display = 'block';
         });
-      }
+    }
 
-      // Obsługa kliknięcia na pole REGON (kopiowanie)
-      if (regonOutput) {
-        regonOutput.addEventListener("click", () => {
-          const regonText = regonOutput.innerText;
-          if (navigator.clipboard) {
-            navigator.clipboard
-              .writeText(regonText)
-              .then(() => showCopyMessage("REGON skopiowany!"))
-              .catch((err) => console.error("Błąd podczas kopiowania:", err));
-          } else {
-            showCopyMessage("REGON skopiowany!");
-          }
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            if (peselOptionsModal) peselOptionsModal.style.display = 'none';
         });
-      }
+    }
 
-      // Obsługa kliknięcia przycisku "Generuj Rachunek"
-      if (generateNrbBtn) {
-        generateNrbBtn.addEventListener("click", () => {
-          const selectedBankCode = bankCodeSelect.value;
-          const selectedFormat = nrbFormatSelect.value;
-          const selectedPrefix = ibanPrefixSelect.value;
-          const newNrb = generateNrb(
-            selectedBankCode,
-            selectedFormat,
-            selectedPrefix,
-          );
-          nrbOutput.innerText = newNrb;
-          displayNrbInfo(newNrb);
-        });
-      }
-
-      // Obsługa kliknięcia na pole Rachunku Bankowego (kopiowanie) PRZENIESIONE DO TEGO BLOKU
-      if (nrbOutput) {
-        nrbOutput.addEventListener("click", () => {
-          const nrbText = nrbOutput.innerText;
-          if (navigator.clipboard) {
-            navigator.clipboard
-              .writeText(nrbText)
-              .then(() => showCopyMessage("Numer rachunku skopiowany!"))
-              .catch((err) => console.error("Błąd podczas kopiowania:", err));
-          } else {
-            showCopyMessage("Numer rachunku skopiowany!");
-          }
-        });
-      }
-
-      // ====================================================
-      // Logika generatora imion i nazwisk
-      // ====================================================
-
-      const nameOutput = document.getElementById("nameOutput");
-      const surnameOutput = document.getElementById("surnameOutput");
-      const genderSelectName = document.getElementById("genderSelect");
-      const generateNameBtn = document.getElementById("generateNameBtn");
-
-      let maleNames = [];
-      let maleSurnames = [];
-      let femaleNames = [];
-      let femaleSurnames = [];
-
-      // Załaduj dane z plików JSON
-      async function loadNameData() {
-        try {
-          const maleNamesResponse = await fetch("static/pl_male_names.json");
-          maleNames = await maleNamesResponse.json();
-
-          const maleSurnamesResponse = await fetch(
-            "static/pl_male_surnames.json",
-          );
-          maleSurnames = await maleSurnamesResponse.json();
-
-          const femaleNamesResponse = await fetch(
-            "static/pl_female_names.json",
-          );
-          femaleNames = await femaleNamesResponse.json();
-
-          const femaleSurnamesResponse = await fetch(
-            "static/pl_female_surnames.json",
-          );
-          femaleSurnames = await femaleSurnamesResponse.json();
-
-          // Generuj losowe imię i nazwisko na starcie
-          generateRandomName();
-        } catch (error) {
-          console.error("Błąd podczas ładowania danych imion:", error);
-          nameOutput.innerText = "Błąd ładowania";
-          surnameOutput.innerText = "Błąd ładowania";
+    window.addEventListener('click', (event) => {
+        if (event.target == peselOptionsModal) {
+            peselOptionsModal.style.display = 'none';
         }
-      }
+    });
 
-      /**
-       * Generuje losową parę imienia i nazwiska na podstawie wybranej płci.
-       */
-      function generateRandomName() {
-        let selectedGender = genderSelectName.value;
+    if (generateBtn) {
+        generateBtn.addEventListener('click', () => {
+            let year, month, day, gender;
 
-        // Jeśli wybrano "Losowa", wybierz losowo
-        if (selectedGender === "random") {
-          selectedGender = Math.random() < 0.5 ? "male" : "female";
+            const selectedGender = genderSelect ? genderSelect.value : 'random';
+            const birthDateValue = birthDateInput ? birthDateInput.value : '';
+            const ageValue = ageInput ? ageInput.value : '';
+
+            if (selectedGender === 'random') {
+                gender = Math.random() < 0.5 ? 'male' : 'female';
+            } else {
+                gender = selectedGender;
+            }
+
+            if (birthDateValue) {
+                const date = new Date(birthDateValue);
+                year = date.getFullYear();
+                month = date.getMonth() + 1;
+                day = date.getDate();
+            } else if (ageValue) {
+                const currentYear = new Date().getFullYear();
+                year = currentYear - parseInt(ageValue);
+                month = Math.floor(Math.random() * 12) + 1;
+                day = Math.floor(Math.random() * 28) + 1;
+            } else {
+                year = Math.floor(Math.random() * (2025 - 1900) + 1900);
+                month = Math.floor(Math.random() * 12) + 1;
+                day = Math.floor(Math.random() * 28) + 1;
+            }
+
+            try {
+                const newPesel = generatePesel(year, month, day, gender);
+                if (peselOutput) peselOutput.innerText = newPesel;
+                displayPeselInfo(newPesel);
+            } catch (error) {
+                console.error("Błąd podczas generowania PESEL:", error);
+                if (peselOutput) peselOutput.innerText = "Błąd: " + error.message;
+                if (peselInfo) peselInfo.textContent = '';
+            }
+        });
+    }
+
+    if (peselOutput) {
+        peselOutput.addEventListener('click', () => {
+            const peselText = peselOutput.innerText;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(peselText)
+                    .then(() => showCopyMessage('Numer PESEL skopiowany!'))
+                    .catch(err => console.error('Błąd podczas kopiowania:', err));
+            } else {
+                showCopyMessage('Numer PESEL skopiowany!');
+            }
+        });
+    }
+
+    if (generateIdBtn) {
+        generateIdBtn.addEventListener('click', () => {
+            if (idOutput) idOutput.innerText = generateIdNumber();
+        });
+    }
+
+    if (idOutput) {
+        idOutput.addEventListener('click', () => {
+            const idText = idOutput.innerText;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(idText)
+                    .then(() => showCopyMessage('Numer dowodu skopiowany!'))
+                    .catch(err => console.error('Błąd podczas kopiowania:', err));
+            } else {
+                showCopyMessage('Numer dowodu skopiowany!');
+            }
+        });
+    }
+
+    if (generateRegonBtn) {
+        generateRegonBtn.addEventListener('click', () => {
+            const regonType = regonTypeSelect ? regonTypeSelect.value : '9';
+            if (regonType === '9') {
+                if (regonOutput) regonOutput.innerText = generateRegon9();
+            } else {
+                if (regonOutput) regonOutput.innerText = generateRegon14();
+            }
+        });
+    }
+
+    if (regonTypeSelect) {
+        regonTypeSelect.addEventListener('change', () => {
+            const regonType = regonTypeSelect.value;
+            if (regonType === '9') {
+                if (regonOutput) regonOutput.innerText = generateRegon9();
+            } else {
+                if (regonOutput) regonOutput.innerText = generateRegon14();
+            }
+        });
+    }
+
+    if (regonOutput) {
+        regonOutput.addEventListener('click', () => {
+            const regonText = regonOutput.innerText;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(regonText)
+                    .then(() => showCopyMessage('REGON skopiowany!'))
+                    .catch(err => console.error('Błąd podczas kopiowania:', err));
+            } else {
+                showCopyMessage('REGON skopiowany!');
+            }
+        });
+    }
+
+    if (generateNrbBtn) {
+        generateNrbBtn.addEventListener('click', () => {
+            const selectedBankCode = bankCodeSelect ? bankCodeSelect.value : 'random';
+            const selectedFormat = nrbFormatSelect ? nrbFormatSelect.value : 'continuous';
+            const selectedPrefix = ibanPrefixSelect ? ibanPrefixSelect.value : 'no-prefix';
+            const newNrb = generateNrb(selectedBankCode, selectedFormat, selectedPrefix);
+            if (nrbOutput) nrbOutput.innerText = newNrb;
+            displayNrbInfo(newNrb);
+        });
+    }
+
+    if (nrbOutput) {
+        nrbOutput.addEventListener('click', () => {
+            const nrbText = nrbOutput.innerText;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(nrbText)
+                    .then(() => showCopyMessage('Numer rachunku skopiowany!'))
+                    .catch(err => console.error('Błąd podczas kopiowania:', err));
+            } else {
+                showCopyMessage('Numer rachunku skopiowany!');
+            }
+        });
+    }
+
+    const nameOutput = document.getElementById('nameOutput');
+    const surnameOutput = document.getElementById('surnameOutput');
+    const genderSelectName = document.getElementById('genderSelect');
+    const generateNameBtn = document.getElementById('generateNameBtn');
+
+    let maleNames = [];
+    let maleSurnames = [];
+    let femaleNames = [];
+    let femaleSurnames = [];
+
+    async function loadNameData() {
+        try {
+            const maleNamesResponse = await fetch('static/pl_male_names.json');
+            maleNames = await maleNamesResponse.json();
+
+            const maleSurnamesResponse = await fetch('static/pl_male_surnames.json');
+            maleSurnames = await maleSurnamesResponse.json();
+
+            const femaleNamesResponse = await fetch('static/pl_female_names.json');
+            femaleNames = await femaleNamesResponse.json();
+
+            const femaleSurnamesResponse = await fetch('static/pl_female_surnames.json');
+            femaleSurnames = await femaleSurnamesResponse.json();
+
+            generateRandomName();
+        } catch (error) {
+            console.error('Błąd podczas ładowania danych imion:', error);
+            if (nameOutput) nameOutput.innerText = 'Błąd ładowania';
+            if (surnameOutput) surnameOutput.innerText = 'Błąd ładowania';
+        }
+    }
+
+    function generateRandomName() {
+        let selectedGender = genderSelectName ? genderSelectName.value : 'random';
+
+        if (selectedGender === 'random') {
+            selectedGender = Math.random() < 0.5 ? 'male' : 'female';
         }
 
         let names, surnames;
-        if (selectedGender === "male") {
-          names = maleNames;
-          surnames = maleSurnames;
+        if (selectedGender === 'male') {
+            names = maleNames;
+            surnames = maleSurnames;
         } else {
-          names = femaleNames;
-          surnames = femaleSurnames;
+            names = femaleNames;
+            surnames = femaleSurnames;
         }
 
-        // Sprawdź czy dane są załadowane
         if (names.length === 0 || surnames.length === 0) {
-          nameOutput.innerText = "Brak danych";
-          surnameOutput.innerText = "Brak danych";
-          return;
+            if (nameOutput) nameOutput.innerText = 'Brak danych';
+            if (surnameOutput) surnameOutput.innerText = 'Brak danych';
+            return;
         }
 
         const randomName = names[Math.floor(Math.random() * names.length)];
-        const randomSurname =
-          surnames[Math.floor(Math.random() * surnames.length)];
+        const randomSurname = surnames[Math.floor(Math.random() * surnames.length)];
+
+        if (nameOutput) nameOutput.innerText = randomName;
+        if (surnameOutput) surnameOutput.innerText = randomSurname;
+    }
+
+    if (generateNameBtn) {
+        generateNameBtn.addEventListener('click', generateRandomName);
+    }
+
+    if (nameOutput) {
+        nameOutput.addEventListener('click', () => {
+            const nameText = nameOutput.innerText;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(nameText)
+                    .then(() => showCopyMessage('Imię skopiowane!'))
+                    .catch(err => console.error('Błąd podczas kopiowania:', err));
+            } else {
+                showCopyMessage('Imię skopiowane!');
+            }
+        });
+    }
+
+    if (surnameOutput) {
+        surnameOutput.addEventListener('click', () => {
+            const surnameText = surnameOutput.innerText;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(surnameText)
+                    .then(() => showCopyMessage('Nazwisko skopiowane!'))
+                    .catch(err => console.error('Błąd podczas kopiowania:', err));
+            } else {
+                showCopyMessage('Nazwisko skopiowane!');
+            }
+        });
+    }
+
+    loadNameData();
+});
 
 const theme = { value: window.getColorPreference ? window.getColorPreference() : 'light' };
 
 if (window.reflectPreference) window.reflectPreference();
 
 document.addEventListener('DOMContentLoaded', () => {
-    reflectPreference();
+    if (window.reflectPreference) reflectPreference();
     const themeToggle = document.querySelector('#theme-toggle');
     if (themeToggle) {
         themeToggle.addEventListener('click', (e) => {
             e.preventDefault();
             theme.value = theme.value === 'light' ? 'dark' : 'light';
-            setPreference();
+            if (window.setPreference) setPreference();
             const checkbox = document.querySelector('#themeToggle');
             if (checkbox) checkbox.checked = theme.value === 'dark';
         });
@@ -982,18 +678,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if(checkbox) {
         checkbox.addEventListener('change', () => {
             theme.value = checkbox.checked ? 'dark' : 'light';
-            setPreference();
+            if (window.setPreference) setPreference();
         });
     }
 });
 
-// Use optional chaining for test compatibility
 if (window.matchMedia) {
     const matchMediaObj = window.matchMedia('(prefers-color-scheme: dark)');
     if (matchMediaObj.addEventListener) {
         matchMediaObj.addEventListener('change', ({ matches: isDark }) => {
             theme.value = isDark ? 'dark' : 'light';
-            setPreference();
+            if (window.setPreference) setPreference();
         });
     }
 }
