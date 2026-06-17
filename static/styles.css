@@ -1054,3 +1054,25 @@ input:focus {
   outline: 2px solid var(--icon-fill-hover);
   outline-offset: 4px;
 }
+
+.field-name-input {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: inherit;
+  padding: 4px 8px;
+  border-radius: 4px;
+  flex: 1;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.field-name-input:hover {
+  background-color: var(--bg-secondary);
+}
+
+.field-name-input:focus {
+  outline: none;
+  border-color: #1976d2;
+  background-color: var(--bg-secondary);
+}
