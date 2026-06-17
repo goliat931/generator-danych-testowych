@@ -240,6 +240,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const birthDateInput = document.getElementById("birthDate");
   const ageInput = document.getElementById("age");
 
+  // Wyczyść drugie pole, gdy jedno z nich jest edytowane / Clear the other field when one is edited
+  if (birthDateInput && ageInput) {
+    birthDateInput.addEventListener("input", () => {
+      if (birthDateInput.value) {
+        ageInput.value = "";
+      }
+    });
+
+    ageInput.addEventListener("input", () => {
+      if (ageInput.value) {
+        birthDateInput.value = "";
+      }
+    });
+  }
+
   const generateIdBtn = document.getElementById("generateIdBtn");
   const idOutput = document.getElementById("idOutput");
 
