@@ -594,7 +594,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Pobierz zaznaczone pola w kolejności / Get checked fields in order
       const fieldsInfo = [];
       const seenNames = new Set();
-      let hasDuplicates = false;
+      const duplicateNames = [];
 
       document
         .querySelectorAll('.draggable-item input[type="checkbox"]:checked')
@@ -610,16 +610,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // Sprawdzanie duplikatów / Checking for duplicates
           if (seenNames.has(normalizedName)) {
-            hasDuplicates = true;
+            if (!duplicateNames.includes(finalName)) {
+              duplicateNames.push(finalName);
+            }
           }
           seenNames.add(normalizedName);
 
           fieldsInfo.push({ key: checkbox.value, name: finalName });
         });
 
-      if (hasDuplicates) {
+      if (duplicateNames.length > 0) {
         // Alert informujący o zduplikowanych nazwach / Alert informing about duplicate names
-        alert("Nazwy pól muszą być unikalne. Znaleziono zduplikowane nazwy!");
+        alert(
+          `Nazwy pól muszą być unikalne. Znaleziono zduplikowane nazwy: ${duplicateNames.join(", ")}`,
+        );
         return;
       }
 

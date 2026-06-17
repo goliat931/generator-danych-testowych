@@ -1,275 +1,454 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Generator Zbiorów Danych</title>
-    <link rel="stylesheet" href="static/styles.css">
-    <link rel="icon" type="image/x-icon" href="static/logo.ico">
-    <link rel="canonical" href="goliat931.github.io/generator-danych-testowych" />
-    <meta name="description" content="Narzędzie do generowania zbiorów danych testowych z różnymi formatami eksportu." />
-</head>
-<body>
+    <link rel="stylesheet" href="static/styles.css" />
+    <link rel="icon" type="image/x-icon" href="static/logo.ico" />
+    <link
+      rel="canonical"
+      href="goliat931.github.io/generator-danych-testowych"
+    />
+    <meta
+      name="description"
+      content="Narzędzie do generowania zbiorów danych testowych z różnymi formatami eksportu."
+    />
+  </head>
+  <body>
     <div class="button-group">
-        <div class="theme-switch">
-            <label for="themeToggle" class="theme-label">
-                <button class="theme-toggle" id="theme-toggle" title="Toggles light & dark" aria-label="auto" aria-live="polite">
-                    <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
-                        <mask class="moon" id="moon-mask">
-                        <rect x="0" y="0" width="100%" height="100%" fill="white" />
-                        <circle cx="24" cy="10" r="6" fill="black" />
-                        </mask>
-                        <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)" fill="currentColor" />
-                        <g class="sun-beams" stroke="currentColor">
-                        <line x1="12" y1="1" x2="12" y2="3" />
-                        <line x1="12" y1="21" x2="12" y2="23" />
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                        <line x1="1" y1="12" x2="3" y2="12" />
-                        <line x1="21" y1="12" x2="23" y2="12" />
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                        </g>
-                    </svg>
-                </button>               
-            </label>
-        </div>
-        <div class="nav-links">
-            <a href="index.html" class="nav-button">Generatory Danych</a>
-            <a href="validator.html" class="nav-button">Walidatory Danych</a>
-        </div>
+      <div class="theme-switch">
+        <label for="themeToggle" class="theme-label">
+          <button
+            class="theme-toggle"
+            id="theme-toggle"
+            title="Toggles light & dark"
+            aria-label="auto"
+            aria-live="polite"
+          >
+            <svg
+              class="sun-and-moon"
+              aria-hidden="true"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <mask class="moon" id="moon-mask">
+                <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                <circle cx="24" cy="10" r="6" fill="black" />
+              </mask>
+              <circle
+                class="sun"
+                cx="12"
+                cy="12"
+                r="6"
+                mask="url(#moon-mask)"
+                fill="currentColor"
+              />
+              <g class="sun-beams" stroke="currentColor">
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </g>
+            </svg>
+          </button>
+        </label>
+      </div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-button">Generatory Danych</a>
+        <a href="validator.html" class="nav-button">Walidatory Danych</a>
+      </div>
     </div>
 
     <div class="container">
-        <h1>Generator Zbiorów Danych</h1>
-        
-        <div class="dataset-generator-tile">
-            <h2>Generator Zbiorów Danych</h2>
+      <h1>Generator Zbiorów Danych</h1>
 
-            <!-- Kontrola na górze: Liczba rekordów, Format, Separator, Generuj -->
-            <div class="control-panel">
-                <div class="control-row">
-                    <div class="control-field">
-                        <label for="recordCount">Liczba rekordów:</label>
-                        <input type="number" id="recordCount" min="1" max="100000" value="10" placeholder="1-100000">
-                    </div>
+      <div class="dataset-generator-tile">
+        <h2>Generator Zbiorów Danych</h2>
 
-                    <div class="control-field">
-                        <h3 style="margin: 0 0 8px 0;">Format eksportu</h3>
-                        <div class="format-selection">
-                            <label class="format-option">
-                                <input type="radio" name="export-format" value="csv" checked>
-                                CSV
-                            </label>
-                            <label class="format-option">
-                                <input type="radio" name="export-format" value="json">
-                                JSON
-                            </label>
-                            <label class="format-option">
-                                <input type="radio" name="export-format" value="xml">
-                                XML
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="control-field" id="separatorFieldWrapper">
-                        <h3 style="margin: 0 0 8px 0;">Separator (CSV)</h3>
-                        <div class="separator-selection">
-                            <label class="separator-option">
-                                <input type="radio" name="csv-separator" value="," checked>
-                                , (Przecinek)
-                            </label>
-                            <label class="separator-option">
-                                <input type="radio" name="csv-separator" value=";">
-                                ; (Średnik)
-                            </label>
-                            <label class="separator-option">
-                                <input type="radio" name="csv-separator" value="tab">
-                                ⇥ (Tab)
-                            </label>
-                            <label class="separator-option">
-                                <input type="radio" name="csv-separator" value="|">
-                                | (Rura)
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="control-buttons">
-                    <button id="generateDatasetBtn" class="btn-primary">📋 Generuj</button>
-                    <button id="downloadDatasetBtn" class="btn-secondary" disabled>📥 Pobierz</button>
-                </div>
+        <!-- Kontrola na górze: Liczba rekordów, Format, Separator, Generuj -->
+        <div class="control-panel">
+          <div class="control-row">
+            <div class="control-field">
+              <label for="recordCount">Liczba rekordów:</label>
+              <input
+                type="number"
+                id="recordCount"
+                min="1"
+                max="100000"
+                value="10"
+                placeholder="1-100000"
+              />
             </div>
 
-            <!-- Wybór danych -->
-            <div class="config-section">
-                <h3>Dane do wygenerowania (przeciągnij aby zmienić kolejność)</h3>
-                <div class="data-selection">
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="pesel" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="PESEL">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="id" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Dowód Osobisty">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="regon" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="REGON">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="firstName" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Imię">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="surname" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Nazwisko">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="imie" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Imię">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="nazwa" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Nazwisko">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="imie_ojca" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Imię ojca">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="imie_matki" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Imię matki">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="sex" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Płeć">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="citizenship" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Obywatelstwo">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="birthdate" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Data urodzenia">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="birthCountry" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Kraj urodzenia">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="birthcity" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Miasto urodzenia">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="document_type" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Typ dokumentu">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="dok_tozs" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Nr dokumentu">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="dok_expirydate" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Data wygaśnięcia dokumentu">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="ulica" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Ulica">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="nr_domu" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Nr domu">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="nr_lokalu" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Nr lokalu">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="kod_pocztowy" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Kod pocztowy">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="miasto" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Miasto">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="kraj" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Kraj">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="telk" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Telefon komórkowy">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="teld" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Telefon domowy">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="mail" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Email">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="bankaccount" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="rachunek bankowy">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="comment" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Komentarz">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="season_string" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="Pora roku">
-                    </div>
-                    <div class="draggable-item">
-                        <input type="checkbox" name="data-field" value="token" checked>
-                        <span class="drag-handle">⋮⋮</span>
-                        <input type="text" class="field-name-input" value="token">
-                    </div>
-                </div>
+            <div class="control-field">
+              <h3 style="margin: 0 0 8px 0">Format eksportu</h3>
+              <div class="format-selection">
+                <label class="format-option">
+                  <input
+                    type="radio"
+                    name="export-format"
+                    value="csv"
+                    checked
+                  />
+                  CSV
+                </label>
+                <label class="format-option">
+                  <input type="radio" name="export-format" value="json" />
+                  JSON
+                </label>
+                <label class="format-option">
+                  <input type="radio" name="export-format" value="xml" />
+                  XML
+                </label>
+              </div>
             </div>
+
+            <div class="control-field" id="separatorFieldWrapper">
+              <h3 style="margin: 0 0 8px 0">Separator (CSV)</h3>
+              <div class="separator-selection">
+                <label class="separator-option">
+                  <input type="radio" name="csv-separator" value="," checked />
+                  , (Przecinek)
+                </label>
+                <label class="separator-option">
+                  <input type="radio" name="csv-separator" value=";" />
+                  ; (Średnik)
+                </label>
+                <label class="separator-option">
+                  <input type="radio" name="csv-separator" value="tab" />
+                  ⇥ (Tab)
+                </label>
+                <label class="separator-option">
+                  <input type="radio" name="csv-separator" value="|" />
+                  | (Rura)
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-buttons">
+            <button id="generateDatasetBtn" class="btn-primary">
+              📋 Generuj
+            </button>
+            <button id="downloadDatasetBtn" class="btn-secondary" disabled>
+              📥 Pobierz
+            </button>
+          </div>
         </div>
 
-        <div class="preview-tile">
-            <h2>Podgląd (pierwsze 5 wierszy)</h2>
-            <pre id="previewContent">Podgląd pojawi się tutaj po kliknięciu "Generuj"</pre>
+        <!-- Wybór danych -->
+        <div class="config-section">
+          <h3>Dane do wygenerowania (przeciągnij aby zmienić kolejność)</h3>
+          <div class="data-selection">
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="pesel" checked />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="PESEL" />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="id" checked />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="Dowód Osobisty"
+              />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="regon" checked />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="REGON" />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="firstName"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Imię" />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="surname"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Nazwisko" />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="imie" />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Imię" />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="nazwa" />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Nazwisko" />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="imie_ojca"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Imię ojca" />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="imie_matki"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Imię matki" />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="sex" checked />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Płeć" />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="citizenship"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="Obywatelstwo"
+              />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="birthdate"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="Data urodzenia"
+              />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="birthCountry"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="Kraj urodzenia"
+              />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="birthcity"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="Miasto urodzenia"
+              />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="document_type"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="Typ dokumentu"
+              />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="dok_tozs"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="Nr dokumentu"
+              />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="dok_expirydate"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="Data wygaśnięcia dokumentu"
+              />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="ulica" checked />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Ulica" />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="nr_domu"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Nr domu" />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="nr_lokalu"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Nr lokalu" />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="kod_pocztowy"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="Kod pocztowy"
+              />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="miasto" checked />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Miasto" />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="kraj" checked />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Kraj" />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="telk" checked />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="Telefon komórkowy"
+              />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="teld" checked />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="Telefon domowy"
+              />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="mail" checked />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Email" />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="bankaccount"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input
+                type="text"
+                class="field-name-input"
+                value="rachunek bankowy"
+              />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="comment"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Komentarz" />
+            </div>
+            <div class="draggable-item">
+              <input
+                type="checkbox"
+                name="data-field"
+                value="season_string"
+                checked
+              />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="Pora roku" />
+            </div>
+            <div class="draggable-item">
+              <input type="checkbox" name="data-field" value="token" checked />
+              <span class="drag-handle">⋮⋮</span>
+              <input type="text" class="field-name-input" value="token" />
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="preview-tile">
+        <h2>Podgląd (pierwsze 5 wierszy)</h2>
+        <pre id="previewContent">
+Podgląd pojawi się tutaj po kliknięciu "Generuj"</pre
+        >
+      </div>
     </div>
 
     <footer>
-        <p>© 2025 Generator Danych Testowych • <a href="https://github.com" target="_blank">GitHub</a></p>
+      <p>
+        © 2025 Generator Danych Testowych •
+        <a href="https://github.com" target="_blank">GitHub</a>
+      </p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@faker-js/faker@latest/dist/faker.min.js"></script>
     <script src="static/dataset-generator.js"></script>
-</body>
+  </body>
 </html>
