@@ -467,10 +467,14 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 
 		// Pobierz zaznaczone pola w kolejności
-		const fields = [];
+		const fieldsInfo = [];
 		document.querySelectorAll('.draggable-item input[type="checkbox"]:checked').forEach(checkbox => {
-			fields.push(checkbox.value);
+			const nameInput = checkbox.closest('.draggable-item').querySelector('.field-name-input');
+			const customName = nameInput ? nameInput.value.trim() : checkbox.value;
+			fieldsInfo.push({ key: checkbox.value, name: customName || checkbox.value });
 		});
+
+		const fields = fieldsInfo.map(f => f.name.replace(/\s+/g, '_'));
 
 		if (fields.length === 0) {
 			alert('Zaznacz przynajmniej jedno pole!');
@@ -495,111 +499,113 @@ document.addEventListener('DOMContentLoaded', () => {
 			const companyName = generateCompanyName();
 			const nip = generateNip();
 
-			fields.forEach(field => {
+			fieldsInfo.forEach(fieldObj => {
+				const field = fieldObj.key;
+				const fieldName = fieldObj.name.replace(/\s+/g, '_');
 				switch(field) {
 					case 'pesel':
-						record.pesel = pesel;
+						record[fieldName] = pesel;
 						break;
 					case 'id':
-						record.id = idNumber;
+						record[fieldName] = idNumber;
 						break;
 					case 'regon':
-						record.regon = generateRegon(Math.random() > 0.5 ? 9 : 14);
+						record[fieldName] = generateRegon(Math.random() > 0.5 ? 9 : 14);
 						break;
 					case 'firstName':
-						record.firstName = firstNameMale;
+						record[fieldName] = firstNameMale;
 						break;
 					case 'surname':
-						record.surname = surname;
+						record[fieldName] = surname;
 						break;
 					case 'imie':
-						record.imie = firstNameMale;
+						record[fieldName] = firstNameMale;
 						break;
 					case 'nazwa':
-						record.nazwa = surname;
+						record[fieldName] = surname;
 						break;
 					case 'imie_ojca':
-						record.imie_ojca = firstNameMale;
+						record[fieldName] = firstNameMale;
 						break;
 					case 'imie_matki':
-						record.imie_matki = firstNameFemale;
+						record[fieldName] = firstNameFemale;
 						break;
 					case 'sex':
-						record.sex = sex;
+						record[fieldName] = sex;
 						break;
 					case 'citizenship':
-						record.citizenship = 'POL';
+						record[fieldName] = 'POL';
 						break;
 					case 'birthdate':
-						record.birthdate = formatDateYMD(birthdate);
+						record[fieldName] = formatDateYMD(birthdate);
 						break;
 					case 'birthCountry':
-						record.birthCountry = 'POL';
+						record[fieldName] = 'POL';
 						break;
 					case 'birthcity':
-						record.birthcity = getRandomCity();
+						record[fieldName] = getRandomCity();
 						break;
 					case 'document_type':
-						record.document_type = 'DOWOD_OSOBISTY';
+						record[fieldName] = 'DOWOD_OSOBISTY';
 						break;
 					case 'dok_tozs':
-						record.dok_tozs = idNumber;
+						record[fieldName] = idNumber;
 						break;
 					case 'dok_expirydate': {
 						const expiry = randomDateBetween(new Date(), new Date(new Date().getFullYear() + 10, 11, 31));
-						record.dok_expirydate = formatDateYMD(expiry);
+						record[fieldName] = formatDateYMD(expiry);
 						break;
 					}
 					case 'ulica':
-						record.ulica = getRandomStreetName();
+						record[fieldName] = getRandomStreetName();
 						break;
 					case 'nr_domu':
-						record.nr_domu = String(randomInt(1, 999));
+						record[fieldName] = String(randomInt(1, 999));
 						break;
 					case 'nr_lokalu':
-						record.nr_lokalu = String(randomInt(1, 999));
+						record[fieldName] = String(randomInt(1, 999));
 						break;
 					case 'kod_pocztowy':
-						record.kod_pocztowy = generatePolishPostalCode();
+						record[fieldName] = generatePolishPostalCode();
 						break;
 					case 'miasto':
-						record.miasto = getRandomCity();
+						record[fieldName] = getRandomCity();
 						break;
 					case 'kraj':
-						record.kraj = 'POL';
+						record[fieldName] = 'POL';
 						break;
 					case 'telk':
-						record.telk = generatePhoneNumber();
+						record[fieldName] = generatePhoneNumber();
 						break;
 					case 'teld':
-						record.teld = generatePhoneNumber();
+						record[fieldName] = generatePhoneNumber();
 						break;
 					case 'mail':
-						record.mail = generateEmail(firstNameMale, surname);
+						record[fieldName] = generateEmail(firstNameMale, surname);
 						break;
 					case 'bankaccount':
-						record.bankaccount = bankAccount;
+						record[fieldName] = bankAccount;
 						break;
 					case 'comment':
-						record.comment = generateComment();
+						record[fieldName] = generateComment();
 						break;
 					case 'season_string':
-						record.season_string = generateSeasonString();
+						record[fieldName] = generateSeasonString();
 						break;
 					case 'token':
-						record.token = generateToken();
+						record[fieldName] = generateToken();
 						break;
 					case 'alnova_pid':
-						record.alnova_pid = String(randomInt(10000000, 99999999));
+						record[fieldName] = String(randomInt(10000000, 99999999));
 						break;
 					case 'nip':
-						record.nip = nip;
+						record[fieldName] = nip;
 						break;
 					case 'companyname':
-						record.companyname = companyName;
+						record[fieldName] = companyName;
 						break;
 					default:
-						record[field] = '';
+						record[fieldName] = '';
 				}
 			});
 			data.push(record);
