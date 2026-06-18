@@ -7,3 +7,7 @@
 ## 2023-10-27 - Screen Reader Announcements for Dynamic Updates
 **Learning:** In vanilla JS apps using custom toast messages or updating text contents to show validation results, screen readers will often not announce the changes since the elements are already in the DOM.
 **Action:** Always add `role="status" aria-live="polite"` to notification containers (`copy-message`) or validation results so that visual changes are reliably announced to visually impaired users without interrupting their workflow.
+
+## 2024-07-25 - Custom Modal Close Buttons Accessibility
+**Learning:** In custom modal implementations, a simple `<span>×</span>` is often used as a close button. However, this pattern is completely inaccessible to screen reader and keyboard users, as `span` elements are non-interactive by default. Without explicit roles and keyboard handling, these users can get trapped inside modals.
+**Action:** Always add `role="button"`, `tabindex="0"`, a descriptive `aria-label`, a `keydown` event listener for 'Enter'/'Space', and explicit `:focus-visible` styles to any `div` or `span` that functions as a button.

@@ -473,6 +473,12 @@ document.addEventListener("DOMContentLoaded", () => {
     closeBtn.addEventListener("click", () => {
       if (peselOptionsModal) peselOptionsModal.style.display = "none";
     });
+    closeBtn.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        if (peselOptionsModal) peselOptionsModal.style.display = "none";
+      }
+    });
   }
 
   window.addEventListener("click", (event) => {
