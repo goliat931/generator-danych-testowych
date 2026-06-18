@@ -285,6 +285,11 @@ button:hover {
   color: var(--text-primary);
 }
 
+.close-btn:focus-visible {
+  outline: 2px solid var(--icon-fill-hover);
+  outline-offset: 4px;
+}
+
 /* --- KOMUNIKAT O SKOPIOWANIU (TOAST) --- */
 .copy-message {
   visibility: hidden;
