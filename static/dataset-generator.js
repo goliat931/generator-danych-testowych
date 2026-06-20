@@ -799,6 +799,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Aktywuj przycisk pobierania
       document.getElementById("downloadDatasetBtn").disabled = false;
+      document
+        .getElementById("downloadDatasetBtn")
+        .removeAttribute("aria-disabled");
+      document.getElementById("downloadDatasetBtn").removeAttribute("title");
     });
 
   // Przycisk pobierania

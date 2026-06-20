@@ -136,7 +136,13 @@
             <button id="generateDatasetBtn" class="btn-primary">
               📋 Generuj
             </button>
-            <button id="downloadDatasetBtn" class="btn-secondary" disabled>
+            <button
+              id="downloadDatasetBtn"
+              class="btn-secondary"
+              disabled
+              aria-disabled="true"
+              title="Najpierw wygeneruj zbiór"
+            >
               📥 Pobierz
             </button>
           </div>
@@ -148,12 +154,22 @@
           <div class="data-selection">
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="pesel" checked />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="PESEL" />
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="id" checked />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -162,7 +178,12 @@
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="regon" checked />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="REGON" />
             </div>
             <div class="draggable-item">
@@ -172,7 +193,12 @@
                 value="firstName"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Imię" />
             </div>
             <div class="draggable-item">
@@ -182,17 +208,32 @@
                 value="surname"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Nazwisko" />
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="imie" />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Imię" />
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="nazwa" />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Nazwisko" />
             </div>
             <div class="draggable-item">
@@ -202,7 +243,12 @@
                 value="imie_ojca"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Imię ojca" />
             </div>
             <div class="draggable-item">
@@ -212,12 +258,22 @@
                 value="imie_matki"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Imię matki" />
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="sex" checked />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Płeć" />
             </div>
             <div class="draggable-item">
@@ -227,7 +283,12 @@
                 value="citizenship"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -241,7 +302,12 @@
                 value="birthdate"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -255,7 +321,12 @@
                 value="birthCountry"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -269,7 +340,12 @@
                 value="birthcity"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -283,7 +359,12 @@
                 value="document_type"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -297,7 +378,12 @@
                 value="dok_tozs"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -311,7 +397,12 @@
                 value="dok_expirydate"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -320,7 +411,12 @@
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="ulica" checked />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Ulica" />
             </div>
             <div class="draggable-item">
@@ -330,7 +426,12 @@
                 value="nr_domu"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Nr domu" />
             </div>
             <div class="draggable-item">
@@ -340,7 +441,12 @@
                 value="nr_lokalu"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Nr lokalu" />
             </div>
             <div class="draggable-item">
@@ -350,7 +456,12 @@
                 value="kod_pocztowy"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -359,17 +470,32 @@
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="miasto" checked />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Miasto" />
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="kraj" checked />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Kraj" />
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="telk" checked />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -378,7 +504,12 @@
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="teld" checked />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -387,7 +518,12 @@
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="mail" checked />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Email" />
             </div>
             <div class="draggable-item">
@@ -397,7 +533,12 @@
                 value="bankaccount"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input
                 type="text"
                 class="field-name-input"
@@ -411,7 +552,12 @@
                 value="comment"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Komentarz" />
             </div>
             <div class="draggable-item">
@@ -421,12 +567,22 @@
                 value="season_string"
                 checked
               />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="Pora roku" />
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="token" checked />
-              <span class="drag-handle">⋮⋮</span>
+              <span
+                class="drag-handle"
+                aria-hidden="true"
+                title="Przeciągnij, aby zmienić kolejność"
+                >⋮⋮</span
+              >
               <input type="text" class="field-name-input" value="token" />
             </div>
           </div>
