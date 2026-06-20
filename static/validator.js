@@ -64,6 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showMessage(text, element, isSuccess = false) {
     element.className = "validator-result " + (isSuccess ? "valid" : "invalid");
+    // Secure fix: Using textContent instead of innerHTML to prevent DOM XSS
     element.textContent = text;
   }
 
