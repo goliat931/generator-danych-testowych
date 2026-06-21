@@ -969,7 +969,6 @@ input:focus {
   transform: scale(1.02);
 }
 
-
 .sun-and-moon > :is(.moon, .sun, .sun-beams) {
   transform-origin: center;
 }
@@ -1069,7 +1068,9 @@ input:focus {
   padding: 4px 8px;
   border-radius: 4px;
   flex: 1;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 .field-name-input:hover {
@@ -1080,4 +1081,15 @@ input:focus {
   outline: none;
   border-color: #1976d2;
   background-color: var(--bg-secondary);
+}
+
+/* Accessibility: Focus visible styles for buttons and links */
+button:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.nav-button:focus-visible,
+.theme-toggle-button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--icon-fill-hover);
+  outline-offset: 4px;
 }

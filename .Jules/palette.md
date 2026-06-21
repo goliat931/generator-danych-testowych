@@ -11,3 +11,7 @@
 ## 2024-07-25 - Custom Modal Close Buttons Accessibility
 **Learning:** In custom modal implementations, a simple `<span>×</span>` is often used as a close button. However, this pattern is completely inaccessible to screen reader and keyboard users, as `span` elements are non-interactive by default. Without explicit roles and keyboard handling, these users can get trapped inside modals.
 **Action:** Always add `role="button"`, `tabindex="0"`, a descriptive `aria-label`, a `keydown` event listener for 'Enter'/'Space', and explicit `:focus-visible` styles to any `div` or `span` that functions as a button.
+
+## 2025-01-24 - Missing Focus Indicators on Interactive Elements
+**Learning:** Native interactive elements like `<button>` and `<a>` across the application (e.g., standard buttons, custom navigation links, and theme toggle buttons) were lacking explicit `:focus-visible` styles, making keyboard navigation difficult for users who rely on visual focus indicators.
+**Action:** Always ensure that global styles include clear, high-contrast `:focus-visible` outlines for all interactive elements (such as `button`, `a`, and `.btn-*` classes) to meet accessibility standards and improve keyboard usability.
