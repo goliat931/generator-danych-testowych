@@ -15,3 +15,7 @@
 ## 2025-01-24 - Missing Focus Indicators on Interactive Elements
 **Learning:** Native interactive elements like `<button>` and `<a>` across the application (e.g., standard buttons, custom navigation links, and theme toggle buttons) were lacking explicit `:focus-visible` styles, making keyboard navigation difficult for users who rely on visual focus indicators.
 **Action:** Always ensure that global styles include clear, high-contrast `:focus-visible` outlines for all interactive elements (such as `button`, `a`, and `.btn-*` classes) to meet accessibility standards and improve keyboard usability.
+
+## 2025-02-09 - Modal Escape Key and Focus Management
+**Learning:** Custom modals often forget to implement the `Escape` key to close, and fail to return focus to the trigger element after closing. Also, focus must be brought inside the modal upon opening. This breaks keyboard navigation flow and traps users or leaves them disconnected from the context.
+**Action:** Always add a `keydown` listener for `Escape` on the `window`/`document` to close custom modals. Ensure focus is moved inside the modal (e.g. to the close button) when it opens, and focus is restored to the element that originally opened the modal after closing it, to maintain keyboard context.

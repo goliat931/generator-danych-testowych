@@ -463,27 +463,45 @@ document.addEventListener("DOMContentLoaded", () => {
     displayNrbInfo("");
   }
 
+  const closeModal = () => {
+    if (peselOptionsModal) {
+      peselOptionsModal.style.display = "none";
+      if (openPeselOptionsBtn) openPeselOptionsBtn.focus();
+    }
+  };
+
   if (openPeselOptionsBtn) {
     openPeselOptionsBtn.addEventListener("click", () => {
-      if (peselOptionsModal) peselOptionsModal.style.display = "block";
+      if (peselOptionsModal) {
+        peselOptionsModal.style.display = "block";
+        if (closeBtn) closeBtn.focus();
+      }
     });
   }
 
   if (closeBtn) {
-    closeBtn.addEventListener("click", () => {
-      if (peselOptionsModal) peselOptionsModal.style.display = "none";
-    });
+    closeBtn.addEventListener("click", closeModal);
     closeBtn.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        if (peselOptionsModal) peselOptionsModal.style.display = "none";
+        closeModal();
       }
     });
   }
 
   window.addEventListener("click", (event) => {
     if (event.target == peselOptionsModal) {
-      peselOptionsModal.style.display = "none";
+      closeModal();
+    }
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (
+      event.key === "Escape" &&
+      peselOptionsModal &&
+      peselOptionsModal.style.display === "block"
+    ) {
+      closeModal();
     }
   });
 
