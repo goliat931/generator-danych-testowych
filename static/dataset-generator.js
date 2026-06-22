@@ -905,5 +905,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeof window !== "undefined") {
     window.generateXml = generateXml;
     window.escapeXml = escapeXml;
+    window.formatDateYMD = formatDateYMD;
   }
 });
