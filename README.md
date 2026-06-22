@@ -7,7 +7,9 @@ https://goliat931.github.io/generator-danych-testowych/
 ## Strony aplikacji
 
 ### 1. **Generator Danych** (index.html)
+
 Główna strona aplikacji umożliwiająca generowanie pojedynczych numerów:
+
 - **PESEL** - z opcjami wyboru płci, roku, miesiąca i dnia urodzenia
 - **Dowód Osobisty (ID)** - generuje numery dowodów z prawidłowym checksumem
 - **REGON** - generuje 9-cyfrowe lub 14-cyfrowe numery REGON
@@ -15,31 +17,38 @@ Główna strona aplikacji umożliwiająca generowanie pojedynczych numerów:
 - **Imiona i Nazwiska** - losowe imiona i nazwiska polskie
 
 Każdy wygenerowany numer wyświetla dodatkowe metadane:
+
 - PESEL: wiek, płeć, data urodzenia, nazwa banku
 - Inne: odpowiednie informacje walidacyjne
 
 Funkcje:
+
 - 🌙 Tryb ciemny/jasny z persystencją w localStorage
 - 📋 Kopiowanie do schowka z powiadomieniem toast
 - 📱 Responsywny layout (mobile, tablet, desktop)
 
 ### 2. **Walidatory Danych** (validator.html)
+
 Strona do walidacji wygenerowanych lub użytkownika danych:
+
 - Weryfikacja PESEL-u (checksum, format, metadata)
 - Weryfikacja ID/Dowodu Osobistego (checksum, format)
 - Weryfikacja REGON (checksum dla 9 i 14 cyfr)
 - Weryfikacja NRB (checksum IBAN, kod banku)
 
 Każdy walidator wyświetla szczegółowe wyniki:
+
 - Status walidacji (✓ prawidłowy / ✗ nieprawidłowy)
 - Metadane (wiek, płeć, nazwa banku itd.)
 - Szczegóły błędów
 
 ### 3. **Generator Zbiorów Danych** (dataset-generator.html)
+
 Zaawansowana strona do generowania masowych zbiorów danych:
 
 **Funkcjonalność:**
-- 🔄 Wybór pól do wygenerowania (PESEL, ID, REGON, Imię, Nazwisko oraz dodatkowe pola testowe: token z datą, dane osobowe, dane adresowe, email, NIP, nazwisko firmy, komentarze i inne)
+
+- 🔄 Wybór pól do wygenerowania (PESEL, ID, REGON, Imię, Nazwisko oraz dodatkowe pola testowe: token z datą, dane osobowe, dane adresowe, email, rachunek bankowy, NIP, nazwa firmy, komentarze i inne)
 - ⬆️⬇️ Zmiana kolejności pól za pomocą drag & drop
 - 🔢 Konfiguracja liczby rekordów (1-100,000)
 - 📦 Wybór formatu eksportu:
@@ -53,18 +62,21 @@ Zaawansowana strona do generowania masowych zbiorów danych:
 ## Jak używać
 
 ### Generator Danych:
+
 1. Otwórz stronę w przeglądarce (index.html)
 2. Wybierz opcje generowania (np. płeć, rok, miesiąc dla PESEL-u)
 3. Kliknij przycisk generowania
 4. Kliknij na wygenerowany numer, aby skopiować go do schowka
 
 ### Walidatory:
+
 1. Przejdź na stronę "Walidatory Danych"
 2. Wpisz numer do walidacji
 3. Kliknij "Waliduj"
 4. Zobaczysz szczegółowe wyniki oraz metadane
 
 ### Generator Zbiorów:
+
 1. Przejdź na stronę "Generator Zbiorów"
 2. Zaznacz pola, które mają się znaleźć w zbiorze
 3. Zmień kolejność (drag & drop)
@@ -77,30 +89,38 @@ Zaawansowana strona do generowania masowych zbiorów danych:
 ## Formaty danych
 
 ### PESEL (11 cyfr)
+
 Numer Powszechnego Elekhronicznego Systemu Ewidencji Ludności
+
 - Cyfry 1-6: data urodzenia (YYMMDD)
 - Cyfry 7-9: numer seryjny
 - Cyfra 10: płeć (nieparzysta=mężczyzna, parzysta=kobieta)
 - Cyfra 11: checksum
 
 ### ID/Dowód Osobisty (3 litery + 6 cyfr + checksum)
+
 - Format: ABC123456X
 - Weryfikacja checksumu
 
 ### REGON (9 lub 14 cyfr)
+
 Rejestr Gospodarki Narodowej
+
 - 9 cyfr: dla osób fizycznych
 - 14 cyfr: dla podmiotów gospodarczych
 - Ostatnia cyfra to checksum
 
 ### NRB (26 cyfr IBAN)
+
 Numer Rachunku Bankowego (IBAN)
+
 - Format: PL + 24 cyfry
 - Cyfry 3-4: kod banku
 - Pozostałe cyfry: numer konta
 - Weryfikacja checksumu IBAN
 
 ### Imiona i Nazwiska
+
 Polskie imiona i nazwiska z rzeczywistych baz danych.
 
 ## Funkcje
@@ -120,6 +140,7 @@ Polskie imiona i nazwiska z rzeczywistych baz danych.
 ## Baza danych bankowych
 
 Projekt zawiera plik `plewibnra_utf8.txt` z oficjalną listą polskich banków i ich kodami. Dane są przetwarzane na `bank_codes.json` zawierający:
+
 - 3-cyfrowe kody banków
 - 8-cyfrowe kody oddziałów
 - Nazwy bankowych instytucji
@@ -127,16 +148,19 @@ Projekt zawiera plik `plewibnra_utf8.txt` z oficjalną listą polskich banków i
 ## Architektura generowania danych
 
 ### Generatory autorskie (własne implementacje):
+
 - **PESEL** - algorytm z checksumem, kodowanie płci i stulecia
 - **Dowód Osobisty (ID)** - format ABC123456X z checksumem
 - **REGON** - 9 lub 14 cyfrowe numery z checksumem
 - **NRB (IBAN)** - format PL + 24 cyfry z checksumem IBAN, kody banków z bazy
 
 ### Dane z plików JSON (polskie słowniki):
+
 - **Imiona** - maleNames, femaleNames (rzeczywiste imiona polskie)
 - **Nazwiska** - polskie nazwiska z bazy danych
 
 ### Dane z biblioteki Faker.js (CDN):
+
 - **Miasta** - kombinacja polskich miast + Faker (60% polskie, 40% от Faker)
 - **Ulice** - kombinacja polskich nazw ulic + Faker
 - **Telefony** - format polski za pomocą Faker
