@@ -572,9 +572,29 @@ document.addEventListener("DOMContentLoaded", () => {
   let generatedFilename = null;
   let generatedMimeType = null;
 
+  function showDatasetError(message) {
+    const errorDiv = document.getElementById("datasetError");
+    if (errorDiv) {
+      errorDiv.textContent = "❌ " + message;
+      errorDiv.style.display = "block";
+      // Auto-hide after 5 seconds to clear the message
+      setTimeout(() => {
+        errorDiv.style.display = "none";
+      }, 5000);
+    } else {
+      // Fallback
+      alert(message);
+    }
+  }
+
   document
     .getElementById("generateDatasetBtn")
     .addEventListener("click", () => {
+      const errorDiv = document.getElementById("datasetError");
+      if (errorDiv) {
+        errorDiv.style.display = "none";
+      }
+
       const recordCount = Math.min(
         parseInt(document.getElementById("recordCount").value) || 10,
         100000,
@@ -621,7 +641,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (duplicateNames.length > 0) {
         // Alert informujący o zduplikowanych nazwach / Alert informing about duplicate names
-        alert(
+        showDatasetError(
           `Nazwy pól muszą być unikalne. Znaleziono zduplikowane nazwy: ${duplicateNames.join(", ")}`,
         );
         return;
@@ -630,7 +650,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const fields = fieldsInfo.map((f) => f.name.replace(/\s+/g, "_"));
 
       if (fields.length === 0) {
-        alert("Zaznacz przynajmniej jedno pole!");
+        showDatasetError("Zaznacz przynajmniej jedno pole!");
         return;
       }
 
