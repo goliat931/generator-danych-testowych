@@ -19,3 +19,7 @@
 ## 2025-02-09 - Modal Escape Key and Focus Management
 **Learning:** Custom modals often forget to implement the `Escape` key to close, and fail to return focus to the trigger element after closing. Also, focus must be brought inside the modal upon opening. This breaks keyboard navigation flow and traps users or leaves them disconnected from the context.
 **Action:** Always add a `keydown` listener for `Escape` on the `window`/`document` to close custom modals. Ensure focus is moved inside the modal (e.g. to the close button) when it opens, and focus is restored to the element that originally opened the modal after closing it, to maintain keyboard context.
+
+## 2025-02-23 - Replace Blocking Alerts with Inline Feedback
+**Learning:** Using native `alert()` for form validation is disruptive to the user flow, inaccessible for many screen reader users, and visually jarring.
+**Action:** Replace `alert()` calls with inline feedback elements (e.g., using `role="status" aria-live="polite"`) styled appropriately for errors or success messages. This allows for clear, non-blocking contextual feedback that works well for all users.
