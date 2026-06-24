@@ -23,3 +23,7 @@
 ## 2025-02-23 - Replace Blocking Alerts with Inline Feedback
 **Learning:** Using native `alert()` for form validation is disruptive to the user flow, inaccessible for many screen reader users, and visually jarring.
 **Action:** Replace `alert()` calls with inline feedback elements (e.g., using `role="status" aria-live="polite"`) styled appropriately for errors or success messages. This allows for clear, non-blocking contextual feedback that works well for all users.
+
+## 2025-02-23 - Asynchronous UI Feedback for Heavy Tasks
+**Learning:** When generating massive datasets (e.g. 100,000 records) entirely on the client-side, the browser's main thread becomes blocked, freezing the application. Without visual feedback, users might think the application has crashed and try to click the button multiple times.
+**Action:** Always wrap heavy synchronous operations in a `setTimeout` (even with a small delay like 50ms) to allow the browser to paint loading states (e.g., `⏳ Generowanie...`, disabling the button, and setting `aria-busy="true"`) before the main thread is locked. Use `try/finally` to guarantee the button state is restored when the operation finishes.
