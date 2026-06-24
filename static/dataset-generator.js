@@ -589,240 +589,258 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document
     .getElementById("generateDatasetBtn")
-    .addEventListener("click", () => {
+    .addEventListener("click", function () {
+      const generateBtn = this;
+      const originalText = generateBtn.textContent;
+      generateBtn.textContent = "⏳ Generowanie...";
+      generateBtn.disabled = true;
+      generateBtn.setAttribute("aria-busy", "true");
+
       const errorDiv = document.getElementById("datasetError");
       if (errorDiv) {
         errorDiv.style.display = "none";
       }
 
-      const recordCount = Math.min(
-        parseInt(document.getElementById("recordCount").value) || 10,
-        100000,
-      );
-      const format = document.querySelector(
-        'input[name="export-format"]:checked',
-      ).value;
-      let separator =
-        document.querySelector('input[name="csv-separator"]:checked')?.value ||
-        ",";
+      setTimeout(() => {
+        try {
+          const recordCount = Math.min(
+            parseInt(document.getElementById("recordCount").value) || 10,
+            100000,
+          );
+          const format = document.querySelector(
+            'input[name="export-format"]:checked',
+          ).value;
+          let separator =
+            document.querySelector('input[name="csv-separator"]:checked')
+              ?.value || ",";
 
-      // Zamień "tab" na faktyczną tabulację
-      if (separator === "tab") {
-        separator = "\t";
-      }
-
-      // Pobierz zaznaczone pola w kolejności / Get checked fields in order
-      const fieldsInfo = [];
-      const seenNames = new Set();
-      const duplicateNames = [];
-
-      document
-        .querySelectorAll('.draggable-item input[type="checkbox"]:checked')
-        .forEach((checkbox) => {
-          const nameInput = checkbox
-            .closest(".draggable-item")
-            .querySelector(".field-name-input");
-          const customName = nameInput
-            ? nameInput.value.trim()
-            : checkbox.value;
-          const finalName = customName || checkbox.value;
-          const normalizedName = finalName.replace(/\s+/g, "_");
-
-          // Sprawdzanie duplikatów / Checking for duplicates
-          if (seenNames.has(normalizedName)) {
-            if (!duplicateNames.includes(finalName)) {
-              duplicateNames.push(finalName);
-            }
+          // Zamień "tab" na faktyczną tabulację
+          if (separator === "tab") {
+            separator = "\t";
           }
-          seenNames.add(normalizedName);
 
-          fieldsInfo.push({ key: checkbox.value, name: finalName });
-        });
+          // Pobierz zaznaczone pola w kolejności / Get checked fields in order
+          const fieldsInfo = [];
+          const seenNames = new Set();
+          const duplicateNames = [];
 
-      if (duplicateNames.length > 0) {
-        // Alert informujący o zduplikowanych nazwach / Alert informing about duplicate names
-        showDatasetError(
-          `Nazwy pól muszą być unikalne. Znaleziono zduplikowane nazwy: ${duplicateNames.join(", ")}`,
-        );
-        return;
-      }
+          document
+            .querySelectorAll('.draggable-item input[type="checkbox"]:checked')
+            .forEach((checkbox) => {
+              const nameInput = checkbox
+                .closest(".draggable-item")
+                .querySelector(".field-name-input");
+              const customName = nameInput
+                ? nameInput.value.trim()
+                : checkbox.value;
+              const finalName = customName || checkbox.value;
+              const normalizedName = finalName.replace(/\s+/g, "_");
 
-      const fields = fieldsInfo.map((f) => f.name.replace(/\s+/g, "_"));
+              // Sprawdzanie duplikatów / Checking for duplicates
+              if (seenNames.has(normalizedName)) {
+                if (!duplicateNames.includes(finalName)) {
+                  duplicateNames.push(finalName);
+                }
+              }
+              seenNames.add(normalizedName);
 
-      if (fields.length === 0) {
-        showDatasetError("Zaznacz przynajmniej jedno pole!");
-        return;
-      }
+              fieldsInfo.push({ key: checkbox.value, name: finalName });
+            });
 
-      // Generuj dane
-      const data = [];
-      for (let i = 0; i < recordCount; i++) {
-        const record = {};
-
-        // Podstawowe wartości używane w wielu polach
-        const sex = "M";
-        const birthdate = randomDateBetween(
-          new Date(1950, 0, 1),
-          new Date(2002, 11, 31),
-        );
-        const pesel = generatePeselFromDate(birthdate, sex);
-        const firstNameMale = getRandomMaleName();
-        const firstNameFemale = getRandomFemaleName();
-        const surname = getRandomSurname();
-        const idNumber = generateIdNumber();
-        const nrb = generateNrb();
-        const bankAccount = nrb;
-        const companyName = generateCompanyName();
-        const nip = generateNip();
-
-        fieldsInfo.forEach((fieldObj) => {
-          const field = fieldObj.key;
-          const fieldName = fieldObj.name.replace(/\s+/g, "_");
-          switch (field) {
-            case "pesel":
-              record[fieldName] = pesel;
-              break;
-            case "id":
-              record[fieldName] = idNumber;
-              break;
-            case "regon":
-              record[fieldName] = generateRegon(Math.random() > 0.5 ? 9 : 14);
-              break;
-            case "firstName":
-              record[fieldName] = firstNameMale;
-              break;
-            case "surname":
-              record[fieldName] = surname;
-              break;
-            case "imie":
-              record[fieldName] = firstNameMale;
-              break;
-            case "nazwa":
-              record[fieldName] = surname;
-              break;
-            case "imie_ojca":
-              record[fieldName] = firstNameMale;
-              break;
-            case "imie_matki":
-              record[fieldName] = firstNameFemale;
-              break;
-            case "sex":
-              record[fieldName] = sex;
-              break;
-            case "citizenship":
-              record[fieldName] = "POL";
-              break;
-            case "birthdate":
-              record[fieldName] = formatDateYMD(birthdate);
-              break;
-            case "birthCountry":
-              record[fieldName] = "POL";
-              break;
-            case "birthcity":
-              record[fieldName] = getRandomCity();
-              break;
-            case "document_type":
-              record[fieldName] = "DOWOD_OSOBISTY";
-              break;
-            case "dok_tozs":
-              record[fieldName] = idNumber;
-              break;
-            case "dok_expirydate": {
-              const expiry = randomDateBetween(
-                new Date(),
-                new Date(new Date().getFullYear() + 10, 11, 31),
-              );
-              record[fieldName] = formatDateYMD(expiry);
-              break;
-            }
-            case "ulica":
-              record[fieldName] = getRandomStreetName();
-              break;
-            case "nr_domu":
-              record[fieldName] = String(randomInt(1, 999));
-              break;
-            case "nr_lokalu":
-              record[fieldName] = String(randomInt(1, 999));
-              break;
-            case "kod_pocztowy":
-              record[fieldName] = generatePolishPostalCode();
-              break;
-            case "miasto":
-              record[fieldName] = getRandomCity();
-              break;
-            case "kraj":
-              record[fieldName] = "POL";
-              break;
-            case "telk":
-              record[fieldName] = generatePhoneNumber();
-              break;
-            case "teld":
-              record[fieldName] = generatePhoneNumber();
-              break;
-            case "mail":
-              record[fieldName] = generateEmail(firstNameMale, surname);
-              break;
-            case "bankaccount":
-              record[fieldName] = bankAccount;
-              break;
-            case "comment":
-              record[fieldName] = generateComment();
-              break;
-            case "season_string":
-              record[fieldName] = generateSeasonString();
-              break;
-            case "token":
-              record[fieldName] = generateToken();
-              break;
-            case "alnova_pid":
-              record[fieldName] = String(randomInt(10000000, 99999999));
-              break;
-            case "nip":
-              record[fieldName] = nip;
-              break;
-            case "companyname":
-              record[fieldName] = companyName;
-              break;
-            default:
-              record[fieldName] = "";
+          if (duplicateNames.length > 0) {
+            // Alert informujący o zduplikowanych nazwach / Alert informing about duplicate names
+            showDatasetError(
+              `Nazwy pól muszą być unikalne. Znaleziono zduplikowane nazwy: ${duplicateNames.join(", ")}`,
+            );
+            return;
           }
-        });
-        data.push(record);
-      }
 
-      // Przygotuj export
-      let content, filename, mimeType;
+          const fields = fieldsInfo.map((f) => f.name.replace(/\s+/g, "_"));
 
-      if (format === "csv") {
-        content = generateCsv(data, fields, separator);
-        filename = "dane_testowe.csv";
-        mimeType = "text/csv;charset=utf-8;";
-      } else if (format === "json") {
-        content = JSON.stringify(data, null, 2);
-        filename = "dane_testowe.json";
-        mimeType = "application/json;charset=utf-8;";
-      } else if (format === "xml") {
-        content = generateXml(data, fields);
-        filename = "dane_testowe.xml";
-        mimeType = "application/xml;charset=utf-8;";
-      }
+          if (fields.length === 0) {
+            showDatasetError("Zaznacz przynajmniej jedno pole!");
+            return;
+          }
 
-      // Przechowaj dane do pobrania
-      generatedData = data;
-      generatedFields = fields;
-      generatedContent = content;
-      generatedFilename = filename;
-      generatedMimeType = mimeType;
+          // Generuj dane
+          const data = [];
+          for (let i = 0; i < recordCount; i++) {
+            const record = {};
 
-      // Pokaż podgląd
-      showPreview(data, fields, format, separator);
+            // Podstawowe wartości używane w wielu polach
+            const sex = "M";
+            const birthdate = randomDateBetween(
+              new Date(1950, 0, 1),
+              new Date(2002, 11, 31),
+            );
+            const pesel = generatePeselFromDate(birthdate, sex);
+            const firstNameMale = getRandomMaleName();
+            const firstNameFemale = getRandomFemaleName();
+            const surname = getRandomSurname();
+            const idNumber = generateIdNumber();
+            const nrb = generateNrb();
+            const bankAccount = nrb;
+            const companyName = generateCompanyName();
+            const nip = generateNip();
 
-      // Aktywuj przycisk pobierania
-      document.getElementById("downloadDatasetBtn").disabled = false;
-      document
-        .getElementById("downloadDatasetBtn")
-        .removeAttribute("aria-disabled");
-      document.getElementById("downloadDatasetBtn").removeAttribute("title");
+            fieldsInfo.forEach((fieldObj) => {
+              const field = fieldObj.key;
+              const fieldName = fieldObj.name.replace(/\s+/g, "_");
+              switch (field) {
+                case "pesel":
+                  record[fieldName] = pesel;
+                  break;
+                case "id":
+                  record[fieldName] = idNumber;
+                  break;
+                case "regon":
+                  record[fieldName] = generateRegon(
+                    Math.random() > 0.5 ? 9 : 14,
+                  );
+                  break;
+                case "firstName":
+                  record[fieldName] = firstNameMale;
+                  break;
+                case "surname":
+                  record[fieldName] = surname;
+                  break;
+                case "imie":
+                  record[fieldName] = firstNameMale;
+                  break;
+                case "nazwa":
+                  record[fieldName] = surname;
+                  break;
+                case "imie_ojca":
+                  record[fieldName] = firstNameMale;
+                  break;
+                case "imie_matki":
+                  record[fieldName] = firstNameFemale;
+                  break;
+                case "sex":
+                  record[fieldName] = sex;
+                  break;
+                case "citizenship":
+                  record[fieldName] = "POL";
+                  break;
+                case "birthdate":
+                  record[fieldName] = formatDateYMD(birthdate);
+                  break;
+                case "birthCountry":
+                  record[fieldName] = "POL";
+                  break;
+                case "birthcity":
+                  record[fieldName] = getRandomCity();
+                  break;
+                case "document_type":
+                  record[fieldName] = "DOWOD_OSOBISTY";
+                  break;
+                case "dok_tozs":
+                  record[fieldName] = idNumber;
+                  break;
+                case "dok_expirydate": {
+                  const expiry = randomDateBetween(
+                    new Date(),
+                    new Date(new Date().getFullYear() + 10, 11, 31),
+                  );
+                  record[fieldName] = formatDateYMD(expiry);
+                  break;
+                }
+                case "ulica":
+                  record[fieldName] = getRandomStreetName();
+                  break;
+                case "nr_domu":
+                  record[fieldName] = String(randomInt(1, 999));
+                  break;
+                case "nr_lokalu":
+                  record[fieldName] = String(randomInt(1, 999));
+                  break;
+                case "kod_pocztowy":
+                  record[fieldName] = generatePolishPostalCode();
+                  break;
+                case "miasto":
+                  record[fieldName] = getRandomCity();
+                  break;
+                case "kraj":
+                  record[fieldName] = "POL";
+                  break;
+                case "telk":
+                  record[fieldName] = generatePhoneNumber();
+                  break;
+                case "teld":
+                  record[fieldName] = generatePhoneNumber();
+                  break;
+                case "mail":
+                  record[fieldName] = generateEmail(firstNameMale, surname);
+                  break;
+                case "bankaccount":
+                  record[fieldName] = bankAccount;
+                  break;
+                case "comment":
+                  record[fieldName] = generateComment();
+                  break;
+                case "season_string":
+                  record[fieldName] = generateSeasonString();
+                  break;
+                case "token":
+                  record[fieldName] = generateToken();
+                  break;
+                case "alnova_pid":
+                  record[fieldName] = String(randomInt(10000000, 99999999));
+                  break;
+                case "nip":
+                  record[fieldName] = nip;
+                  break;
+                case "companyname":
+                  record[fieldName] = companyName;
+                  break;
+                default:
+                  record[fieldName] = "";
+              }
+            });
+            data.push(record);
+          }
+
+          // Przygotuj export
+          let content, filename, mimeType;
+
+          if (format === "csv") {
+            content = generateCsv(data, fields, separator);
+            filename = "dane_testowe.csv";
+            mimeType = "text/csv;charset=utf-8;";
+          } else if (format === "json") {
+            content = JSON.stringify(data, null, 2);
+            filename = "dane_testowe.json";
+            mimeType = "application/json;charset=utf-8;";
+          } else if (format === "xml") {
+            content = generateXml(data, fields);
+            filename = "dane_testowe.xml";
+            mimeType = "application/xml;charset=utf-8;";
+          }
+
+          // Przechowaj dane do pobrania
+          generatedData = data;
+          generatedFields = fields;
+          generatedContent = content;
+          generatedFilename = filename;
+          generatedMimeType = mimeType;
+
+          // Pokaż podgląd
+          showPreview(data, fields, format, separator);
+
+          // Aktywuj przycisk pobierania
+          document.getElementById("downloadDatasetBtn").disabled = false;
+          document
+            .getElementById("downloadDatasetBtn")
+            .removeAttribute("aria-disabled");
+          document
+            .getElementById("downloadDatasetBtn")
+            .removeAttribute("title");
+        } finally {
+          generateBtn.textContent = originalText;
+          generateBtn.disabled = false;
+          generateBtn.removeAttribute("aria-busy");
+        }
+      }, 50);
     });
 
   // Przycisk pobierania
