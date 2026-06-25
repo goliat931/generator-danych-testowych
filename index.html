@@ -24,8 +24,8 @@
           <button
             class="theme-toggle"
             id="theme-toggle"
-            title="Toggles light & dark"
-            aria-label="auto"
+            title="Przełącz motyw"
+            aria-label="Przełącz motyw"
             aria-live="polite"
           >
             <svg
@@ -242,7 +242,13 @@
 
     <div id="peselOptionsModal" class="modal">
       <div class="modal-content">
-        <span class="close-btn" role="button" tabindex="0" aria-label="Zamknij ustawienia PESEL / Close PESEL settings">×</span>
+        <span
+          class="close-btn"
+          role="button"
+          tabindex="0"
+          aria-label="Zamknij ustawienia PESEL / Close PESEL settings"
+          >×</span
+        >
         <h2>Ustawienia PESEL</h2>
         <div class="generator-options">
           <div class="option-group">
@@ -259,13 +265,24 @@
           </div>
           <div class="option-group">
             <label for="age">Wiek:</label>
-            <input type="number" id="age" min="0" max="120" placeholder="np. 30" />
+            <input
+              type="number"
+              id="age"
+              min="0"
+              max="120"
+              placeholder="np. 30"
+            />
           </div>
         </div>
       </div>
     </div>
 
-    <div id="copy-message" class="copy-message" role="status" aria-live="polite"></div>
+    <div
+      id="copy-message"
+      class="copy-message"
+      role="status"
+      aria-live="polite"
+    ></div>
 
     <footer>
       Stworzony przez: <strong>Dawid Karczewski</strong>
