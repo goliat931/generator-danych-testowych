@@ -27,3 +27,7 @@
 ## 2025-02-23 - Asynchronous UI Feedback for Heavy Tasks
 **Learning:** When generating massive datasets (e.g. 100,000 records) entirely on the client-side, the browser's main thread becomes blocked, freezing the application. Without visual feedback, users might think the application has crashed and try to click the button multiple times.
 **Action:** Always wrap heavy synchronous operations in a `setTimeout` (even with a small delay like 50ms) to allow the browser to paint loading states (e.g., `⏳ Generowanie...`, disabling the button, and setting `aria-busy="true"`) before the main thread is locked. Use `try/finally` to guarantee the button state is restored when the operation finishes.
+
+## 2025-02-23 - Dynamic ARIA Labels for Theme Toggles
+**Learning:** When using a toggle button for themes (light/dark) whose state is managed by JavaScript, setting a static or generic `aria-label` (like "auto", "light", or "dark") fails to convey the *action* that will happen when the button is clicked.
+**Action:** Always dynamically update the `aria-label` and `title` of toggle buttons via JavaScript to clearly describe the action it will perform (e.g., "Switch to light theme" or "Włącz motyw jasny") based on the *current* state.

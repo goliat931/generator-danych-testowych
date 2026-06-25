@@ -1,25 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
   function initTheme() {
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-    let currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    let currentTheme = savedTheme || (prefersDark ? "dark" : "light");
 
     const applyTheme = (theme) => {
-      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute("data-theme", theme);
       if (themeToggleBtn) {
-        themeToggleBtn.setAttribute('aria-label', theme);
+        const titleText =
+          theme === "dark" ? "Włącz motyw jasny" : "Włącz motyw ciemny";
+        themeToggleBtn.setAttribute("aria-label", titleText);
+        themeToggleBtn.setAttribute("title", titleText);
       }
     };
 
     applyTheme(currentTheme);
 
     if (themeToggleBtn) {
-      themeToggleBtn.addEventListener('click', (e) => {
+      themeToggleBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-        localStorage.setItem('theme', currentTheme);
+        currentTheme = currentTheme === "light" ? "dark" : "light";
+        localStorage.setItem("theme", currentTheme);
         applyTheme(currentTheme);
       });
     }
@@ -33,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       bankCodes = data;
     })
     .catch((error) =>
-      console.error("Błąd załadowania bank_codes.json:", error)
+      console.error("Błąd załadowania bank_codes.json:", error),
     );
 
   const peselInput = document.getElementById("peselInput");
@@ -56,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const weightsPesel = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
   const letterToNumber = Object.fromEntries(
-    Array.from({ length: 26 }, (_, i) => [String.fromCharCode(65 + i), 10 + i])
+    Array.from({ length: 26 }, (_, i) => [String.fromCharCode(65 + i), 10 + i]),
   );
   const weightsId = [7, 3, 1, 9, 7, 3, 1, 7, 3];
   const weightsRegon9 = [8, 9, 2, 3, 4, 5, 6, 7];

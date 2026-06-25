@@ -72,7 +72,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const applyTheme = (theme) => {
       document.documentElement.setAttribute("data-theme", theme);
       if (themeToggleBtn) {
-        themeToggleBtn.setAttribute("aria-label", theme);
+        const titleText =
+          theme === "dark" ? "Włącz motyw jasny" : "Włącz motyw ciemny";
+        themeToggleBtn.setAttribute("aria-label", titleText);
+        themeToggleBtn.setAttribute("title", titleText);
       }
     };
 
