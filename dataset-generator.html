@@ -95,8 +95,14 @@
             </div>
 
             <div class="control-field">
-              <h3 style="margin: 0 0 8px 0">Format eksportu</h3>
-              <div class="format-selection">
+              <h3 id="exportFormatLabel" style="margin: 0 0 8px 0">
+                Format eksportu
+              </h3>
+              <div
+                class="format-selection"
+                role="radiogroup"
+                aria-labelledby="exportFormatLabel"
+              >
                 <label class="format-option">
                   <input
                     type="radio"
@@ -118,8 +124,14 @@
             </div>
 
             <div class="control-field" id="separatorFieldWrapper">
-              <h3 style="margin: 0 0 8px 0">Separator (CSV)</h3>
-              <div class="separator-selection">
+              <h3 id="csvSeparatorLabel" style="margin: 0 0 8px 0">
+                Separator (CSV)
+              </h3>
+              <div
+                class="separator-selection"
+                role="radiogroup"
+                aria-labelledby="csvSeparatorLabel"
+              >
                 <label class="separator-option">
                   <input type="radio" name="csv-separator" value="," checked />
                   , (Przecinek)
