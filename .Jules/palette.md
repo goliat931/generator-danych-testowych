@@ -31,3 +31,7 @@
 ## 2025-02-23 - Dynamic ARIA Labels for Theme Toggles
 **Learning:** When using a toggle button for themes (light/dark) whose state is managed by JavaScript, setting a static or generic `aria-label` (like "auto", "light", or "dark") fails to convey the *action* that will happen when the button is clicked.
 **Action:** Always dynamically update the `aria-label` and `title` of toggle buttons via JavaScript to clearly describe the action it will perform (e.g., "Switch to light theme" or "Włącz motyw jasny") based on the *current* state.
+
+## 2025-02-23 - Dynamic ARIA labels for adjoining input elements
+**Learning:** When building complex forms with adjoining interactive elements (like a checkbox next to a text input without explicit label wrappers), screen readers fail to associate the elements properly. For example, a screen reader would announce a checkbox without context, and a text input without context.
+**Action:** Always add explicit `aria-label`s to both elements. Furthermore, if one element's value provides context for the other (e.g., the text input names the field that the checkbox toggles), use JavaScript to dynamically update the checkbox's `aria-label` whenever the text input changes to maintain accurate context for screen reader users.
