@@ -492,8 +492,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Pokazywanie oryginalnej nazwy pola, jeśli została zmodyfikowana / Show original field name if it was modified
   document.querySelectorAll(".draggable-item").forEach((item) => {
+    const checkbox = item.querySelector('input[type="checkbox"]');
     const input = item.querySelector(".field-name-input");
     if (input) {
+      // Setup initial ARIA labels
+      if (checkbox) {
+        checkbox.setAttribute("aria-label", `Dołącz pole ${input.value}`);
+      }
+      input.setAttribute("aria-label", "Nazwa pola w wygenerowanym pliku");
+
       const originalName = input.getAttribute("value");
       const hint = document.createElement("small");
       hint.className = "original-name-hint";
@@ -512,6 +519,14 @@ document.addEventListener("DOMContentLoaded", () => {
           hint.style.display = "inline";
         } else {
           hint.style.display = "none";
+        }
+
+        // Dynamically update checkbox aria-label
+        if (checkbox) {
+          checkbox.setAttribute(
+            "aria-label",
+            `Dołącz pole ${input.value || originalName}`,
+          );
         }
       });
 
