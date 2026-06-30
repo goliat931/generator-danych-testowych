@@ -422,8 +422,14 @@ input {
 
 select:focus,
 input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: #1976d2;
+}
+
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--icon-fill-hover);
+  outline-offset: 2px;
 }
 
 /* Specyficzny układ dla NRB */
@@ -453,8 +459,13 @@ input:focus {
 }
 
 .validator-input-group input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: #1976d2;
+}
+
+.validator-input-group input:focus-visible {
+  outline: 2px solid var(--icon-fill-hover);
+  outline-offset: 2px;
 }
 
 .validator-input-group button {
@@ -1078,9 +1089,14 @@ input:focus {
 }
 
 .field-name-input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: #1976d2;
   background-color: var(--bg-secondary);
+}
+
+.field-name-input:focus-visible {
+  outline: 2px solid var(--icon-fill-hover);
+  outline-offset: 2px;
 }
 
 /* Accessibility: Focus visible styles for buttons and links */
