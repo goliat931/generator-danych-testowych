@@ -422,7 +422,7 @@ input {
 
 select:focus,
 input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: #1976d2;
 }
 
@@ -453,7 +453,7 @@ input:focus {
 }
 
 .validator-input-group input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: #1976d2;
 }
 
@@ -1078,7 +1078,7 @@ input:focus {
 }
 
 .field-name-input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: #1976d2;
   background-color: var(--bg-secondary);
 }
