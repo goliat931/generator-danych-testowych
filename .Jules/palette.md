@@ -35,3 +35,7 @@
 ## 2025-02-23 - Dynamic ARIA labels for adjoining input elements
 **Learning:** When building complex forms with adjoining interactive elements (like a checkbox next to a text input without explicit label wrappers), screen readers fail to associate the elements properly. For example, a screen reader would announce a checkbox without context, and a text input without context.
 **Action:** Always add explicit `aria-label`s to both elements. Furthermore, if one element's value provides context for the other (e.g., the text input names the field that the checkbox toggles), use JavaScript to dynamically update the checkbox's `aria-label` whenever the text input changes to maintain accurate context for screen reader users.
+
+## 2025-02-23 - Focus Visible Outline in High Contrast Mode
+**Learning:** Using `outline: none;` on focus states while relying purely on `border-color` changes is an accessibility anti-pattern. High Contrast Modes in operating systems (like Windows HCM) often strip out custom background colors and border colors, making the focus state completely invisible to users relying on these modes.
+**Action:** Always use `outline: 2px solid transparent;` instead of `outline: none;` on focus states. This preserves the native high-contrast outline that is injected by the OS in HCM, while remaining invisible (transparent) in normal viewing modes, allowing custom border colors or box shadows to serve as the visual indicator.
