@@ -422,7 +422,7 @@ input {
 
 select:focus,
 input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: #1976d2;
 }
 
@@ -453,7 +453,7 @@ input:focus {
 }
 
 .validator-input-group input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: #1976d2;
 }
 
@@ -1078,7 +1078,7 @@ input:focus {
 }
 
 .field-name-input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: #1976d2;
   background-color: var(--bg-secondary);
 }
@@ -1089,7 +1089,9 @@ button:focus-visible,
 .btn-secondary:focus-visible,
 .nav-button:focus-visible,
 .theme-toggle-button:focus-visible,
-a:focus-visible {
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
   outline: 2px solid var(--icon-fill-hover);
   outline-offset: 4px;
 }
