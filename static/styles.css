@@ -506,6 +506,19 @@ input:focus {
   border: 2px solid #c62828;
 }
 
+/* Accessibility: Visual feedback for validation states */
+input[aria-invalid="true"] {
+  border-color: #c62828;
+  outline: 2px solid #c62828;
+  outline-offset: -2px;
+}
+
+input[aria-invalid="false"] {
+  border-color: #2e7d32;
+  outline: 2px solid #2e7d32;
+  outline-offset: -2px;
+}
+
 /* --- THEME SWITCH --- */
 .theme-switch {
   display: flex;
