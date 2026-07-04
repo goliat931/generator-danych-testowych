@@ -35,3 +35,7 @@
 ## 2025-02-23 - Dynamic ARIA labels for adjoining input elements
 **Learning:** When building complex forms with adjoining interactive elements (like a checkbox next to a text input without explicit label wrappers), screen readers fail to associate the elements properly. For example, a screen reader would announce a checkbox without context, and a text input without context.
 **Action:** Always add explicit `aria-label`s to both elements. Furthermore, if one element's value provides context for the other (e.g., the text input names the field that the checkbox toggles), use JavaScript to dynamically update the checkbox's `aria-label` whenever the text input changes to maintain accurate context for screen reader users.
+
+## 2025-02-23 - Form Validation Accessibility and Immediate Feedback
+**Learning:** Missing connection between input and error messages makes it hard for screen reader users to understand validation failures. Visual feedback only on the message is insufficient. Delaying error clearing until the next submission creates a poor UX.
+**Action:** Always link inputs to error containers using `aria-describedby`, use `aria-invalid="true"` on the input itself when validation fails, provide visual styles for invalid inputs, and clear the error state on the `input` event to provide immediate feedback.
