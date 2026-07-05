@@ -35,3 +35,7 @@
 ## 2025-02-23 - Dynamic ARIA labels for adjoining input elements
 **Learning:** When building complex forms with adjoining interactive elements (like a checkbox next to a text input without explicit label wrappers), screen readers fail to associate the elements properly. For example, a screen reader would announce a checkbox without context, and a text input without context.
 **Action:** Always add explicit `aria-label`s to both elements. Furthermore, if one element's value provides context for the other (e.g., the text input names the field that the checkbox toggles), use JavaScript to dynamically update the checkbox's `aria-label` whenever the text input changes to maintain accurate context for screen reader users.
+
+## 2026-07-05 - Inline Form Validation Feedback
+**Learning:** Implementing visual validation cues (like borders) purely through CSS using `[aria-invalid]` selectors ensures the visual state stays perfectly in sync with the accessible state, while clearing these states immediately on the `input` event improves real-time perceived responsiveness.
+**Action:** Always link input elements to their error containers via `aria-describedby` and drive validation styling off the `aria-invalid` attribute instead of separate CSS classes, removing them eagerly on user input.
