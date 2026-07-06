@@ -67,10 +67,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const weightsRegon9 = [8, 9, 2, 3, 4, 5, 6, 7];
   const weightsRegon14 = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8];
 
-  function showMessage(text, element, isSuccess = false) {
+  function showMessage(text, element, isSuccess = false, inputElement = null) {
     element.className = "validator-result " + (isSuccess ? "valid" : "invalid");
     // Secure fix: Using textContent instead of innerHTML to prevent DOM XSS
     element.textContent = text;
+
+    if (inputElement) {
+      inputElement.setAttribute("aria-invalid", isSuccess ? "false" : "true");
+    }
   }
 
   function isValidPeselChecksum(pesel) {
@@ -319,9 +323,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const pesel = peselInput.value.trim();
     if (pesel) {
       const result = validatePesel(pesel);
-      showMessage(result.message, peselResult, result.isValid);
+      showMessage(result.message, peselResult, result.isValid, peselInput);
     } else {
-      showMessage("❌ Wpisz numer PESEL", peselResult, false);
+      showMessage("❌ Wpisz numer PESEL", peselResult, false, peselInput);
     }
   });
 
@@ -329,13 +333,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") peselValidateBtn.click();
   });
 
+  peselInput.addEventListener("input", () => {
+    peselInput.removeAttribute("aria-invalid");
+    peselResult.textContent = "";
+    peselResult.className = "validator-result";
+  });
+
   idValidateBtn.addEventListener("click", () => {
     const id = idInput.value.trim().toUpperCase();
     if (id) {
       const result = validateId(id);
-      showMessage(result.message, idResult, result.isValid);
+      showMessage(result.message, idResult, result.isValid, idInput);
     } else {
-      showMessage("❌ Wpisz numer dowodu", idResult, false);
+      showMessage("❌ Wpisz numer dowodu", idResult, false, idInput);
     }
   });
 
@@ -343,13 +353,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") idValidateBtn.click();
   });
 
+  idInput.addEventListener("input", () => {
+    idInput.removeAttribute("aria-invalid");
+    idResult.textContent = "";
+    idResult.className = "validator-result";
+  });
+
   regonValidateBtn.addEventListener("click", () => {
     const regon = regonInput.value.trim();
     if (regon) {
       const result = validateRegon(regon);
-      showMessage(result.message, regonResult, result.isValid);
+      showMessage(result.message, regonResult, result.isValid, regonInput);
     } else {
-      showMessage("❌ Wpisz numer REGON", regonResult, false);
+      showMessage("❌ Wpisz numer REGON", regonResult, false, regonInput);
     }
   });
 
@@ -357,18 +373,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") regonValidateBtn.click();
   });
 
+  regonInput.addEventListener("input", () => {
+    regonInput.removeAttribute("aria-invalid");
+    regonResult.textContent = "";
+    regonResult.className = "validator-result";
+  });
+
   nrbValidateBtn.addEventListener("click", () => {
     const nrb = nrbInput.value.trim();
     if (nrb) {
       const result = validateNrb(nrb);
-      showMessage(result.message, nrbResult, result.isValid);
+      showMessage(result.message, nrbResult, result.isValid, nrbInput);
     } else {
-      showMessage("❌ Wpisz numer rachunku", nrbResult, false);
+      showMessage("❌ Wpisz numer rachunku", nrbResult, false, nrbInput);
     }
   });
 
   nrbInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") nrbValidateBtn.click();
+  });
+
+  nrbInput.addEventListener("input", () => {
+    nrbInput.removeAttribute("aria-invalid");
+    nrbResult.textContent = "";
+    nrbResult.className = "validator-result";
   });
 
   if (typeof window !== "undefined") {
