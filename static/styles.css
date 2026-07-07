@@ -457,6 +457,24 @@ input:focus {
   border-color: #1976d2;
 }
 
+.validator-input-group input[aria-invalid="true"] {
+  border-color: #c62828;
+}
+
+.validator-input-group input[aria-invalid="true"]:focus {
+  outline: 2px solid #c62828;
+  outline-offset: 1px;
+}
+
+.validator-input-group input[aria-invalid="false"] {
+  border-color: #2e7d32;
+}
+
+.validator-input-group input[aria-invalid="false"]:focus {
+  outline: 2px solid #2e7d32;
+  outline-offset: 1px;
+}
+
 .validator-input-group button {
   padding: 12px 24px;
   font-size: 0.95rem;
