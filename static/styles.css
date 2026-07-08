@@ -457,6 +457,16 @@ input:focus {
   border-color: #1976d2;
 }
 
+.validator-input-group input[aria-invalid="true"] {
+  border-color: #d32f2f;
+  background-color: #ffebee;
+}
+
+.validator-input-group input[aria-invalid="false"] {
+  border-color: #388e3c;
+  background-color: #e8f5e9;
+}
+
 .validator-input-group button {
   padding: 12px 24px;
   font-size: 0.95rem;
