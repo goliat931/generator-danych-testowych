@@ -35,3 +35,7 @@
 ## 2025-02-23 - Dynamic ARIA labels for adjoining input elements
 **Learning:** When building complex forms with adjoining interactive elements (like a checkbox next to a text input without explicit label wrappers), screen readers fail to associate the elements properly. For example, a screen reader would announce a checkbox without context, and a text input without context.
 **Action:** Always add explicit `aria-label`s to both elements. Furthermore, if one element's value provides context for the other (e.g., the text input names the field that the checkbox toggles), use JavaScript to dynamically update the checkbox's `aria-label` whenever the text input changes to maintain accurate context for screen reader users.
+
+## 2025-02-23 - Focus Visible Outline on Inputs
+**Learning:** Setting `outline: none` relying only on `border-color` changes on inputs/selects on focus is an anti-pattern. This strips out the focus indicators completely in High Contrast Modes, making it difficult for keyboard users to navigate.
+**Action:** Always use `outline: 2px solid transparent;` on `:focus` to preserve native high-contrast borders while applying custom styles via `:focus-visible`. Additionally, explicitly add `input`, `select`, and `textarea` to global `:focus-visible` styles to ensure clear keyboard focus indicators.
