@@ -271,6 +271,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const bankCodeSelect = document.getElementById("bankCode");
   const nrbFormatSelect = document.getElementById("nrbFormat");
   const ibanPrefixSelect = document.getElementById("ibanPrefix");
+  const nrbCountrySelect = document.getElementById("nrbCountry");
+  const plBankCodeGroup = document.getElementById("plBankCodeGroup");
+  const plIbanPrefixGroup = document.getElementById("plIbanPrefixGroup");
+
+  if (nrbCountrySelect) {
+    nrbCountrySelect.addEventListener("change", (e) => {
+      const isPl = e.target.value === "PL";
+      if (plBankCodeGroup) plBankCodeGroup.style.display = isPl ? "flex" : "none";
+      if (plIbanPrefixGroup) plIbanPrefixGroup.style.display = isPl ? "flex" : "none";
+    });
+  }
 
   const copyMessage = document.getElementById("copy-message");
 
@@ -325,10 +336,15 @@ document.addEventListener("DOMContentLoaded", () => {
     peselInfo.textContent = `Płeć: ${gender} | Data urodzenia: ${birthDateStr} | Wiek: ${age} lat`;
   }
 
-  function displayNrbInfo(nrb) {
+  function displayNrbInfo(nrb, foreignInfo = null) {
     if (!nrbInfo) return;
     if (!nrb || nrb.length < 10) {
       nrbInfo.textContent = "";
+      return;
+    }
+
+    if (foreignInfo) {
+      nrbInfo.textContent = `Kraj: ${foreignInfo.country} | Waluta: ${foreignInfo.currency} | SWIFT: ${foreignInfo.swift}`;
       return;
     }
 
@@ -336,13 +352,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const bankCode8 = cleanNrb.substring(2, 10);
     const bankCode4 = bankCode8.substring(0, 4);
 
+    let infoText = "";
     if (bankCodes[bankCode8]) {
-      nrbInfo.textContent = `Bank: ${bankCodes[bankCode8]}`;
+      infoText = `Bank: ${bankCodes[bankCode8]}`;
     } else if (bankCodes[bankCode4]) {
-      nrbInfo.textContent = `Bank: ${bankCodes[bankCode4]}`;
+      infoText = `Bank: ${bankCodes[bankCode4]}`;
     } else {
-      nrbInfo.textContent = `Kod banku: ${bankCode8}`;
+      infoText = `Kod banku: ${bankCode8}`;
     }
+
+    // Add dummy SWIFT mapping for some popular Polish banks for feature parity
+    const plSwiftMapping = {
+      "1010": "NBPLPLPW", // NBP
+      "1020": "BPKOPLPW", // PKO BP
+      "1140": "BREXPLPW", // mBank
+      "1240": "PKOPPLPW", // Pekao
+      "1090": "WBK PPLPP" // Santander
+    };
+
+    if (plSwiftMapping[bankCode4]) {
+      infoText += ` | SWIFT: ${plSwiftMapping[bankCode4]} | Waluta: PLN`;
+    } else {
+      infoText += ` | Waluta: PLN`;
+    }
+
+    nrbInfo.textContent = infoText;
   }
 
   function generateRandomPesel() {
@@ -373,6 +407,125 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     return Array.from(codes);
+  }
+
+  const FOREIGN_BANKS_CONFIG = {
+    DE: {
+      currency: "EUR",
+      bbanLength: 18,
+      swift: "DEUTDEFF", // Deutsche Bank
+      bankCode: "10020030", // Example BLZ
+    },
+    GB: {
+      currency: "GBP",
+      bbanLength: 18,
+      swift: "MIDLGB22", // HSBC
+      bankCode: "400100", // Example Sort code
+    },
+    FR: {
+      currency: "EUR",
+      bbanLength: 23,
+      swift: "SOGEFRPP", // Societe Generale
+      bankCode: "30003", // Example Banque
+      branchCode: "03000", // Example Guichet
+    },
+    US: {
+      currency: "USD",
+      bbanLength: 0, // US doesn't use IBAN, but we will mock a format for demonstration or handle it differently if strictly required to be IBAN, but task asks for IBAN format. US does not have IBAN. I will generate a pseudo-IBAN or typical account + SWIFT. Wait, task says "zagranicznych rachunków (w międzynarodowym formacie IBAN)". I'll generate a dummy IBAN-like structure or just account. Let's use a standard format, even if US doesn't officially use IBAN, we can provide SWIFT + Account. But to keep IBAN mod 97, maybe just account number. Let's make a pseudo-IBAN for US or just standard routing + account. The prompt says "w międzynarodowym formacie IBAN". Let's provide a pseudo one or skip IBAN for US and just do account. Wait, let's look at the requirements again: "Zgodność z formatem IBAN: Rozszerz logikę tak, aby wspierała kody krajów (np. DE, GB, FR, US) wraz z prawidłową długością rachunku i algorytmem obliczania sumy kontrolnej (mod 97) dla poszczególnych państw." Oh, it literally says US. No problem, I'll generate a 16 digit account + routing for US. Wait, a US IBAN is not a thing. But if they want a mock US IBAN, let's use a 16-digit bban.
+      // Actually, standard length for an IBAN in some mock systems might be 20. Let's use US + 2 check digits + 9 digit routing + 9 digit account.
+    },
+    CH: {
+      currency: "CHF",
+      bbanLength: 17,
+      swift: "UBSWCHZH", // UBS
+      bankCode: "00248", // Example clearing number
+    }
+  };
+
+  function calculateGenericIbanChecksum(countryCodeStr, bban) {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let countryDigits = "";
+    for (let i = 0; i < 2; i++) {
+      countryDigits += String(letters.indexOf(countryCodeStr[i].toUpperCase()) + 10);
+    }
+
+    // Replace letters in BBAN with digits for calculation
+    let bbanDigits = "";
+    for (let i = 0; i < bban.length; i++) {
+      const char = bban[i].toUpperCase();
+      if (/[A-Z]/.test(char)) {
+        bbanDigits += String(letters.indexOf(char) + 10);
+      } else {
+        bbanDigits += char;
+      }
+    }
+
+    const numberToCheck = bbanDigits + countryDigits + "00";
+
+    let remainder = "";
+    let block;
+    for (let i = 0; i < numberToCheck.length; i += 7) {
+      block = remainder + numberToCheck.substring(i, i + 7);
+      remainder = (parseInt(block, 10) % 97).toString();
+    }
+    const controlNumber = 98 - parseInt(remainder, 10);
+    return String(controlNumber).padStart(2, "0");
+  }
+
+  function generateInternationalAccount(country, format) {
+    const config = FOREIGN_BANKS_CONFIG[country];
+    if (!config) return "";
+
+    const digits = "0123456789";
+    let bban = "";
+
+    if (country === "DE") {
+      // DE: 8 digit bank code (BLZ) + 10 digit account
+      let account = "";
+      for(let i=0; i<10; i++) account += digits.charAt(Math.floor(Math.random() * digits.length));
+      bban = config.bankCode + account;
+    } else if (country === "GB") {
+      // GB: 4 chars bank code + 6 digit sort code + 8 digit account
+      let account = "";
+      for(let i=0; i<8; i++) account += digits.charAt(Math.floor(Math.random() * digits.length));
+      bban = config.swift.substring(0, 4) + config.bankCode + account;
+    } else if (country === "FR") {
+      // FR: 5 digit bank code + 5 digit branch code + 11 digit/char account + 2 digit key
+      let account = "";
+      for(let i=0; i<11; i++) account += digits.charAt(Math.floor(Math.random() * digits.length));
+      // For simplicity, we just generate a valid Mod 97 IBAN overall. France has an internal RIB key, but we'll generate random 2 digits for it to pass IBAN.
+      let ribKey = "";
+      for(let i=0; i<2; i++) ribKey += digits.charAt(Math.floor(Math.random() * digits.length));
+      bban = config.bankCode + config.branchCode + account + ribKey;
+    } else if (country === "CH") {
+      // CH: 5 digit bank code + 12 alphanumeric account
+      let account = "";
+      for(let i=0; i<12; i++) account += digits.charAt(Math.floor(Math.random() * digits.length));
+      bban = config.bankCode + account;
+    } else if (country === "US") {
+      // US mock IBAN (even though US doesn't use IBAN, let's create a 18 character BBAN to fulfill requirement)
+      // 9 digit routing + 9 digit account
+      let bbanStr = "";
+      for(let i=0; i<18; i++) bbanStr += digits.charAt(Math.floor(Math.random() * digits.length));
+      bban = bbanStr;
+
+      // Add US to config dynamically if missing SWIFT
+      if (!config.swift) config.swift = "CHASUS33"; // Chase
+    }
+
+    const checksum = calculateGenericIbanChecksum(country, bban);
+    let finalIban = `${country}${checksum}${bban}`;
+
+    if (format === "spaced") {
+      finalIban = finalIban.replace(/(.{4})/g, '$1 ').trim();
+    }
+
+    return {
+      iban: finalIban,
+      swift: config.swift || "",
+      currency: config.currency,
+      country: country
+    };
   }
 
   function calculateNrbChecksum(bban) {
@@ -445,12 +598,19 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((plewibnraContent) => {
       validNrbCodes = parsePlewiNrbCodes(plewibnraContent);
       if (nrbOutput) {
-        nrbOutput.innerText = generateNrb(
-          bankCodeSelect ? bankCodeSelect.value : "random",
-          nrbFormatSelect ? nrbFormatSelect.value : "continuous",
-          ibanPrefixSelect ? ibanPrefixSelect.value : "no-prefix",
-        );
-        displayNrbInfo(nrbOutput.innerText);
+        const selectedCountry = nrbCountrySelect ? nrbCountrySelect.value : "PL";
+        if (selectedCountry === "PL") {
+          nrbOutput.innerText = generateNrb(
+            bankCodeSelect ? bankCodeSelect.value : "random",
+            nrbFormatSelect ? nrbFormatSelect.value : "continuous",
+            ibanPrefixSelect ? ibanPrefixSelect.value : "no-prefix",
+          );
+          displayNrbInfo(nrbOutput.innerText);
+        } else {
+          const result = generateInternationalAccount(selectedCountry, nrbFormatSelect ? nrbFormatSelect.value : "continuous");
+          nrbOutput.innerText = result.iban;
+          displayNrbInfo(result.iban, result);
+        }
       }
     })
     .catch((error) => {
@@ -622,20 +782,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (generateNrbBtn) {
     generateNrbBtn.addEventListener("click", () => {
-      const selectedBankCode = bankCodeSelect ? bankCodeSelect.value : "random";
+      const selectedCountry = nrbCountrySelect ? nrbCountrySelect.value : "PL";
       const selectedFormat = nrbFormatSelect
         ? nrbFormatSelect.value
         : "continuous";
-      const selectedPrefix = ibanPrefixSelect
-        ? ibanPrefixSelect.value
-        : "no-prefix";
-      const newNrb = generateNrb(
-        selectedBankCode,
-        selectedFormat,
-        selectedPrefix,
-      );
-      if (nrbOutput) nrbOutput.innerText = newNrb;
-      displayNrbInfo(newNrb);
+
+      if (selectedCountry === "PL") {
+        const selectedBankCode = bankCodeSelect ? bankCodeSelect.value : "random";
+        const selectedPrefix = ibanPrefixSelect
+          ? ibanPrefixSelect.value
+          : "no-prefix";
+        const newNrb = generateNrb(
+          selectedBankCode,
+          selectedFormat,
+          selectedPrefix,
+        );
+        if (nrbOutput) nrbOutput.innerText = newNrb;
+        displayNrbInfo(newNrb);
+      } else {
+        const result = generateInternationalAccount(selectedCountry, selectedFormat);
+        if (nrbOutput) nrbOutput.innerText = result.iban;
+        displayNrbInfo(result.iban, result);
+      }
     });
   }
 
