@@ -259,17 +259,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function validateNrb(nrb) {
-    nrb = nrb.replace(/\s/g, "").toUpperCase();
-    if (nrb.startsWith("PL")) {
-      nrb = nrb.substring(2);
+  function normalizeNrbInput(nrb) {
+    const normalizedInput = nrb.replace(/\s+/g, "").trim().toUpperCase();
+    const countryCodeMatch = normalizedInput.match(/^([A-Z]{2})(.*)$/);
+
+    if (countryCodeMatch) {
+      return {
+        normalizedValue: countryCodeMatch[2],
+        hasCountryCode: true,
+        countryCode: countryCodeMatch[1],
+      };
     }
 
-    if (nrb.length !== 26) {
+    return {
+      normalizedValue: normalizedInput,
+      hasCountryCode: false,
+      countryCode: "",
+    };
+  }
+
+  function validateNrb(nrb) {
+    const { normalizedValue, hasCountryCode } = normalizeNrbInput(nrb);
+
+    if (!hasCountryCode && normalizedValue.length !== 26) {
       return { isValid: false, message: "❌ Numer rachunku musi mieć 26 cyfr" };
     }
 
-    if (!/^\d{26}$/.test(nrb)) {
+    if (hasCountryCode && normalizedValue.length > 26) {
+      return { isValid: false, message: "❌ Numer rachunku musi mieć 26 cyfr" };
+    }
+
+    if (!/^\d+$/.test(normalizedValue)) {
       return {
         isValid: false,
         message: "❌ Numer rachunku może zawierać tylko cyfry (poza PL)",
@@ -277,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const countryCode = "2521";
-    const bban = nrb.substring(2);
+    const bban = normalizedValue.substring(2);
     const numberToCheck = bban + countryCode + "00";
 
     let remainder = "";
@@ -289,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const controlNumber = 98 - parseInt(remainder, 10);
     const expectedChecksum = String(controlNumber).padStart(2, "0");
-    const actualChecksum = nrb.substring(0, 2);
+    const actualChecksum = normalizedValue.substring(0, 2);
 
     if (expectedChecksum !== actualChecksum) {
       return {
@@ -299,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     }
 
-    const bankCode8 = nrb.substring(2, 10);
+    const bankCode8 = normalizedValue.substring(2, 10);
     const bankCode4 = bankCode8.substring(0, 4);
     let bankName = "Nieznany bank";
 
@@ -358,9 +378,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   nrbValidateBtn.addEventListener("click", () => {
-    const nrb = nrbInput.value.trim();
-    if (nrb) {
-      const result = validateNrb(nrb);
+    const rawNrb = nrbInput.value || "";
+    const { normalizedValue, countryCode, hasCountryCode } = normalizeNrbInput(rawNrb);
+    const formattedNrb = hasCountryCode
+      ? `${countryCode}${normalizedValue}`
+      : normalizedValue;
+
+    nrbInput.value = formattedNrb;
+
+    if (formattedNrb) {
+      const result = validateNrb(formattedNrb);
       showMessage(result.message, nrbResult, result.isValid);
     } else {
       showMessage("❌ Wpisz numer rachunku", nrbResult, false);
