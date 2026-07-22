@@ -259,79 +259,73 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function normalizeNrbInput(nrb) {
-    const normalizedInput = nrb.replace(/\s+/g, "").trim().toUpperCase();
-    const countryCodeMatch = normalizedInput.match(/^([A-Z]{2})(.*)$/);
-
-    if (countryCodeMatch) {
-      return {
-        normalizedValue: countryCodeMatch[2],
-        hasCountryCode: true,
-        countryCode: countryCodeMatch[1],
-      };
-    }
-
-    return {
-      normalizedValue: normalizedInput,
-      hasCountryCode: false,
-      countryCode: "",
-    };
-  }
-
   function validateNrb(nrb) {
-    const { normalizedValue, hasCountryCode } = normalizeNrbInput(nrb);
+    const iban = nrb.replace(/\s/g, "").toUpperCase();
 
-    if (!hasCountryCode && normalizedValue.length !== 26) {
-      return { isValid: false, message: "❌ Numer rachunku musi mieć 26 cyfr" };
+    if (iban.length < 5 || iban.length > 34) {
+      return { isValid: false, message: "❌ Nieprawidłowa długość numeru IBAN." };
     }
 
-    if (hasCountryCode && normalizedValue.length > 26) {
-      return { isValid: false, message: "❌ Numer rachunku musi mieć 26 cyfr" };
+    const country = iban.substring(0, 2);
+    if (!/^[A-Z]{2}$/.test(country)) {
+        return { isValid: false, message: "❌ Nieprawidłowy kod kraju w numerze IBAN." };
+    }
+    
+    const checksum = iban.substring(2, 4);
+    if (!/^\d{2}$/.test(checksum)) {
+        return { isValid: false, message: "❌ Nieprawidłowa suma kontrolna w numerze IBAN (musi składać się z 2 cyfr)." };
     }
 
-    if (!/^\d+$/.test(normalizedValue)) {
+    const bban = iban.substring(4);
+    const rearranged = bban + country + checksum;
+
+    const numericIban = rearranged.split('').map(char => {
+        const code = char.charCodeAt(0);
+        if (code >= 65 && code <= 90) { // A-Z
+            return code - 55;
+        }
+        return char;
+    }).join('');
+
+    if (!/^[0-9]+$/.test(numericIban)) {
+        return { isValid: false, message: "❌ IBAN zawiera niedozwolone znaki." };
+    }
+
+    try {
+        const remainder = BigInt(numericIban) % 97n;
+        if (remainder !== 1n) {
+            return {
+                isValid: false,
+                message: "❌ Numer rachunku jest niepoprawny (błędna suma kontrolna IBAN)",
+            };
+        }
+    } catch (e) {
+        return { isValid: false, message: "❌ Błąd podczas walidacji numeru IBAN." };
+    }
+
+    if (country === 'PL') {
+      if (iban.length !== 28) {
+        return { isValid: false, message: "❌ Polski numer IBAN musi mieć 28 znaków (PL + 26 cyfr)." };
+      }
+      const bankCode8 = bban.substring(0, 8);
+      const bankCode4 = bankCode8.substring(0, 4);
+      let bankName = "Nieznany bank";
+
+      if (bankCodes[bankCode8]) {
+        bankName = bankCodes[bankCode8];
+      } else if (bankCodes[bankCode4]) {
+        bankName = bankCodes[bankCode4];
+      }
+
       return {
-        isValid: false,
-        message: "❌ Numer rachunku może zawierać tylko cyfry (poza PL)",
+        isValid: true,
+        message: `✅ Numer rachunku bankowego jest poprawny!\nBank: ${bankName}`,
       };
-    }
-
-    const countryCode = "2521";
-    const bban = normalizedValue.substring(2);
-    const numberToCheck = bban + countryCode + "00";
-
-    let remainder = "";
-    let block;
-    for (let i = 0; i < numberToCheck.length; i += 7) {
-      block = remainder + numberToCheck.substring(i, i + 7);
-      remainder = (parseInt(block, 10) % 97).toString();
-    }
-
-    const controlNumber = 98 - parseInt(remainder, 10);
-    const expectedChecksum = String(controlNumber).padStart(2, "0");
-    const actualChecksum = normalizedValue.substring(0, 2);
-
-    if (expectedChecksum !== actualChecksum) {
-      return {
-        isValid: false,
-        message:
-          "❌ Numer rachunku jest niepoprawny (błędna suma kontrolna IBAN)",
-      };
-    }
-
-    const bankCode8 = normalizedValue.substring(2, 10);
-    const bankCode4 = bankCode8.substring(0, 4);
-    let bankName = "Nieznany bank";
-
-    if (bankCodes[bankCode8]) {
-      bankName = bankCodes[bankCode8];
-    } else if (bankCodes[bankCode4]) {
-      bankName = bankCodes[bankCode4];
     }
 
     return {
       isValid: true,
-      message: `✅ Numer rachunku bankowego jest poprawny!\nBank: ${bankName}`,
+      message: `✅ Numer IBAN (${country}) jest poprawny!`,
     };
   }
 
