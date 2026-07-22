@@ -41,6 +41,15 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Błąd załadowania bank_codes.json:", error),
     );
 
+  let foreignBanksData = {};
+  fetch("static/banks_data.json")
+    .then((response) => response.json())
+    .then((data) => {
+      foreignBanksData = data;
+    })
+    .catch((error) =>
+      console.error("Błąd załadowania banks_data.json:", error),
+    );
   const peselInput = document.getElementById("peselInput");
   const peselValidateBtn = document.getElementById("peselValidateBtn");
   const peselResult = document.getElementById("peselResult");
@@ -260,7 +269,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function validateNrb(nrb) {
-    const iban = nrb.replace(/\s/g, "").toUpperCase();
+    let iban = nrb.replace(/\s/g, "").toUpperCase();
+
+    // Jeśli podano 26 cyfr, załóż, że to polski NRB i dodaj prefiks PL do walidacji
+    if (iban.length === 26 && /^\d+$/.test(iban)) {
+      iban = "PL" + iban;
+    }
 
     if (iban.length < 5 || iban.length > 34) {
       return { isValid: false, message: "❌ Nieprawidłowa długość numeru IBAN." };
@@ -317,10 +331,35 @@ document.addEventListener("DOMContentLoaded", () => {
         bankName = bankCodes[bankCode4];
       }
 
+      const plSwiftMapping = {
+        1010: "NBPLPLPW", 1020: "BPKOPLPW", 1140: "BREXPLPW",
+        1240: "PKOPPLPW", 1090: "WBKOPLPW", 1050: "INGBPLPW",
+        1600: "PPABPLPK", 1160: "BIGBPLPW", 2490: "ALBPPLPW",
+        1030: "CITIPLXX", 1940: "LUCBPLPW", 1560: "GETIPLPP",
+        1930: "BOSWPLPW", 1870: "WESTPLPP", 1910: "POLUPLPR",
+        1610: "GBWAPLP1"
+      };
+      let swiftMessage = "";
+      if (plSwiftMapping[bankCode4]) {
+          swiftMessage = `\nSWIFT: ${plSwiftMapping[bankCode4]}`;
+      }
+
       return {
         isValid: true,
-        message: `✅ Numer rachunku bankowego jest poprawny!\nBank: ${bankName}`,
+        message: `✅ Polski numer IBAN jest poprawny!\nBank: ${bankName}${swiftMessage}`,
       };
+    }
+
+    const countryBanks = foreignBanksData[country];
+    if (countryBanks) {
+        for (const bank of countryBanks) {
+            if (bban.startsWith(bank.bank_code)) {
+                return {
+                    isValid: true,
+                    message: `✅ Numer IBAN (${country}) jest poprawny!\nBank: ${bank.bank_name}\nSWIFT: ${bank.swift}`
+                };
+            }
+        }
     }
 
     return {
@@ -373,14 +412,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   nrbValidateBtn.addEventListener("click", () => {
     const rawNrb = nrbInput.value || "";
-    const { normalizedValue, countryCode, hasCountryCode } = normalizeNrbInput(rawNrb);
-    const formattedNrb = hasCountryCode
-      ? `${countryCode}${normalizedValue}`
-      : normalizedValue;
-
-    nrbInput.value = formattedNrb;
-
-    if (formattedNrb) {
+    if (rawNrb) {
+      const formattedNrb = rawNrb.replace(/\s/g, "").toUpperCase();
+      nrbInput.value = formattedNrb;
       const result = validateNrb(formattedNrb);
       showMessage(result.message, nrbResult, result.isValid);
     } else {
