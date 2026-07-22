@@ -229,6 +229,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeBtn = peselOptionsModal
     ? peselOptionsModal.querySelector(".close-btn")
     : null;
+  const peselOkBtn = document.getElementById("peselOkBtn");
+
+  const openNrbOptionsBtn = document.getElementById("openNrbOptionsBtn");
+  const nrbOptionsModal = document.getElementById("nrbOptionsModal");
+  const closeNrbBtn = nrbOptionsModal
+    ? nrbOptionsModal.querySelector(".close-btn")
+    : null;
+  const nrbOkBtn = document.getElementById("nrbOkBtn");
 
   const genderSelect = document.getElementById("gender");
   const birthDateInput = document.getElementById("birthDate");
@@ -676,10 +684,17 @@ document.addEventListener("DOMContentLoaded", () => {
     displayNrbInfo("");
   }
 
-  const closeModal = () => {
+  const closePeselModal = () => {
     if (peselOptionsModal) {
       peselOptionsModal.style.display = "none";
       if (openPeselOptionsBtn) openPeselOptionsBtn.focus();
+    }
+  };
+
+  const closeNrbModal = () => {
+    if (nrbOptionsModal) {
+      nrbOptionsModal.style.display = "none";
+      if (openNrbOptionsBtn) openNrbOptionsBtn.focus();
     }
   };
 
@@ -693,28 +708,57 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (closeBtn) {
-    closeBtn.addEventListener("click", closeModal);
+    closeBtn.addEventListener("click", closePeselModal);
     closeBtn.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        closeModal();
+        closePeselModal();
       }
     });
   }
 
+  if (peselOkBtn) {
+    peselOkBtn.addEventListener("click", closePeselModal);
+  }
+
+  if (openNrbOptionsBtn) {
+    openNrbOptionsBtn.addEventListener("click", () => {
+      if (nrbOptionsModal) {
+        nrbOptionsModal.style.display = "block";
+        if (closeNrbBtn) closeNrbBtn.focus();
+      }
+    });
+  }
+
+  if (closeNrbBtn) {
+    closeNrbBtn.addEventListener("click", closeNrbModal);
+    closeNrbBtn.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        closeNrbModal();
+      }
+    });
+  }
+
+  if (nrbOkBtn) {
+    nrbOkBtn.addEventListener("click", closeNrbModal);
+  }
+
   window.addEventListener("click", (event) => {
     if (event.target == peselOptionsModal) {
-      closeModal();
+      closePeselModal();
+    } else if (event.target == nrbOptionsModal) {
+      closeNrbModal();
     }
   });
 
   window.addEventListener("keydown", (event) => {
-    if (
-      event.key === "Escape" &&
-      peselOptionsModal &&
-      peselOptionsModal.style.display === "block"
-    ) {
-      closeModal();
+    if (event.key === "Escape") {
+      if (peselOptionsModal && peselOptionsModal.style.display === "block") {
+        closePeselModal();
+      } else if (nrbOptionsModal && nrbOptionsModal.style.display === "block") {
+        closeNrbModal();
+      }
     }
   });
 
