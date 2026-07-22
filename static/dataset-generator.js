@@ -591,18 +591,29 @@ document.addEventListener("DOMContentLoaded", () => {
   let generatedMimeType = null;
 
   function showDatasetError(message) {
-    const errorDiv = document.getElementById("datasetError");
-    if (errorDiv) {
-      errorDiv.textContent = "❌ " + message;
-      errorDiv.style.display = "block";
-      // Auto-hide after 5 seconds to clear the message
-      setTimeout(() => {
-        errorDiv.style.display = "none";
-      }, 5000);
-    } else {
-      // Fallback
-      alert(message);
+    let errorDiv = document.getElementById("datasetError");
+    if (!errorDiv) {
+      errorDiv = document.createElement("div");
+      errorDiv.id = "datasetError";
+      errorDiv.className = "validator-result invalid";
+      errorDiv.setAttribute("role", "status");
+      errorDiv.setAttribute("aria-live", "polite");
+      errorDiv.style.marginBottom = "20px";
+
+      const controlPanel = document.querySelector(".control-panel");
+      if (controlPanel) {
+        controlPanel.parentNode.insertBefore(errorDiv, controlPanel);
+      } else {
+        document.body.prepend(errorDiv);
+      }
     }
+
+    errorDiv.textContent = "❌ " + message;
+    errorDiv.style.display = "block";
+    // Auto-hide after 5 seconds to clear the message
+    setTimeout(() => {
+      errorDiv.style.display = "none";
+    }, 5000);
   }
 
   document
