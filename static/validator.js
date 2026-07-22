@@ -76,10 +76,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const weightsRegon9 = [8, 9, 2, 3, 4, 5, 6, 7];
   const weightsRegon14 = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8];
 
-  function showMessage(text, element, isSuccess = false) {
+  function showMessage(text, element, isSuccess = false, inputElement = null) {
     element.className = "validator-result " + (isSuccess ? "valid" : "invalid");
     // Secure fix: Using textContent instead of innerHTML to prevent DOM XSS
     element.textContent = text;
+    if (inputElement) {
+      inputElement.setAttribute("aria-invalid", isSuccess ? "false" : "true");
+    }
   }
 
   function isValidPeselChecksum(pesel) {
@@ -277,49 +280,70 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (iban.length < 5 || iban.length > 34) {
-      return { isValid: false, message: "❌ Nieprawidłowa długość numeru IBAN." };
+      return {
+        isValid: false,
+        message: "❌ Nieprawidłowa długość numeru IBAN.",
+      };
     }
 
     const country = iban.substring(0, 2);
     if (!/^[A-Z]{2}$/.test(country)) {
-        return { isValid: false, message: "❌ Nieprawidłowy kod kraju w numerze IBAN." };
+      return {
+        isValid: false,
+        message: "❌ Nieprawidłowy kod kraju w numerze IBAN.",
+      };
     }
-    
+
     const checksum = iban.substring(2, 4);
     if (!/^\d{2}$/.test(checksum)) {
-        return { isValid: false, message: "❌ Nieprawidłowa suma kontrolna w numerze IBAN (musi składać się z 2 cyfr)." };
+      return {
+        isValid: false,
+        message:
+          "❌ Nieprawidłowa suma kontrolna w numerze IBAN (musi składać się z 2 cyfr).",
+      };
     }
 
     const bban = iban.substring(4);
     const rearranged = bban + country + checksum;
 
-    const numericIban = rearranged.split('').map(char => {
+    const numericIban = rearranged
+      .split("")
+      .map((char) => {
         const code = char.charCodeAt(0);
-        if (code >= 65 && code <= 90) { // A-Z
-            return code - 55;
+        if (code >= 65 && code <= 90) {
+          // A-Z
+          return code - 55;
         }
         return char;
-    }).join('');
+      })
+      .join("");
 
     if (!/^[0-9]+$/.test(numericIban)) {
-        return { isValid: false, message: "❌ IBAN zawiera niedozwolone znaki." };
+      return { isValid: false, message: "❌ IBAN zawiera niedozwolone znaki." };
     }
 
     try {
-        const remainder = BigInt(numericIban) % 97n;
-        if (remainder !== 1n) {
-            return {
-                isValid: false,
-                message: "❌ Numer rachunku jest niepoprawny (błędna suma kontrolna IBAN)",
-            };
-        }
+      const remainder = BigInt(numericIban) % 97n;
+      if (remainder !== 1n) {
+        return {
+          isValid: false,
+          message:
+            "❌ Numer rachunku jest niepoprawny (błędna suma kontrolna IBAN)",
+        };
+      }
     } catch (e) {
-        return { isValid: false, message: "❌ Błąd podczas walidacji numeru IBAN." };
+      return {
+        isValid: false,
+        message: "❌ Błąd podczas walidacji numeru IBAN.",
+      };
     }
 
-    if (country === 'PL') {
+    if (country === "PL") {
       if (iban.length !== 28) {
-        return { isValid: false, message: "❌ Polski numer IBAN musi mieć 28 znaków (PL + 26 cyfr)." };
+        return {
+          isValid: false,
+          message: "❌ Polski numer IBAN musi mieć 28 znaków (PL + 26 cyfr).",
+        };
       }
       const bankCode8 = bban.substring(0, 8);
       const bankCode4 = bankCode8.substring(0, 4);
@@ -332,16 +356,26 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const plSwiftMapping = {
-        1010: "NBPLPLPW", 1020: "BPKOPLPW", 1140: "BREXPLPW",
-        1240: "PKOPPLPW", 1090: "WBKOPLPW", 1050: "INGBPLPW",
-        1600: "PPABPLPK", 1160: "BIGBPLPW", 2490: "ALBPPLPW",
-        1030: "CITIPLXX", 1940: "LUCBPLPW", 1560: "GETIPLPP",
-        1930: "BOSWPLPW", 1870: "WESTPLPP", 1910: "POLUPLPR",
-        1610: "GBWAPLP1"
+        1010: "NBPLPLPW",
+        1020: "BPKOPLPW",
+        1140: "BREXPLPW",
+        1240: "PKOPPLPW",
+        1090: "WBKOPLPW",
+        1050: "INGBPLPW",
+        1600: "PPABPLPK",
+        1160: "BIGBPLPW",
+        2490: "ALBPPLPW",
+        1030: "CITIPLXX",
+        1940: "LUCBPLPW",
+        1560: "GETIPLPP",
+        1930: "BOSWPLPW",
+        1870: "WESTPLPP",
+        1910: "POLUPLPR",
+        1610: "GBWAPLP1",
       };
       let swiftMessage = "";
       if (plSwiftMapping[bankCode4]) {
-          swiftMessage = `\nSWIFT: ${plSwiftMapping[bankCode4]}`;
+        swiftMessage = `\nSWIFT: ${plSwiftMapping[bankCode4]}`;
       }
 
       return {
@@ -352,22 +386,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const countryBanks = foreignBanksData[country];
     if (countryBanks) {
-        for (const bank of countryBanks) {
-            let bankCodeMatches = false;
-            if (country === 'GB') {
-                // For GB, the sort code (bank_code) is at positions 4-9 of the BBAN.
-                bankCodeMatches = bban.substring(4).startsWith(bank.bank_code);
-            } else {
-                bankCodeMatches = bban.startsWith(bank.bank_code);
-            }
-
-            if (bankCodeMatches) {
-                return {
-                    isValid: true,
-                    message: `✅ Numer IBAN (${country}) jest poprawny!\nBank: ${bank.bank_name}\nSWIFT: ${bank.swift}`
-                };
-            }
+      for (const bank of countryBanks) {
+        let bankCodeMatches = false;
+        if (country === "GB") {
+          // For GB, the sort code (bank_code) is at positions 4-9 of the BBAN.
+          bankCodeMatches = bban.substring(4).startsWith(bank.bank_code);
+        } else {
+          bankCodeMatches = bban.startsWith(bank.bank_code);
         }
+
+        if (bankCodeMatches) {
+          return {
+            isValid: true,
+            message: `✅ Numer IBAN (${country}) jest poprawny!\nBank: ${bank.bank_name}\nSWIFT: ${bank.swift}`,
+          };
+        }
+      }
     }
 
     return {
@@ -380,9 +414,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const pesel = peselInput.value.trim();
     if (pesel) {
       const result = validatePesel(pesel);
-      showMessage(result.message, peselResult, result.isValid);
+      showMessage(result.message, peselResult, result.isValid, peselInput);
     } else {
-      showMessage("❌ Wpisz numer PESEL", peselResult, false);
+      showMessage("❌ Wpisz numer PESEL", peselResult, false, peselInput);
     }
   });
 
@@ -394,9 +428,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const id = idInput.value.trim().toUpperCase();
     if (id) {
       const result = validateId(id);
-      showMessage(result.message, idResult, result.isValid);
+      showMessage(result.message, idResult, result.isValid, idInput);
     } else {
-      showMessage("❌ Wpisz numer dowodu", idResult, false);
+      showMessage("❌ Wpisz numer dowodu", idResult, false, idInput);
     }
   });
 
@@ -408,9 +442,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const regon = regonInput.value.trim();
     if (regon) {
       const result = validateRegon(regon);
-      showMessage(result.message, regonResult, result.isValid);
+      showMessage(result.message, regonResult, result.isValid, regonInput);
     } else {
-      showMessage("❌ Wpisz numer REGON", regonResult, false);
+      showMessage("❌ Wpisz numer REGON", regonResult, false, regonInput);
     }
   });
 
@@ -424,14 +458,27 @@ document.addEventListener("DOMContentLoaded", () => {
       const formattedNrb = rawNrb.replace(/\s/g, "").toUpperCase();
       nrbInput.value = formattedNrb;
       const result = validateNrb(formattedNrb);
-      showMessage(result.message, nrbResult, result.isValid);
+      showMessage(result.message, nrbResult, result.isValid, nrbInput);
     } else {
-      showMessage("❌ Wpisz numer rachunku", nrbResult, false);
+      showMessage("❌ Wpisz numer rachunku", nrbResult, false, nrbInput);
     }
   });
 
   nrbInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") nrbValidateBtn.click();
+  });
+
+  [
+    { input: peselInput, result: peselResult },
+    { input: idInput, result: idResult },
+    { input: regonInput, result: regonResult },
+    { input: nrbInput, result: nrbResult },
+  ].forEach(({ input, result }) => {
+    input.addEventListener("input", () => {
+      input.removeAttribute("aria-invalid");
+      result.textContent = "";
+      result.className = "validator-result";
+    });
   });
 
   if (typeof window !== "undefined") {
