@@ -144,6 +144,17 @@
         <div class="output-info" id="nrbInfo"></div>
         <div class="generator-options">
           <div class="option-group">
+            <label for="nrbCountry">Kraj i Waluta:</label>
+            <select id="nrbCountry">
+              <option value="PL">Polska (PLN)</option>
+              <option value="DE">Niemcy (EUR)</option>
+              <option value="GB">Wielka Brytania (GBP)</option>
+              <option value="FR">Francja (EUR)</option>
+              <option value="US">Stany Zjednoczone (USD)</option>
+              <option value="CH">Szwajcaria (CHF)</option>
+            </select>
+          </div>
+          <div class="option-group" id="plBankCodeGroup">
             <label for="bankCode">Kod banku:</label>
             <select id="bankCode">
               <option value="random">Losowy</option>
@@ -185,7 +196,7 @@
               <option value="spaced">Ze spacjami</option>
             </select>
           </div>
-          <div class="option-group">
+          <div class="option-group" id="plIbanPrefixGroup">
             <label for="ibanPrefix">Prefiks IBAN:</label>
             <select id="ibanPrefix">
               <option value="no-prefix">Bez PL</option>

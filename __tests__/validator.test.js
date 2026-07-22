@@ -114,4 +114,24 @@ describe('validateNrb', () => {
 
         expect(result.message).toContain('Numer rachunku bankowego jest poprawny!');
     });
+
+    it('should normalize whitespace in the input field and allow a country-code prefix', () => {
+        const nrbInput = document.getElementById('nrbInput');
+        const nrbValidateBtn = document.getElementById('nrbValidateBtn');
+        const nrbResult = document.getElementById('nrbResult');
+
+        nrbInput.value = 'PL 87 9681 0002 0552 0062 6008 2412';
+        nrbValidateBtn.click();
+
+        expect(nrbInput.value).toBe('PL87968100020552006260082412');
+        expect(nrbResult.textContent).toContain('Numer rachunku bankowego jest poprawny!');
+        expect(nrbInput.maxLength).toBe(34);
+    });
+
+    it('should not report the 26-digit length error when a country code is present and the numeric part is shorter', () => {
+        const result = window.validateNrb('PL8796810002055200626008241');
+
+        expect(result.message).not.toContain('26 cyfr');
+        expect(result.message).toContain('niepoprawny');
+    });
 });
