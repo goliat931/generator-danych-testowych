@@ -217,10 +217,15 @@ button:last-of-type {
 #openPeselOptionsBtn {
   background-color: #2e7d32;
 }
+#peselOkBtn,
+#nrbOkBtn {
+  background-color: #2e7d32;
+}
 #generateIdBtn {
   background-color: #1976d2;
 }
-#generateNrbBtn {
+#generateNrbBtn,
+#openNrbOptionsBtn {
   background-color: #ef6c00;
 }
 #generateNameBtn {
@@ -420,9 +425,16 @@ input {
     color 0.3s ease;
 }
 
+<<<<<<< Updated upstream
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--icon-fill-hover);
+  outline-offset: 2px;
+=======
 select:focus,
 input:focus {
   outline: 2px solid transparent;
+>>>>>>> Stashed changes
   border-color: #1976d2;
 }
 
@@ -452,8 +464,14 @@ input:focus {
   transition: border-color 0.3s;
 }
 
+<<<<<<< Updated upstream
+.validator-input-group input:focus-visible {
+  outline: 2px solid var(--icon-fill-hover);
+  outline-offset: 2px;
+=======
 .validator-input-group input:focus {
   outline: 2px solid transparent;
+>>>>>>> Stashed changes
   border-color: #1976d2;
 }
 
@@ -1077,8 +1095,14 @@ input:focus {
   background-color: var(--bg-secondary);
 }
 
+<<<<<<< Updated upstream
+.field-name-input:focus-visible {
+  outline: 2px solid var(--icon-fill-hover);
+  outline-offset: 2px;
+=======
 .field-name-input:focus {
   outline: 2px solid transparent;
+>>>>>>> Stashed changes
   border-color: #1976d2;
   background-color: var(--bg-secondary);
 }

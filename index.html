@@ -142,58 +142,10 @@
           87968100020552006260082412
         </div>
         <div class="output-info" id="nrbInfo"></div>
-        <div class="generator-options">
-          <div class="option-group">
-            <label for="bankCode">Kod banku:</label>
-            <select id="bankCode">
-              <option value="random">Losowy</option>
-              <option value="1010">NBP</option>
-              <option value="1020">PKO BP</option>
-              <option value="1030">Bank Handlowy</option>
-              <option value="1050">ING Bank Śląski</option>
-              <option value="1060">Bank BPH</option>
-              <option value="1090">Santander Bank Polska</option>
-              <option value="1130">Bank Gospodarstwa Krajowego</option>
-              <option value="1140">mBank</option>
-              <option value="1160">Bank Millennium</option>
-              <option value="1240">Pekao SA</option>
-              <option value="1280">HSBC</option>
-              <option value="1320">Bank Pocztowy</option>
-              <option value="1540">BOŚ Bank</option>
-              <option value="1580">Mercedes-Benz Bank Polska</option>
-              <option value="1610">SGB - Bank</option>
-              <option value="1680">Plus Bank</option>
-              <option value="1840">Societe Generale</option>
-              <option value="1870">Nest Bank</option>
-              <option value="1930">Bank Polskiej Spółdzielczości</option>
-              <option value="1940">Credit Agricole</option>
-              <option value="2030">BNP Paribas</option>
-              <option value="2120">Santander Consumer Bank</option>
-              <option value="2160">Toyota Bank</option>
-              <option value="2190">DNB Bank Polska</option>
-              <option value="2480">VeloBank</option>
-              <option value="2490">Alior Bank</option>
-              <option value="2770">Volkswagen Bank</option>
-              <option value="2790">Raiffeisen Digital Bank</option>
-              <option value="2910">Aion Bank</option>
-            </select>
-          </div>
-          <div class="option-group">
-            <label for="nrbFormat">Format:</label>
-            <select id="nrbFormat">
-              <option value="compact">Bez spacji</option>
-              <option value="spaced">Ze spacjami</option>
-            </select>
-          </div>
-          <div class="option-group">
-            <label for="ibanPrefix">Prefiks IBAN:</label>
-            <select id="ibanPrefix">
-              <option value="no-prefix">Bez PL</option>
-              <option value="with-prefix">Z PL</option>
-            </select>
-          </div>
+        <div class="button-group">
+          <button type="button" id="openNrbOptionsBtn">Ustawienia</button>
+          <button type="button" id="generateNrbBtn">Generuj</button>
         </div>
-        <button type="button" id="generateNrbBtn">Generuj</button>
       </div>
 
       <div class="generator-tile">
@@ -274,6 +226,83 @@
             />
           </div>
         </div>
+        <button type="button" id="peselOkBtn" style="margin-top: 15px;">OK</button>
+      </div>
+    </div>
+
+    <div id="nrbOptionsModal" class="modal">
+      <div class="modal-content">
+        <span
+          class="close-btn"
+          role="button"
+          tabindex="0"
+          aria-label="Zamknij ustawienia NRB / Close NRB settings"
+          >×</span
+        >
+        <h2>Ustawienia NRB</h2>
+        <div class="generator-options">
+          <div class="option-group">
+            <label for="nrbCountry">Kraj i Waluta:</label>
+            <select id="nrbCountry">
+              <option value="PL">Polska (PLN)</option>
+              <option value="DE">Niemcy (EUR)</option>
+              <option value="GB">Wielka Brytania (GBP)</option>
+              <option value="FR">Francja (EUR)</option>
+              <option value="US">Stany Zjednoczone (USD)</option>
+              <option value="CH">Szwajcaria (CHF)</option>
+            </select>
+          </div>
+          <div class="option-group" id="plBankCodeGroup">
+            <label for="bankCode">Kod banku:</label>
+            <select id="bankCode">
+              <option value="random">Losowy</option>
+              <option value="1010">NBP</option>
+              <option value="1020">PKO BP</option>
+              <option value="1030">Bank Handlowy</option>
+              <option value="1050">ING Bank Śląski</option>
+              <option value="1060">Bank BPH</option>
+              <option value="1090">Santander Bank Polska</option>
+              <option value="1130">Bank Gospodarstwa Krajowego</option>
+              <option value="1140">mBank</option>
+              <option value="1160">Bank Millennium</option>
+              <option value="1240">Pekao SA</option>
+              <option value="1280">HSBC</option>
+              <option value="1320">Bank Pocztowy</option>
+              <option value="1540">BOŚ Bank</option>
+              <option value="1580">Mercedes-Benz Bank Polska</option>
+              <option value="1610">SGB - Bank</option>
+              <option value="1680">Plus Bank</option>
+              <option value="1840">Societe Generale</option>
+              <option value="1870">Nest Bank</option>
+              <option value="1930">Bank Polskiej Spółdzielczości</option>
+              <option value="1940">Credit Agricole</option>
+              <option value="2030">BNP Paribas</option>
+              <option value="2120">Santander Consumer Bank</option>
+              <option value="2160">Toyota Bank</option>
+              <option value="2190">DNB Bank Polska</option>
+              <option value="2480">VeloBank</option>
+              <option value="2490">Alior Bank</option>
+              <option value="2770">Volkswagen Bank</option>
+              <option value="2790">Raiffeisen Digital Bank</option>
+              <option value="2910">Aion Bank</option>
+            </select>
+          </div>
+          <div class="option-group">
+            <label for="nrbFormat">Format:</label>
+            <select id="nrbFormat">
+              <option value="compact">Bez spacji</option>
+              <option value="spaced">Ze spacjami</option>
+            </select>
+          </div>
+          <div class="option-group" id="plIbanPrefixGroup">
+            <label for="ibanPrefix">Prefiks IBAN:</label>
+            <select id="ibanPrefix">
+              <option value="no-prefix">Bez PL</option>
+              <option value="with-prefix">Z PL</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" id="nrbOkBtn" style="margin-top: 15px;">OK</button>
       </div>
     </div>
 

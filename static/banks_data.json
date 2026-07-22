@@ -1,0 +1,57 @@
+{
+  "PL": [
+    { "bank_name": "Narodowy Bank Polski", "bank_code": "1010", "currency": "PLN", "swift": "NBPLPLPW" },
+    { "bank_name": "PKO Bank Polski", "bank_code": "1020", "currency": "PLN", "swift": "BPKOPLPW" },
+    { "bank_name": "Bank Pekao SA", "bank_code": "1240", "currency": "PLN", "swift": "PKOPPLPW" },
+    { "bank_name": "Santander Bank Polska", "bank_code": "1090", "currency": "PLN", "swift": "WBKOPLPW" },
+    { "bank_name": "mBank", "bank_code": "1140", "currency": "PLN", "swift": "BREXPLPW" },
+    { "bank_name": "ING Bank Śląski", "bank_code": "1050", "currency": "PLN", "swift": "INGBPLPW" },
+    { "bank_name": "BNP Paribas Bank Polska", "bank_code": "1600", "currency": "PLN", "swift": "PPABPLPK" },
+    { "bank_name": "Bank Millennium", "bank_code": "1160", "currency": "PLN", "swift": "BIGBPLPW" },
+    { "bank_name": "Alior Bank", "bank_code": "2490", "currency": "PLN", "swift": "ALBPPLPW" },
+    { "bank_name": "Citi Handlowy (Bank Handlowy)", "bank_code": "1030", "currency": "PLN", "swift": "CITIPLXX" },
+    { "bank_name": "Credit Agricole Bank Polska", "bank_code": "1940", "currency": "PLN", "swift": "LUCBPLPW" },
+    { "bank_name": "VeloBank", "bank_code": "1560", "currency": "PLN", "swift": "GETIPLPP" },
+    { "bank_name": "BOŚ Bank", "bank_code": "1930", "currency": "PLN", "swift": "BOSWPLPW" },
+    { "bank_name": "Nest Bank", "bank_code": "1870", "currency": "PLN", "swift": "WESTPLPP" },
+    { "bank_name": "Bank BPS (Grupa BPS)", "bank_code": "1910", "currency": "PLN", "swift": "POLUPLPR" },
+    { "bank_name": "SGB-Bank", "bank_code": "1610", "currency": "PLN", "swift": "GBWAPLP1" }
+  ],
+  "DE": [
+    { "bank_name": "Deutsche Bank", "bank_code": "10070000", "currency": "EUR", "swift": "DEUTDEDBXXX" },
+    { "bank_name": "Commerzbank", "bank_code": "10040000", "currency": "EUR", "swift": "COBADEFFXXX" },
+    { "bank_name": "DZ Bank", "bank_code": "50060400", "currency": "EUR", "swift": "GENODED1500" },
+    { "bank_name": "HypoVereinsbank (UniCredit)", "bank_code": "70020270", "currency": "EUR", "swift": "HYVEDMMMXXX" }
+  ],
+  "GB": [
+    { "bank_name": "Barclays Bank", "bank_code": "200000", "currency": "GBP", "swift": "BARCGB22XXX" },
+    { "bank_name": "HSBC Bank UK", "bank_code": "400000", "currency": "GBP", "swift": "MIDLGB22XXX" },
+    { "bank_name": "Lloyds Bank", "bank_code": "300000", "currency": "GBP", "swift": "LOYDGB21XXX" },
+    { "bank_name": "NatWest (National Westminster Bank)", "bank_code": "600000", "currency": "GBP", "swift": "NWBKGB2LXXX" }
+  ],
+  "FR": [
+    { "bank_name": "BNP Paribas France", "bank_code": "30004", "currency": "EUR", "swift": "BNPAFRPPXXX" },
+    { "bank_name": "Société Générale", "bank_code": "30003", "currency": "EUR", "swift": "SOGEFRPPXXX" },
+    { "bank_name": "Crédit Agricole", "bank_code": "11206", "currency": "EUR", "swift": "AGRIFRPPXXX" }
+  ],
+  "CZ": [
+    { "bank_name": "Česká spořitelna", "bank_code": "0800", "currency": "CZK", "swift": "GIBACZPX" },
+    { "bank_name": "Komerční banka", "bank_code": "0100", "currency": "CZK", "swift": "KOMBCZPP" },
+    { "bank_name": "ČSOB", "bank_code": "0300", "currency": "CZK", "swift": "CEKOCZPP" }
+  ],
+  "SK": [
+    { "bank_name": "Slovenská sporiteľňa", "bank_code": "0900", "currency": "EUR", "swift": "GIBASKBX" },
+    { "bank_name": "Tatra banka", "bank_code": "1100", "currency": "EUR", "swift": "TATRSKBX" },
+    { "bank_name": "VÚB banka", "bank_code": "0200", "currency": "EUR", "swift": "SUBASKBX" }
+  ],
+  "CH": [
+    { "bank_name": "UBS Switzerland", "bank_code": "00230", "currency": "CHF", "swift": "UBSWCHZH80A" },
+    { "bank_name": "Zürcher Kantonalbank", "bank_code": "00700", "currency": "CHF", "swift": "ZURKCH22XXX" },
+    { "bank_name": "PostFinance", "bank_code": "09000", "currency": "CHF", "swift": "POBNCH22XXX" }
+  ],
+  "US": [
+    { "bank_name": "JPMorgan Chase Bank", "bank_code": "021000021", "currency": "USD", "swift": "CHASUS33XXX" },
+    { "bank_name": "Bank of America", "bank_code": "026009593", "currency": "USD", "swift": "BOFAUS3NXXX" },
+    { "bank_name": "Citibank N.A.", "bank_code": "021000089", "currency": "USD", "swift": "CITIUS33XXX" }
+  ]
+}
