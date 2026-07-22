@@ -1101,3 +1101,13 @@ a:focus-visible {
   outline: 2px solid var(--icon-fill-hover);
   outline-offset: 4px;
 }
+
+input[aria-invalid="true"] {
+  border-color: #c62828 !important;
+  outline-color: #c62828 !important;
+}
+
+input[aria-invalid="false"] {
+  border-color: #2e7d32 !important;
+  outline-color: #2e7d32 !important;
+}
