@@ -15,55 +15,6 @@ const weightsId = [7, 3, 1, 9, 7, 3, 1, 7, 3];
 const weightsRegon9 = [8, 9, 2, 3, 4, 5, 6, 7];
 const weightsRegon14 = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8];
 
-function calculateIdChecksum(fullNumber) {
-  const numericArray = fullNumber
-    .split("")
-    .map((char) =>
-      /[A-Z]/.test(char) ? letterToNumber[char] : parseInt(char, 10),
-    );
-
-  let sum = 0;
-  for (let i = 0; i < weightsId.length; i++) {
-    sum += numericArray[i] * weightsId[i];
-  }
-  return sum % 10;
-}
-
-function generateIdNumber() {
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const digits = "0123456789";
-
-  let letterPart = "";
-  for (let i = 0; i < 3; i++) {
-    letterPart += letters.charAt(Math.floor(Math.random() * letters.length));
-  }
-
-  let digitsPart = "";
-  for (let i = 0; i < 6; i++) {
-    digitsPart += digits.charAt(Math.floor(Math.random() * digits.length));
-  }
-
-  let idArrayChars = [
-    letterPart[0],
-    letterPart[1],
-    letterPart[2],
-    0,
-    ...digitsPart.slice(1),
-  ];
-
-  const numericArray = idArrayChars.map((char) =>
-    /[A-Z]/.test(char) ? letterToNumber[char] : parseInt(char, 10),
-  );
-
-  let sum = 0;
-  for (let i = 0; i < weightsId.length; i++) {
-    sum += numericArray[i] * weightsId[i];
-  }
-
-  const controlDigit = sum % 10;
-  return letterPart + controlDigit + digitsPart.slice(1);
-}
-
 function getEncodedMonth(year, month) {
   if (year >= 1800 && year <= 1899)
     return String(month + encodedMonths["1800-1899"]).padStart(2, "0");
@@ -155,6 +106,35 @@ function generateRegon14() {
   return `${regon13}${controlDigit}`;
 }
 
+function calculateIdChecksum(fullNumber) {
+  const numericArray = fullNumber
+    .split("")
+    .map((char) =>
+      /[A-Z]/.test(char) ? letterToNumber[char] : parseInt(char, 10),
+    );
+
+  let sum = 0;
+  for (let i = 0; i < weightsId.length; i++) {
+    sum += numericArray[i] * weightsId[i];
+  }
+  return sum % 10;
+}
+
+function generateIdNumber() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const digits = "0123456789";
+
+  let letterPart = "";
+  for (let i = 0; i < 3; i++) {
+    letterPart += letters.charAt(Math.floor(Math.random() * letters.length));
+  }
+
+  const firstDigit = calculateIdChecksum(letterPart + "000000");
+
+  let digitsPart = Array.from({ length: 5 }, () => Math.floor(Math.random() * 10)).join('');
+  return letterPart + firstDigit + digitsPart;
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     generateRegon9,
@@ -176,6 +156,7 @@ if (typeof module !== "undefined" && module.exports) {
 document.addEventListener("DOMContentLoaded", () => {
   let bankCodes = {};
   let validNrbCodes = [];
+  let foreignBanksData = {};
 
   function initTheme() {
     const themeToggleBtn = document.getElementById("theme-toggle");
@@ -230,6 +211,14 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Błąd załadowania bank_codes.json:", error),
     );
 
+  fetch("static/banks_data.json")
+    .then((response) => response.json())
+    .then((data) => {
+      foreignBanksData = data;
+    })
+    .catch((error) =>
+      console.error("Błąd załadowania banks_data.json:", error),
+    );
   const peselOutput = document.getElementById("peselOutput");
   const peselInfo = document.getElementById("peselInfo");
   const openPeselOptionsBtn = document.getElementById("openPeselOptionsBtn");
@@ -344,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (foreignInfo) {
-      nrbInfo.textContent = `Kraj: ${foreignInfo.country} | Waluta: ${foreignInfo.currency} | SWIFT: ${foreignInfo.swift}`;
+      nrbInfo.textContent = `Kraj: ${foreignInfo.country_code} | Bank: ${foreignInfo.bank_name} | Waluta: ${foreignInfo.currency} | SWIFT: ${foreignInfo.swift}`;
       return;
     }
 
@@ -409,39 +398,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return Array.from(codes);
   }
 
-  const FOREIGN_BANKS_CONFIG = {
-    DE: {
-      currency: "EUR",
-      bbanLength: 18,
-      swift: "DEUTDEFF", // Deutsche Bank
-      bankCode: "10020030", // Example BLZ
-    },
-    GB: {
-      currency: "GBP",
-      bbanLength: 18,
-      swift: "MIDLGB22", // HSBC
-      bankCode: "400100", // Example Sort code
-    },
-    FR: {
-      currency: "EUR",
-      bbanLength: 23,
-      swift: "SOGEFRPP", // Societe Generale
-      bankCode: "30003", // Example Banque
-      branchCode: "03000", // Example Guichet
-    },
-    US: {
-      currency: "USD",
-      bbanLength: 0, // US doesn't use IBAN, but we will mock a format for demonstration or handle it differently if strictly required to be IBAN, but task asks for IBAN format. US does not have IBAN. I will generate a pseudo-IBAN or typical account + SWIFT. Wait, task says "zagranicznych rachunków (w międzynarodowym formacie IBAN)". I'll generate a dummy IBAN-like structure or just account. Let's use a standard format, even if US doesn't officially use IBAN, we can provide SWIFT + Account. But to keep IBAN mod 97, maybe just account number. Let's make a pseudo-IBAN for US or just standard routing + account. The prompt says "w międzynarodowym formacie IBAN". Let's provide a pseudo one or skip IBAN for US and just do account. Wait, let's look at the requirements again: "Zgodność z formatem IBAN: Rozszerz logikę tak, aby wspierała kody krajów (np. DE, GB, FR, US) wraz z prawidłową długością rachunku i algorytmem obliczania sumy kontrolnej (mod 97) dla poszczególnych państw." Oh, it literally says US. No problem, I'll generate a 16 digit account + routing for US. Wait, a US IBAN is not a thing. But if they want a mock US IBAN, let's use a 16-digit bban.
-      // Actually, standard length for an IBAN in some mock systems might be 20. Let's use US + 2 check digits + 9 digit routing + 9 digit account.
-    },
-    CH: {
-      currency: "CHF",
-      bbanLength: 17,
-      swift: "UBSWCHZH", // UBS
-      bankCode: "00248", // Example clearing number
-    }
-  };
-
   function calculateGenericIbanChecksum(countryCodeStr, bban) {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let countryDigits = "";
@@ -473,58 +429,70 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function generateInternationalAccount(country, format) {
-    const config = FOREIGN_BANKS_CONFIG[country];
-    if (!config) return "";
+    const countryBanks = foreignBanksData[country];
+    if (!countryBanks || countryBanks.length === 0) {
+        return {
+            iban: `Brak danych dla kraju: ${country}`,
+            swift: "",
+            currency: "",
+            bank_name: "",
+            country_code: country
+        };
+    }
 
+    const bankInfo = countryBanks[Math.floor(Math.random() * countryBanks.length)];
+    
     const digits = "0123456789";
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let bban = "";
+    let accountNumber = "";
 
-    if (country === "DE") {
-      // DE: 8 digit bank code (BLZ) + 10 digit account
-      let account = "";
-      for(let i=0; i<10; i++) account += digits.charAt(Math.floor(Math.random() * digits.length));
-      bban = config.bankCode + account;
-    } else if (country === "GB") {
-      // GB: 4 chars bank code + 6 digit sort code + 8 digit account
-      let account = "";
-      for(let i=0; i<8; i++) account += digits.charAt(Math.floor(Math.random() * digits.length));
-      bban = config.swift.substring(0, 4) + config.bankCode + account;
-    } else if (country === "FR") {
-      // FR: 5 digit bank code + 5 digit branch code + 11 digit/char account + 2 digit key
-      let account = "";
-      for(let i=0; i<11; i++) account += digits.charAt(Math.floor(Math.random() * digits.length));
-      // For simplicity, we just generate a valid Mod 97 IBAN overall. France has an internal RIB key, but we'll generate random 2 digits for it to pass IBAN.
-      let ribKey = "";
-      for(let i=0; i<2; i++) ribKey += digits.charAt(Math.floor(Math.random() * digits.length));
-      bban = config.bankCode + config.branchCode + account + ribKey;
-    } else if (country === "CH") {
-      // CH: 5 digit bank code + 12 alphanumeric account
-      let account = "";
-      for(let i=0; i<12; i++) account += digits.charAt(Math.floor(Math.random() * digits.length));
-      bban = config.bankCode + account;
-    } else if (country === "US") {
-      // US mock IBAN (even though US doesn't use IBAN, let's create a 18 character BBAN to fulfill requirement)
-      // 9 digit routing + 9 digit account
-      let bbanStr = "";
-      for(let i=0; i<18; i++) bbanStr += digits.charAt(Math.floor(Math.random() * digits.length));
-      bban = bbanStr;
-
-      // Add US to config dynamically if missing SWIFT
-      if (!config.swift) config.swift = "CHASUS33"; // Chase
+    switch (country) {
+        case "DE": // BBAN: 18 (8 bank code, 10 account)
+            accountNumber = Array.from({ length: 10 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
+            bban = bankInfo.bank_code + accountNumber;
+            break;
+        case "GB": // BBAN: 18 (4 bank ID, 6 sort code, 8 account)
+            accountNumber = Array.from({ length: 8 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
+            bban = bankInfo.swift.substring(0, 4) + bankInfo.bank_code + accountNumber;
+            break;
+        case "FR": // BBAN: 23 (5 bank, 5 branch, 11 account, 2 key)
+            const branchCode = Array.from({ length: 5 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
+            accountNumber = Array.from({ length: 11 }, () => (Math.random() > 0.1 ? digits.charAt(Math.floor(Math.random() * digits.length)) : letters.charAt(Math.floor(Math.random() * letters.length)))).join('');
+            const ribKey = Array.from({ length: 2 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
+            bban = bankInfo.bank_code + branchCode + accountNumber + ribKey;
+            break;
+        case "CZ": // BBAN: 20 (4 bank, 6 branch, 10 account)
+        case "SK": // BBAN: 20 (4 bank, 6 branch, 10 account)
+            const branch = Array.from({ length: 6 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
+            accountNumber = Array.from({ length: 10 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
+            bban = bankInfo.bank_code + branch + accountNumber;
+            break;
+        case "CH": // BBAN: 17 (5 bank, 12 account)
+            accountNumber = Array.from({ length: 12 }, () => (Math.random() > 0.1 ? digits.charAt(Math.floor(Math.random() * digits.length)) : letters.charAt(Math.floor(Math.random() * letters.length)))).join('');
+            bban = bankInfo.bank_code + accountNumber;
+            break;
+        case "US": // Mock IBAN for US
+            accountNumber = Array.from({ length: 12 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
+            bban = bankInfo.bank_code + accountNumber; // 9-digit routing + 12-digit account
+            break;
+        default:
+             return { iban: `Logika dla kraju ${country} niezaimplementowana.`, swift: "", currency: "", bank_name: "", country_code: country };
     }
 
     const checksum = calculateGenericIbanChecksum(country, bban);
     let finalIban = `${country}${checksum}${bban}`;
 
     if (format === "spaced") {
-      finalIban = finalIban.replace(/(.{4})/g, '$1 ').trim();
+        finalIban = finalIban.replace(/(.{4})/g, '$1 ').trim();
     }
 
     return {
-      iban: finalIban,
-      swift: config.swift || "",
-      currency: config.currency,
-      country: country
+        iban: finalIban,
+        swift: bankInfo.swift,
+        currency: bankInfo.currency,
+        bank_name: bankInfo.bank_name,
+        country_code: country
     };
   }
 
