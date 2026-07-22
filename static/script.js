@@ -131,7 +131,9 @@ function generateIdNumber() {
 
   const firstDigit = calculateIdChecksum(letterPart + "000000");
 
-  let digitsPart = Array.from({ length: 5 }, () => Math.floor(Math.random() * 10)).join('');
+  let digitsPart = Array.from({ length: 5 }, () =>
+    Math.floor(Math.random() * 10),
+  ).join("");
   return letterPart + firstDigit + digitsPart;
 }
 
@@ -267,8 +269,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (nrbCountrySelect) {
     nrbCountrySelect.addEventListener("change", (e) => {
       const isPl = e.target.value === "PL";
-      if (plBankCodeGroup) plBankCodeGroup.style.display = isPl ? "flex" : "none";
-      if (plIbanPrefixGroup) plIbanPrefixGroup.style.display = isPl ? "flex" : "none";
+      if (plBankCodeGroup)
+        plBankCodeGroup.style.display = isPl ? "flex" : "none";
+      if (plIbanPrefixGroup)
+        plIbanPrefixGroup.style.display = isPl ? "flex" : "none";
     });
   }
 
@@ -325,15 +329,56 @@ document.addEventListener("DOMContentLoaded", () => {
     peselInfo.textContent = `Płeć: ${gender} | Data urodzenia: ${birthDateStr} | Wiek: ${age} lat`;
   }
 
+  function createCopyableSwift(swiftCode) {
+    const span = document.createElement("span");
+    span.textContent = swiftCode;
+    span.setAttribute("role", "button");
+    span.setAttribute("tabindex", "0");
+    span.setAttribute(
+      "aria-label",
+      "Skopiuj SWIFT do schowka / Copy SWIFT to clipboard",
+    );
+    span.setAttribute("title", "Skopiuj SWIFT / Copy SWIFT");
+    span.style.cursor = "pointer";
+    span.style.textDecoration = "underline";
+    span.style.fontWeight = "bold";
+
+    span.addEventListener("click", () => {
+      if (navigator.clipboard) {
+        navigator.clipboard
+          .writeText(swiftCode)
+          .then(() => showCopyMessage("SWIFT skopiowany!"))
+          .catch((err) => console.error("Błąd podczas kopiowania:", err));
+      } else {
+        showCopyMessage("SWIFT skopiowany!");
+      }
+    });
+
+    span.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        span.click();
+      }
+    });
+
+    return span;
+  }
+
   function displayNrbInfo(nrb, foreignInfo = null) {
     if (!nrbInfo) return;
+
+    nrbInfo.textContent = "";
+
     if (!nrb || nrb.length < 10) {
-      nrbInfo.textContent = "";
       return;
     }
 
     if (foreignInfo) {
-      nrbInfo.textContent = `Kraj: ${foreignInfo.country_code} | Bank: ${foreignInfo.bank_name} | Waluta: ${foreignInfo.currency} | SWIFT: ${foreignInfo.swift}`;
+      const part1 = document.createTextNode(
+        `Kraj: ${foreignInfo.country_code} | Bank: ${foreignInfo.bank_name} | Waluta: ${foreignInfo.currency} | SWIFT: `,
+      );
+      nrbInfo.appendChild(part1);
+      nrbInfo.appendChild(createCopyableSwift(foreignInfo.swift));
       return;
     }
 
@@ -352,20 +397,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Add dummy SWIFT mapping for some popular Polish banks for feature parity
     const plSwiftMapping = {
-      "1010": "NBPLPLPW", // NBP
-      "1020": "BPKOPLPW", // PKO BP
-      "1140": "BREXPLPW", // mBank
-      "1240": "PKOPPLPW", // Pekao
-      "1090": "WBK PPLPP" // Santander
+      1010: "NBPLPLPW", // NBP
+      1020: "BPKOPLPW", // PKO BP
+      1140: "BREXPLPW", // mBank
+      1240: "PKOPPLPW", // Pekao
+      1090: "WBK PPLPP", // Santander
     };
 
     if (plSwiftMapping[bankCode4]) {
-      infoText += ` | SWIFT: ${plSwiftMapping[bankCode4]} | Waluta: PLN`;
+      nrbInfo.appendChild(document.createTextNode(infoText + ` | SWIFT: `));
+      nrbInfo.appendChild(createCopyableSwift(plSwiftMapping[bankCode4]));
+      nrbInfo.appendChild(document.createTextNode(` | Waluta: PLN`));
     } else {
-      infoText += ` | Waluta: PLN`;
+      nrbInfo.appendChild(document.createTextNode(infoText + ` | Waluta: PLN`));
     }
-
-    nrbInfo.textContent = infoText;
   }
 
   function generateRandomPesel() {
@@ -402,7 +447,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let countryDigits = "";
     for (let i = 0; i < 2; i++) {
-      countryDigits += String(letters.indexOf(countryCodeStr[i].toUpperCase()) + 10);
+      countryDigits += String(
+        letters.indexOf(countryCodeStr[i].toUpperCase()) + 10,
+      );
     }
 
     // Replace letters in BBAN with digits for calculation
@@ -431,68 +478,98 @@ document.addEventListener("DOMContentLoaded", () => {
   function generateInternationalAccount(country, format) {
     const countryBanks = foreignBanksData[country];
     if (!countryBanks || countryBanks.length === 0) {
-        return {
-            iban: `Brak danych dla kraju: ${country}`,
-            swift: "",
-            currency: "",
-            bank_name: "",
-            country_code: country
-        };
+      return {
+        iban: `Brak danych dla kraju: ${country}`,
+        swift: "",
+        currency: "",
+        bank_name: "",
+        country_code: country,
+      };
     }
 
-    const bankInfo = countryBanks[Math.floor(Math.random() * countryBanks.length)];
-    
+    const bankInfo =
+      countryBanks[Math.floor(Math.random() * countryBanks.length)];
+
     const digits = "0123456789";
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let bban = "";
     let accountNumber = "";
 
     switch (country) {
-        case "DE": // BBAN: 18 (8 bank code, 10 account)
-            accountNumber = Array.from({ length: 10 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
-            bban = bankInfo.bank_code + accountNumber;
-            break;
-        case "GB": // BBAN: 18 (4 bank ID, 6 sort code, 8 account)
-            accountNumber = Array.from({ length: 8 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
-            bban = bankInfo.swift.substring(0, 4) + bankInfo.bank_code + accountNumber;
-            break;
-        case "FR": // BBAN: 23 (5 bank, 5 branch, 11 account, 2 key)
-            const branchCode = Array.from({ length: 5 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
-            accountNumber = Array.from({ length: 11 }, () => (Math.random() > 0.1 ? digits.charAt(Math.floor(Math.random() * digits.length)) : letters.charAt(Math.floor(Math.random() * letters.length)))).join('');
-            const ribKey = Array.from({ length: 2 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
-            bban = bankInfo.bank_code + branchCode + accountNumber + ribKey;
-            break;
-        case "CZ": // BBAN: 20 (4 bank, 6 branch, 10 account)
-        case "SK": // BBAN: 20 (4 bank, 6 branch, 10 account)
-            const branch = Array.from({ length: 6 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
-            accountNumber = Array.from({ length: 10 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
-            bban = bankInfo.bank_code + branch + accountNumber;
-            break;
-        case "CH": // BBAN: 17 (5 bank, 12 account)
-            accountNumber = Array.from({ length: 12 }, () => (Math.random() > 0.1 ? digits.charAt(Math.floor(Math.random() * digits.length)) : letters.charAt(Math.floor(Math.random() * letters.length)))).join('');
-            bban = bankInfo.bank_code + accountNumber;
-            break;
-        case "US": // Mock IBAN for US
-            accountNumber = Array.from({ length: 12 }, () => digits.charAt(Math.floor(Math.random() * digits.length))).join('');
-            bban = bankInfo.bank_code + accountNumber; // 9-digit routing + 12-digit account
-            break;
-        default:
-             return { iban: `Logika dla kraju ${country} niezaimplementowana.`, swift: "", currency: "", bank_name: "", country_code: country };
+      case "DE": // BBAN: 18 (8 bank code, 10 account)
+        accountNumber = Array.from({ length: 10 }, () =>
+          digits.charAt(Math.floor(Math.random() * digits.length)),
+        ).join("");
+        bban = bankInfo.bank_code + accountNumber;
+        break;
+      case "GB": // BBAN: 18 (4 bank ID, 6 sort code, 8 account)
+        accountNumber = Array.from({ length: 8 }, () =>
+          digits.charAt(Math.floor(Math.random() * digits.length)),
+        ).join("");
+        bban =
+          bankInfo.swift.substring(0, 4) + bankInfo.bank_code + accountNumber;
+        break;
+      case "FR": // BBAN: 23 (5 bank, 5 branch, 11 account, 2 key)
+        const branchCode = Array.from({ length: 5 }, () =>
+          digits.charAt(Math.floor(Math.random() * digits.length)),
+        ).join("");
+        accountNumber = Array.from({ length: 11 }, () =>
+          Math.random() > 0.1
+            ? digits.charAt(Math.floor(Math.random() * digits.length))
+            : letters.charAt(Math.floor(Math.random() * letters.length)),
+        ).join("");
+        const ribKey = Array.from({ length: 2 }, () =>
+          digits.charAt(Math.floor(Math.random() * digits.length)),
+        ).join("");
+        bban = bankInfo.bank_code + branchCode + accountNumber + ribKey;
+        break;
+      case "CZ": // BBAN: 20 (4 bank, 6 branch, 10 account)
+      case "SK": // BBAN: 20 (4 bank, 6 branch, 10 account)
+        const branch = Array.from({ length: 6 }, () =>
+          digits.charAt(Math.floor(Math.random() * digits.length)),
+        ).join("");
+        accountNumber = Array.from({ length: 10 }, () =>
+          digits.charAt(Math.floor(Math.random() * digits.length)),
+        ).join("");
+        bban = bankInfo.bank_code + branch + accountNumber;
+        break;
+      case "CH": // BBAN: 17 (5 bank, 12 account)
+        accountNumber = Array.from({ length: 12 }, () =>
+          Math.random() > 0.1
+            ? digits.charAt(Math.floor(Math.random() * digits.length))
+            : letters.charAt(Math.floor(Math.random() * letters.length)),
+        ).join("");
+        bban = bankInfo.bank_code + accountNumber;
+        break;
+      case "US": // Mock IBAN for US
+        accountNumber = Array.from({ length: 12 }, () =>
+          digits.charAt(Math.floor(Math.random() * digits.length)),
+        ).join("");
+        bban = bankInfo.bank_code + accountNumber; // 9-digit routing + 12-digit account
+        break;
+      default:
+        return {
+          iban: `Logika dla kraju ${country} niezaimplementowana.`,
+          swift: "",
+          currency: "",
+          bank_name: "",
+          country_code: country,
+        };
     }
 
     const checksum = calculateGenericIbanChecksum(country, bban);
     let finalIban = `${country}${checksum}${bban}`;
 
     if (format === "spaced") {
-        finalIban = finalIban.replace(/(.{4})/g, '$1 ').trim();
+      finalIban = finalIban.replace(/(.{4})/g, "$1 ").trim();
     }
 
     return {
-        iban: finalIban,
-        swift: bankInfo.swift,
-        currency: bankInfo.currency,
-        bank_name: bankInfo.bank_name,
-        country_code: country
+      iban: finalIban,
+      swift: bankInfo.swift,
+      currency: bankInfo.currency,
+      bank_name: bankInfo.bank_name,
+      country_code: country,
     };
   }
 
@@ -566,7 +643,9 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((plewibnraContent) => {
       validNrbCodes = parsePlewiNrbCodes(plewibnraContent);
       if (nrbOutput) {
-        const selectedCountry = nrbCountrySelect ? nrbCountrySelect.value : "PL";
+        const selectedCountry = nrbCountrySelect
+          ? nrbCountrySelect.value
+          : "PL";
         if (selectedCountry === "PL") {
           nrbOutput.innerText = generateNrb(
             bankCodeSelect ? bankCodeSelect.value : "random",
@@ -575,7 +654,10 @@ document.addEventListener("DOMContentLoaded", () => {
           );
           displayNrbInfo(nrbOutput.innerText);
         } else {
-          const result = generateInternationalAccount(selectedCountry, nrbFormatSelect ? nrbFormatSelect.value : "continuous");
+          const result = generateInternationalAccount(
+            selectedCountry,
+            nrbFormatSelect ? nrbFormatSelect.value : "continuous",
+          );
           nrbOutput.innerText = result.iban;
           displayNrbInfo(result.iban, result);
         }
@@ -756,7 +838,9 @@ document.addEventListener("DOMContentLoaded", () => {
         : "continuous";
 
       if (selectedCountry === "PL") {
-        const selectedBankCode = bankCodeSelect ? bankCodeSelect.value : "random";
+        const selectedBankCode = bankCodeSelect
+          ? bankCodeSelect.value
+          : "random";
         const selectedPrefix = ibanPrefixSelect
           ? ibanPrefixSelect.value
           : "no-prefix";
@@ -768,7 +852,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (nrbOutput) nrbOutput.innerText = newNrb;
         displayNrbInfo(newNrb);
       } else {
-        const result = generateInternationalAccount(selectedCountry, selectedFormat);
+        const result = generateInternationalAccount(
+          selectedCountry,
+          selectedFormat,
+        );
         if (nrbOutput) nrbOutput.innerText = result.iban;
         displayNrbInfo(result.iban, result);
       }
