@@ -217,10 +217,15 @@ button:last-of-type {
 #openPeselOptionsBtn {
   background-color: #2e7d32;
 }
+#peselOkBtn,
+#nrbOkBtn {
+  background-color: #2e7d32;
+}
 #generateIdBtn {
   background-color: #1976d2;
 }
-#generateNrbBtn {
+#generateNrbBtn,
+#openNrbOptionsBtn {
   background-color: #ef6c00;
 }
 #generateNameBtn {
