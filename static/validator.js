@@ -353,7 +353,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const countryBanks = foreignBanksData[country];
     if (countryBanks) {
         for (const bank of countryBanks) {
-            if (bban.startsWith(bank.bank_code)) {
+            let bankCodeMatches = false;
+            if (country === 'GB') {
+                // For GB, the sort code (bank_code) is at positions 4-9 of the BBAN.
+                bankCodeMatches = bban.substring(4).startsWith(bank.bank_code);
+            } else {
+                bankCodeMatches = bban.startsWith(bank.bank_code);
+            }
+
+            if (bankCodeMatches) {
                 return {
                     isValid: true,
                     message: `✅ Numer IBAN (${country}) jest poprawny!\nBank: ${bank.bank_name}\nSWIFT: ${bank.swift}`
