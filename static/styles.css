@@ -440,6 +440,14 @@ input:focus-visible {
 }
 
 /* --- WALIDATOR --- */
+input[aria-invalid="true"] {
+  border-color: #c62828 !important;
+}
+
+input[aria-invalid="true"]:focus-visible {
+  outline-color: #c62828 !important;
+}
+
 .validator-input-group {
   display: flex;
   gap: 12px;
