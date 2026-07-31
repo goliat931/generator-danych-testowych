@@ -49,3 +49,6 @@
 
 **Learning:** Using `outline: none` on inputs and relying only on a `border-color` change for focus state is an accessibility anti-pattern. It may fail WCAG contrast ratio requirements and, critically, is entirely stripped out by High Contrast Modes (like Windows High Contrast), leaving keyboard users with no visible focus indicator.
 **Action:** Always replace `outline: none` with a strong `:focus-visible` outline using high-contrast design tokens (e.g. `var(--icon-fill-hover)` with `outline-offset`). This ensures focus states are robust across all color themes and accessibility modes.
+## 2026-07-31 - Inline Form Validation Feedback
+**Learning:** Tying visual validation cues directly to `aria-invalid` attributes, and clearing them immediately on the `input` event, provides a much smoother and more accessible experience than relying solely on separate error text or generic CSS classes.
+**Action:** Always use `aria-invalid` as the CSS hook for validation states in forms, and ensure real-time feedback by clearing error states as the user types.
