@@ -129,11 +129,12 @@ function generateIdNumber() {
     letterPart += letters.charAt(Math.floor(Math.random() * letters.length));
   }
 
-  const firstDigit = calculateIdChecksum(letterPart + "000000");
-
   let digitsPart = Array.from({ length: 5 }, () =>
     Math.floor(Math.random() * 10),
   ).join("");
+
+  const firstDigit = calculateIdChecksum(letterPart + "0" + digitsPart);
+
   return letterPart + firstDigit + digitsPart;
 }
 
