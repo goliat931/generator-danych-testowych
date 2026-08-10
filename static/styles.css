@@ -295,6 +295,15 @@ button:hover {
   outline-offset: 4px;
 }
 
+button:active,
+.btn-primary:active,
+.btn-secondary:active,
+.nav-button:active,
+.theme-toggle-button:active,
+.generated-output:active {
+  transform: scale(0.98);
+}
+
 /* --- KOMUNIKAT O SKOPIOWANIU (TOAST) --- */
 .copy-message {
   visibility: hidden;
@@ -308,17 +317,19 @@ button:hover {
   z-index: 2000;
   left: 50%;
   bottom: 30px;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(20px) scale(0.95);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   opacity: 0;
   transition:
     opacity 0.4s,
-    visibility 0.4s;
+    visibility 0.4s,
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .copy-message.show {
   visibility: visible;
   opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
 }
 
 /* --- RESPONSYWNOŚĆ --- */
