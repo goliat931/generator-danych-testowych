@@ -54,3 +54,7 @@
 
 **Learning:** Relying solely on separate text elements below an input for validation errors leaves screen reader users unaware of the error when interacting directly with the input, and leaving stale visual error styles after user correction degrades UX.
 **Action:** Always link form inputs to their error message containers using `aria-describedby` (even when empty). Dynamically set `aria-invalid="true"` or `"false"` via JavaScript during validation to communicate state. Clear both the error text and the `aria-invalid` attribute immediately on the `input` event to provide responsive real-time feedback.
+
+## 2025-02-23 - Tactile Feedback and Spring Animations
+**Learning:** Users lack clear, immediate tactile feedback when interacting with buttons, and toast notifications (like copy success messages) appearing abruptly lack the polished, delightful feel of a modern application.
+**Action:** Always add a subtle `transform: scale(0.98)` on the `:active` state of interactive elements (like buttons) to simulate a physical button press. Additionally, use a `cubic-bezier` timing function on `transform` properties for temporary UI elements like toast notifications to create a natural, bouncy pop-up animation.
