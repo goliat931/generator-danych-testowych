@@ -1109,3 +1109,13 @@ a:focus-visible {
   outline: 2px solid var(--icon-fill-hover);
   outline-offset: 4px;
 }
+
+/* Accessibility/UX: Tactile feedback for interactive elements */
+button:active,
+.btn-primary:active,
+.btn-secondary:active,
+.nav-button:active,
+.theme-toggle-button:active,
+a.nav-button:active {
+  transform: scale(0.98);
+}
