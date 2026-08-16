@@ -240,6 +240,15 @@ button:hover {
   transform: scale(1.02);
 }
 
+button:active,
+.btn-primary:active,
+.btn-secondary:active,
+.nav-button:active,
+.theme-toggle-button:active,
+.close-btn:active {
+  transform: scale(0.98);
+}
+
 /* --- MODAL (POPUP USTAWIEŃ) --- */
 .modal {
   display: none;
@@ -308,17 +317,19 @@ button:hover {
   z-index: 2000;
   left: 50%;
   bottom: 30px;
-  transform: translateX(-50%);
+  transform: translate(-50%, 20px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   opacity: 0;
   transition:
-    opacity 0.4s,
-    visibility 0.4s;
+    opacity 0.4s ease,
+    visibility 0.4s ease,
+    transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .copy-message.show {
   visibility: visible;
   opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 /* --- RESPONSYWNOŚĆ --- */
