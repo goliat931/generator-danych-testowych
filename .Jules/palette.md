@@ -54,3 +54,7 @@
 
 **Learning:** Relying solely on separate text elements below an input for validation errors leaves screen reader users unaware of the error when interacting directly with the input, and leaving stale visual error styles after user correction degrades UX.
 **Action:** Always link form inputs to their error message containers using `aria-describedby` (even when empty). Dynamically set `aria-invalid="true"` or `"false"` via JavaScript during validation to communicate state. Clear both the error text and the `aria-invalid` attribute immediately on the `input` event to provide responsive real-time feedback.
+
+## 2026-08-17 - Tactile Feedback for Interactive Elements
+**Learning:** Standard interactive elements (buttons, links, toggles) lack tactile feedback when clicked. Without an active state scale transition, interactions can feel rigid and unresponsive.
+**Action:** Always include a subtle scale down transform (e.g., `transform: scale(0.98)`) on the `:active` pseudo-class of standard buttons, navigation links, and UI toggles to provide immediate, satisfying tactile feedback. Ensure this is explicitly not applied to large static elements or output blocks where a scale shift would cause visual jank or layout shifts.
