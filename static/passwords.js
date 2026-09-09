@@ -65,9 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (lengthInput && lengthValueLabel) {
     lengthValueLabel.textContent = lengthInput.value;
-    lengthInput.addEventListener("input", () => {
-      lengthValueLabel.textContent = lengthInput.value;
-    });
   }
 
   function showCopyMessage(text) {
@@ -203,6 +200,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function handleGenerate() {
+    if (lengthInput && lengthValueLabel) {
+      lengthValueLabel.textContent = lengthInput.value;
+    }
+
     const pool = buildCharPool();
     if (!pool) {
       showError("Zaznacz przynajmniej jeden zestaw znaków.");
@@ -226,9 +227,27 @@ document.addEventListener("DOMContentLoaded", () => {
     renderPasswords(passwords, pool.length, length);
   }
 
+  // Hasła generują się na żywo przy każdej zmianie ustawień. Przycisk
+  // pozostaje jako "wylosuj ponownie" dla tych samych ustawień.
   if (generateBtn) {
     generateBtn.addEventListener("click", handleGenerate);
   }
+  if (lengthInput) {
+    lengthInput.addEventListener("input", handleGenerate);
+  }
+  if (countInput) {
+    countInput.addEventListener("input", handleGenerate);
+  }
+  [
+    lowerCheckbox,
+    upperCheckbox,
+    digitsCheckbox,
+    specialCheckbox,
+    diacriticsCheckbox,
+    excludeSimilarCheckbox,
+  ].forEach((checkbox) => {
+    if (checkbox) checkbox.addEventListener("change", handleGenerate);
+  });
 
   handleGenerate();
 });
