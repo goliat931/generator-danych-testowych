@@ -17,14 +17,49 @@
     return rows.map((row) => row.padEnd(width, "."));
   }
 
-  // Rysuje siatkę pikseli od góry (rząd 0 = góra sylwetki) w dół. Element
-  // bazowy MUSI mieć jawnie ustawioną pełną szerokość/wysokość sprite'a
-  // (patrz buildCompanion), żeby jego własny box faktycznie obejmował całą
-  // postać - inaczej dymek z ikonką (bottom: 100%) pozycjonowałby się
-  // względem jednego "piksela", a nie całej sylwetki.
+  const OUTLINE_COLOR = "#14100c";
+
+  // Dorysowuje ciemny 1-pikselowy kontur wokół sylwetki (klasyczna technika
+  // pixel-artowa). Bez niego drobne, blokowe kształty (zwłaszcza cienkie
+  // nogi) potrafią wtopić się w tło strony i sprawiać wrażenie "urwanych".
+  function outlineCells(rows) {
+    const height = rows.length;
+    const width = rows[0].length;
+    const filled = (x, y) =>
+      y >= 0 && y < height && x >= 0 && x < width && rows[y][x] !== ".";
+    const cells = [];
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (filled(x, y)) continue;
+        if (
+          filled(x - 1, y) ||
+          filled(x + 1, y) ||
+          filled(x, y - 1) ||
+          filled(x, y + 1) ||
+          filled(x - 1, y - 1) ||
+          filled(x + 1, y - 1) ||
+          filled(x - 1, y + 1) ||
+          filled(x + 1, y + 1)
+        ) {
+          cells.push([x, y]);
+        }
+      }
+    }
+    return cells;
+  }
+
+  // Rysuje siatkę pikseli od góry (rząd 0 = góra sylwetki) w dół, z
+  // dorysowanym konturem. Element bazowy MUSI mieć jawnie ustawioną pełną
+  // szerokość/wysokość sprite'a (patrz buildCompanion), żeby jego własny box
+  // faktycznie obejmował całą postać - inaczej dymek z ikonką (bottom: 100%)
+  // pozycjonowałby się względem jednego "piksela", a nie całej sylwetki.
   function rowsToBoxShadow(rows, palette) {
     const padded = padRows(rows);
     const shadows = [];
+    // Kontur najpierw (rysowany "pod spodem"), potem kolorowe piksele na wierzchu.
+    outlineCells(padded).forEach(([x, y]) => {
+      shadows.push(`${x * PX}px ${y * PX}px 0 ${OUTLINE_COLOR}`);
+    });
     padded.forEach((row, y) => {
       for (let x = 0; x < row.length; x++) {
         const char = row[x];
@@ -53,15 +88,15 @@
     "sttttttt",
     ".tttttt.",
     ".tttttt.",
-    "..t..t..",
+    ".tt..tt.",
   ];
   const DAVID_FRAMES = {
     A: rowsToBoxShadow(
-      [...DAVID_BODY, "..b..b..", "..b..b.."],
+      [...DAVID_BODY, ".bb..bb.", ".bb..bb."],
       DAVID_PALETTE,
     ),
     B: rowsToBoxShadow(
-      [...DAVID_BODY, ".b....b.", "b......b"],
+      [...DAVID_BODY, "bb....bb", "bb....bb"],
       DAVID_PALETTE,
     ),
   };
@@ -90,15 +125,15 @@
   ];
   const GOLIATH_FRAMES = {
     A: rowsToBoxShadow(
-      [...GOLIATH_BODY, "..b......b..", "..b......b.."],
+      [...GOLIATH_BODY, "..bbb..bbb..", "..bbb..bbb.."],
       GOLIATH_PALETTE,
     ),
     B: rowsToBoxShadow(
-      [...GOLIATH_BODY, ".b........b.", "b..........b"],
+      [...GOLIATH_BODY, ".bbb....bbb.", ".bbb....bbb."],
       GOLIATH_PALETTE,
     ),
   };
-  const GOLIATH_WIDTH = 13;
+  const GOLIATH_WIDTH = 12;
   const GOLIATH_HEIGHT = GOLIATH_BODY.length + 2;
 
   // --- Ikonki "dymków" nawiązujące do funkcji danej strony ---
@@ -156,20 +191,30 @@
     const flip = document.createElement("div");
     flip.className = "companion-flip";
 
-    // Sprite ma jawnie ustawiony PEŁNY rozmiar sylwetki (nie tylko jednego
-    // "piksela"), żeby jego box faktycznie obejmował całą postać - dzięki
-    // temu dymek z ikonką (.companion-prop, bottom: 100% względem .companion)
-    // pojawia się nad głową, a nie chowa się w połowie ciała.
+    // WAŻNE: technika "box-shadow pixel art" wymaga, żeby element bazowy
+    // (.companion-sprite) był rozmiaru JEDNEGO piksela (PX x PX) - box-shadow
+    // bez "spread" kopiuje kształt/rozmiar CAŁEGO boxa, więc powiększenie go
+    // do rozmiaru całej postaci sprawia, że każdy "piksel" staje się kopią
+    // całego dużego prostokąta i obraz się rozjeżdża. Dlatego pełny rozmiar
+    // sylwetki ustawiamy na OSOBNYM kontenerze (.companion-body), żeby dymek
+    // z ikonką (bottom: 100% względem .companion) poprawnie pozycjonował się
+    // nad głową, a sam sprite zostaje mały.
+    const body = document.createElement("div");
+    body.className = "companion-body";
+    body.style.width = `${widthCols * PX}px`;
+    body.style.height = `${heightRows * PX}px`;
+
     const sprite = document.createElement("div");
     sprite.className = "companion-sprite";
-    sprite.style.width = `${widthCols * PX}px`;
-    sprite.style.height = `${heightRows * PX}px`;
+    sprite.style.width = `${PX}px`;
+    sprite.style.height = `${PX}px`;
 
-    flip.appendChild(sprite);
+    body.appendChild(sprite);
+    flip.appendChild(body);
     wrap.appendChild(prop);
     wrap.appendChild(flip);
 
-    return { wrap, prop, flip, sprite };
+    return { wrap, prop, flip, body, sprite };
   }
 
   const david = buildCompanion("companion-david", DAVID_WIDTH, DAVID_HEIGHT);
@@ -299,7 +344,9 @@
     }
 
     // Reakcja na kliknięcie: mały podskok + natychmiastowy dymek.
-    el.sprite.addEventListener("click", () => {
+    // Nasłuch na .companion-body (pełny rozmiar postaci), nie na malutkim
+    // .companion-sprite, żeby obszar klikalny obejmował całą sylwetkę.
+    el.body.addEventListener("click", () => {
       showProp();
       el.flip.classList.add("companion-bounce");
       setTimeout(() => el.flip.classList.remove("companion-bounce"), 400);

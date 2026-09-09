@@ -1266,12 +1266,23 @@ a:focus-visible {
   }
 }
 
-.companion-sprite {
-  /* szerokość/wysokość ustawiane w JS (static/companions.js) na pełny
-     rozmiar sylwetki, żeby dymek z ikonką pozycjonował się nad głową */
+.companion-body {
+  /* Kontener w pełnym rozmiarze sylwetki (ustawianym w JS) - tylko po to,
+     żeby dymek z ikonką (.companion-prop, bottom: 100%) pozycjonował się
+     nad głową, i żeby obszar klikalny obejmował całą postać, a nie jeden
+     mały piksel. */
   position: relative;
   cursor: pointer;
   pointer-events: auto;
+}
+
+.companion-sprite {
+  /* Element bazowy techniki "box-shadow pixel art" - MUSI zostać rozmiaru
+     jednego piksela (patrz komentarz w buildCompanion w companions.js),
+     inaczej każdy narysowany "piksel" staje się kopią całego dużego boxa. */
+  position: absolute;
+  top: 0;
+  left: 0;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35));
 }
 
