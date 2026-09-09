@@ -93,6 +93,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Podpina walidację danego pola: klik przycisku, Enter w polu oraz
+  // czyszczenie komunikatu przy edycji. `prepare` zwraca wartość do
+  // zwalidowania (domyślnie przycięty tekst pola) i może mieć efekty
+  // uboczne, np. normalizację wartości pola (patrz walidacja NRB).
+  function wireValidator({ input, button, result, validate, emptyMessage, prepare }) {
+    if (!input || !button) return;
+
+    button.addEventListener("click", () => {
+      const value = prepare ? prepare() : input.value.trim();
+      if (value) {
+        const validationResult = validate(value);
+        showMessage(
+          validationResult.message,
+          result,
+          validationResult.isValid,
+          input,
+        );
+      } else {
+        showMessage(emptyMessage, result, false, input);
+      }
+    });
+
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") button.click();
+    });
+
+    input.addEventListener("input", () => {
+      clearValidationFeedback(input, result);
+    });
+  }
+
   function isValidPeselChecksum(pesel) {
     let checksumSum = 0;
     for (let i = 0; i < 10; i++) {
@@ -104,29 +135,28 @@ document.addEventListener("DOMContentLoaded", () => {
     return expectedChecksum === actualChecksum;
   }
 
+  // Przesunięcia miesiąca w PESEL wg stulecia urodzenia, sprawdzane od
+  // największego do najmniejszego (patrz decodePeselDate).
+  const centuryMonthOffsets = [
+    { threshold: 80, yearBase: 1800 },
+    { threshold: 60, yearBase: 2200 },
+    { threshold: 40, yearBase: 2100 },
+    { threshold: 20, yearBase: 2000 },
+    { threshold: 0, yearBase: 1900 },
+  ];
+
   function decodePeselDate(pesel) {
     const rr = parseInt(pesel.substring(0, 2));
     const mm = parseInt(pesel.substring(2, 4));
     const dd = parseInt(pesel.substring(4, 6));
 
-    let actualMonth = mm;
-    let year = rr;
-    if (mm > 80) {
-      actualMonth = mm - 80;
-      year = 1800 + rr;
-    } else if (mm > 60) {
-      actualMonth = mm - 60;
-      year = 2200 + rr;
-    } else if (mm > 40) {
-      actualMonth = mm - 40;
-      year = 2100 + rr;
-    } else if (mm > 20) {
-      actualMonth = mm - 20;
-      year = 2000 + rr;
-    } else {
-      year = 1900 + rr;
-    }
-    return { year, month: actualMonth, day: dd };
+    const century = centuryMonthOffsets.find((c) => mm > c.threshold);
+
+    return {
+      year: century.yearBase + rr,
+      month: mm - century.threshold,
+      day: dd,
+    };
   }
 
   function calculateAge(year, month, day) {
@@ -418,78 +448,44 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  peselValidateBtn.addEventListener("click", () => {
-    const pesel = peselInput.value.trim();
-    if (pesel) {
-      const result = validatePesel(pesel);
-      showMessage(result.message, peselResult, result.isValid, peselInput);
-    } else {
-      showMessage("❌ Wpisz numer PESEL", peselResult, false, peselInput);
-    }
+  wireValidator({
+    input: peselInput,
+    button: peselValidateBtn,
+    result: peselResult,
+    validate: validatePesel,
+    emptyMessage: "❌ Wpisz numer PESEL",
   });
 
-  peselInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") peselValidateBtn.click();
+  wireValidator({
+    input: idInput,
+    button: idValidateBtn,
+    result: idResult,
+    validate: validateId,
+    emptyMessage: "❌ Wpisz numer dowodu",
+    prepare: () => idInput.value.trim().toUpperCase(),
   });
 
-  peselInput.addEventListener("input", () => {
-    clearValidationFeedback(peselInput, peselResult);
+  wireValidator({
+    input: regonInput,
+    button: regonValidateBtn,
+    result: regonResult,
+    validate: validateRegon,
+    emptyMessage: "❌ Wpisz numer REGON",
   });
 
-  idValidateBtn.addEventListener("click", () => {
-    const id = idInput.value.trim().toUpperCase();
-    if (id) {
-      const result = validateId(id);
-      showMessage(result.message, idResult, result.isValid, idInput);
-    } else {
-      showMessage("❌ Wpisz numer dowodu", idResult, false, idInput);
-    }
-  });
-
-  idInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") idValidateBtn.click();
-  });
-
-  idInput.addEventListener("input", () => {
-    clearValidationFeedback(idInput, idResult);
-  });
-
-  regonValidateBtn.addEventListener("click", () => {
-    const regon = regonInput.value.trim();
-    if (regon) {
-      const result = validateRegon(regon);
-      showMessage(result.message, regonResult, result.isValid, regonInput);
-    } else {
-      showMessage("❌ Wpisz numer REGON", regonResult, false, regonInput);
-    }
-  });
-
-  regonInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") regonValidateBtn.click();
-  });
-
-  regonInput.addEventListener("input", () => {
-    clearValidationFeedback(regonInput, regonResult);
-  });
-
-  nrbValidateBtn.addEventListener("click", () => {
-    const rawNrb = nrbInput.value || "";
-    if (rawNrb) {
+  wireValidator({
+    input: nrbInput,
+    button: nrbValidateBtn,
+    result: nrbResult,
+    validate: validateNrb,
+    emptyMessage: "❌ Wpisz numer rachunku",
+    prepare: () => {
+      const rawNrb = nrbInput.value || "";
+      if (!rawNrb) return "";
       const formattedNrb = rawNrb.replace(/\s/g, "").toUpperCase();
       nrbInput.value = formattedNrb;
-      const result = validateNrb(formattedNrb);
-      showMessage(result.message, nrbResult, result.isValid, nrbInput);
-    } else {
-      showMessage("❌ Wpisz numer rachunku", nrbResult, false, nrbInput);
-    }
-  });
-
-  nrbInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") nrbValidateBtn.click();
-  });
-
-  nrbInput.addEventListener("input", () => {
-    clearValidationFeedback(nrbInput, nrbResult);
+      return formattedNrb;
+    },
   });
 
   if (typeof window !== "undefined") {
