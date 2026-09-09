@@ -73,68 +73,102 @@
 
   // --- Dawid: mały pasterz z procą ---
   const DAVID_PALETTE = {
-    h: "#5a3a1a",
-    f: "#e8b98a",
-    t: "#3a7ca5",
-    b: "#4a3418",
-    s: "#2b2b2b",
+    h: "#5c3a21",
+    s: "#f2c49b",
+    t: "#4a7a96",
+    b: "#3a2a18",
+    e: "#111111",
+    p: "#8b5a2b",
+    l: "#969696",
   };
-  const DAVID_BODY = [
-    "..hhhh..",
-    ".hffffh.",
-    ".hffffh.",
-    "..ffff..",
-    ".tttttt.",
-    "sttttttt",
-    ".tttttt.",
-    ".tttttt.",
-    ".tt..tt.",
+  const DAVID_BODY_A = [
+    "....hhhh....",
+    "...hhsshh...",
+    "...hse.es...",
+    "...hssssh...",
+    "....ssss....",
+    "...ltttt....",
+    "..l.tttt.p..",
+    ".l..tttt..p.",
+    "....tttt....",
+    "...bbbbbb...",
+    "...b....b...",
+    "..bbb..bbb..",
+  ];
+  const DAVID_BODY_B = [
+    "....hhhh....",
+    "...hhsshh...",
+    "...hse.es...",
+    "...hssssh...",
+    "....ssss....",
+    "...ltttt....",
+    "..l.tttt.p..",
+    ".l..tttt..p.",
+    "....tttt....",
+    "...bbbbbb...",
+    "...bb..bb...",
+    "...bb..bb...",
   ];
   const DAVID_FRAMES = {
-    A: rowsToBoxShadow(
-      [...DAVID_BODY, ".bb..bb.", ".bb..bb."],
-      DAVID_PALETTE,
-    ),
-    B: rowsToBoxShadow(
-      [...DAVID_BODY, "bb....bb", "bb....bb"],
-      DAVID_PALETTE,
-    ),
+    A: rowsToBoxShadow(DAVID_BODY_A, DAVID_PALETTE),
+    B: rowsToBoxShadow(DAVID_BODY_B, DAVID_PALETTE),
   };
-  const DAVID_WIDTH = 8;
-  const DAVID_HEIGHT = DAVID_BODY.length + 2;
+  const DAVID_WIDTH = 12;
+  const DAVID_HEIGHT = 12;
 
   // --- Goliat: opancerzony olbrzym ---
   const GOLIATH_PALETTE = {
-    H: "#8a8f98",
-    f: "#c99770",
-    A: "#6b4a2a",
-    D: "#b08d57",
-    b: "#2e2116",
+    H: "#707780",
+    S: "#8a939e",
+    f: "#d1a384",
+    A: "#573a20",
+    D: "#c49a45",
+    b: "#21160e",
+    e: "#111111",
+    r: "#a83232",
   };
-  const GOLIATH_BODY = [
-    "..HHHHHHHH..",
-    ".HHHHHHHHHH.",
-    ".HffffffffH.",
-    "..ffffffff..",
-    ".AAAAAAAAAA.",
-    "AADAAAAAADAA",
-    ".AAAAAAAAAA.",
-    ".AAAAAAAAAA.",
-    ".AAAAAAAAAA.",
-    "..AAAAAAAA..",
+  const GOLIATH_BODY_A = [
+    "......rrrr......",
+    ".....rrrrrr.....",
+    "....HHHHHHHH....",
+    "...HSHHHHHHSH...",
+    "...HHfffffHHH...",
+    "...HHfe.efHHH...",
+    "....HfffffHH....",
+    "....HHHHHHHH....",
+    "...HHHAAAAHHH...",
+    "..HHHHAAAAHHHH..",
+    "..HHHHADDDHHHH..",
+    "..HHHHAAAAHHHH..",
+    "...HHHHHHHHHH...",
+    "...HH......HH...",
+    "..bbb......bbb..",
+    "..bbb......bbb..",
+  ];
+  const GOLIATH_BODY_B = [
+    "......rrrr......",
+    ".....rrrrrr.....",
+    "....HHHHHHHH....",
+    "...HSHHHHHHSH...",
+    "...HHfffffHHH...",
+    "...HHfe.efHHH...",
+    "....HfffffHH....",
+    "....HHHHHHHH....",
+    "...HHHAAAAHHH...",
+    "..HHHHAAAAHHHH..",
+    "..HHHHADDDHHHH..",
+    "..HHHHAAAAHHHH..",
+    "...HHHHHHHHHH...",
+    "...HH......HH...",
+    "...bbb....bbb...",
+    "...bbb....bbb...",
   ];
   const GOLIATH_FRAMES = {
-    A: rowsToBoxShadow(
-      [...GOLIATH_BODY, "..bbb..bbb..", "..bbb..bbb.."],
-      GOLIATH_PALETTE,
-    ),
-    B: rowsToBoxShadow(
-      [...GOLIATH_BODY, ".bbb....bbb.", ".bbb....bbb."],
-      GOLIATH_PALETTE,
-    ),
+    A: rowsToBoxShadow(GOLIATH_BODY_A, GOLIATH_PALETTE),
+    B: rowsToBoxShadow(GOLIATH_BODY_B, GOLIATH_PALETTE),
   };
-  const GOLIATH_WIDTH = 12;
-  const GOLIATH_HEIGHT = GOLIATH_BODY.length + 2;
+  const GOLIATH_WIDTH = 16;
+  const GOLIATH_HEIGHT = 16;
 
   // --- Ikonki "dymków" nawiązujące do funkcji danej strony ---
   const ICON_PALETTES = {
@@ -142,12 +176,14 @@
     validate: { g: "#2e7d32" },
     dataset: { d: "#c9a24b" },
     security: { h: "#8a8a8a", k: "#d4af37" },
+    interact: { e: "#e74c3c" },
   };
   const ICON_ROWS = {
     documents: ["cccccc", "c.ll.c", "c....c", "c.ll.c", "cccccc"],
     validate: ["......", ".....g", "....g.", ".g.g..", "..g...", "......"],
     dataset: ["ddddddd", ".ddddd.", "ddddddd", ".ddddd.", "ddddddd"],
     security: [".hhhh.", "h....h", "kkkkkk", "kkkkkk", "kk..kk", "kkkkkk"],
+    interact: ["...", ".e.", ".e.", ".e.", "...", ".e.", "..."],
   };
   const ICON_SHADOWS = Object.fromEntries(
     Object.keys(ICON_ROWS).map((key) => [
@@ -214,7 +250,7 @@
     wrap.appendChild(prop);
     wrap.appendChild(flip);
 
-    return { wrap, prop, flip, body, sprite };
+    return { wrap, prop, propInner, flip, body, sprite };
   }
 
   const david = buildCompanion("companion-david", DAVID_WIDTH, DAVID_HEIGHT);
@@ -233,13 +269,15 @@
       x: opts.startX,
       groundY: 0,
       climbTarget: 0,
-      direction: 1,
+      direction: opts.startDirection || 1,
       mode: "walk", // walk | pause | climbUp | climbDown | climbIdle
       modeUntil: performance.now() + 1000 + Math.random() * 2000,
       frame: "A",
       frameToggleAt: performance.now() + opts.frameInterval,
       nextPropAt:
-        performance.now() + opts.propMinDelay + Math.random() * opts.propMinDelay,
+        performance.now() +
+        opts.propMinDelay +
+        Math.random() * opts.propMinDelay,
     };
 
     function setFrame(name) {
@@ -249,9 +287,16 @@
     }
     setFrame("A");
 
-    function showProp() {
+    function showProp(overrideTheme) {
+      const currentTheme = overrideTheme || theme;
+      el.propInner.style.boxShadow = ICON_SHADOWS[currentTheme];
       el.prop.classList.add("show");
-      setTimeout(() => el.prop.classList.remove("show"), 1500);
+      setTimeout(() => {
+        el.prop.classList.remove("show");
+        setTimeout(() => {
+          el.propInner.style.boxShadow = ICON_SHADOWS[theme];
+        }, 250);
+      }, 1500);
     }
 
     function maxX() {
@@ -286,7 +331,10 @@
         } else if (state.x >= limit) {
           state.x = limit;
           state.direction = -1;
-        } else if (!prefersReducedMotion && Math.random() < opts.turnChance * dt) {
+        } else if (
+          !prefersReducedMotion &&
+          Math.random() < opts.turnChance * dt
+        ) {
           state.direction *= -1;
         }
 
@@ -315,8 +363,7 @@
         state.x = Math.min(limit, Math.max(0, state.x));
         if (atEdge) {
           state.mode = "climbUp";
-          state.climbTarget =
-            40 + Math.random() * (window.innerHeight * 0.25);
+          state.climbTarget = 40 + Math.random() * (window.innerHeight * 0.25);
           setFrame("A");
         }
       } else if (state.mode === "climbUp") {
@@ -352,7 +399,7 @@
       setTimeout(() => el.flip.classList.remove("companion-bounce"), 400);
     });
 
-    return { tick, state };
+    return { tick, state, el, setFrame, showProp };
   }
 
   const davidWalker = createWalker(david, DAVID_FRAMES, DAVID_WIDTH * PX, {
@@ -369,6 +416,7 @@
     GOLIATH_WIDTH * PX,
     {
       startX: window.innerWidth - GOLIATH_WIDTH * PX - 60,
+      startDirection: -1,
       speed: 24,
       climbSpeed: 18,
       frameInterval: 260,
@@ -376,6 +424,8 @@
       propMinDelay: 12000,
     },
   );
+
+  let interactionCooldown = 0;
 
   if (prefersReducedMotion) {
     // Bez ciągłego wędrowania - postacie stoją, wciąż można je "poklikać".
@@ -386,6 +436,59 @@
     const loop = (now) => {
       const dt = Math.min(0.05, (now - lastTime) / 1000);
       lastTime = now;
+
+      // Obsługa interakcji między postaciami
+      if (
+        now > interactionCooldown &&
+        davidWalker.state.groundY === 0 &&
+        goliathWalker.state.groundY === 0 &&
+        davidWalker.state.mode === "walk" &&
+        goliathWalker.state.mode === "walk"
+      ) {
+        const dx =
+          davidWalker.state.x +
+          (DAVID_WIDTH * PX) / 2 -
+          (goliathWalker.state.x + (GOLIATH_WIDTH * PX) / 2);
+
+        if (Math.abs(dx) < 60) {
+          // Są blisko, robimy interakcję
+          davidWalker.state.mode = "pause";
+          goliathWalker.state.mode = "pause";
+          davidWalker.state.modeUntil = now + 2000;
+          goliathWalker.state.modeUntil = now + 2000;
+
+          // Zwracają się ku sobie
+          davidWalker.state.direction = dx < 0 ? 1 : -1;
+          goliathWalker.state.direction = dx > 0 ? 1 : -1;
+
+          davidWalker.setFrame("A");
+          goliathWalker.setFrame("A");
+
+          davidWalker.el.flip.classList.add("companion-bounce");
+          goliathWalker.el.flip.classList.add("companion-bounce");
+
+          davidWalker.showProp("interact");
+          setTimeout(() => goliathWalker.showProp("interact"), 300);
+
+          setTimeout(() => {
+            davidWalker.el.flip.classList.remove("companion-bounce");
+            goliathWalker.el.flip.classList.remove("companion-bounce");
+          }, 400);
+
+          // Po interakcji odchodzą w przeciwnych kierunkach
+          setTimeout(() => {
+            davidWalker.state.direction *= -1;
+            goliathWalker.state.direction *= -1;
+            davidWalker.state.mode = "walk";
+            goliathWalker.state.mode = "walk";
+            davidWalker.state.modeUntil = now + 4000 + Math.random() * 6000;
+            goliathWalker.state.modeUntil = now + 4000 + Math.random() * 6000;
+          }, 2000);
+
+          interactionCooldown = now + 15000 + Math.random() * 10000;
+        }
+      }
+
       davidWalker.tick(now, dt);
       goliathWalker.tick(now, dt);
       requestAnimationFrame(loop);
