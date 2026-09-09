@@ -240,6 +240,14 @@ button:hover {
   transform: scale(1.02);
 }
 
+/* Delikatne tactile feedback przy kliknięciu - pomija duże bloki wyjściowe
+   (.generated-output), gdzie skalowanie powodowałoby zauważalne szarpnięcie. */
+button:active:not(:disabled),
+.nav-button:active,
+.close-btn:active {
+  transform: scale(0.98);
+}
+
 /* --- MODAL (POPUP USTAWIEŃ) --- */
 .modal {
   display: none;
@@ -308,17 +316,19 @@ button:hover {
   z-index: 2000;
   left: 50%;
   bottom: 30px;
-  transform: translateX(-50%);
+  transform: translate(-50%, 20px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   opacity: 0;
   transition:
-    opacity 0.4s,
-    visibility 0.4s;
+    opacity 0.4s ease,
+    visibility 0.4s ease,
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .copy-message.show {
   visibility: visible;
   opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 /* --- RESPONSYWNOŚĆ --- */
@@ -410,6 +420,26 @@ footer a svg {
   font-size: 0.9rem;
   color: var(--text-primary);
   transition: color 0.3s ease;
+}
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.checkbox-label input[type="checkbox"] {
+  margin: 0;
+  padding: 0;
+  border: initial;
+  cursor: pointer;
+  width: auto;
+  flex-shrink: 0;
+}
+.field-hint {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 4px 0 0 0;
 }
 select,
 input {
@@ -684,8 +714,98 @@ input:focus-visible {
 }
 
 .format-option input[type="radio"],
-.separator-option input[type="radio"] {
+.separator-option input[type="radio"],
+.format-option input[type="checkbox"] {
   cursor: pointer;
+}
+
+/* --- GENERATOR HASEŁ --- */
+.length-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.length-control input[type="range"] {
+  flex: 1;
+  margin-bottom: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.length-value {
+  font-weight: 700;
+  min-width: 2.5em;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.password-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.password-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 14px;
+  background-color: var(--bg-primary);
+}
+
+.password-output {
+  font-size: 1.15rem;
+  font-family: "Courier New", monospace;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  white-space: normal;
+  word-break: break-all;
+  text-align: left;
+  min-height: auto;
+  margin: 0;
+  padding: 4px 8px;
+  flex: 1 1 220px;
+  justify-content: flex-start;
+}
+
+.password-strength {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+
+.password-strength.very-weak {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.password-strength.weak {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.password-strength.medium {
+  background-color: #fff8e1;
+  color: #ef6c00;
+}
+
+.password-strength.strong {
+  background-color: #edf7ed;
+  color: #2e7d32;
+}
+
+.password-strength.very-strong {
+  background-color: #e3f2fd;
+  color: #1565c0;
 }
 
 .control-buttons {

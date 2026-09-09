@@ -21,7 +21,7 @@
     { "bank_name": "Deutsche Bank", "bank_code": "10070000", "currency": "EUR", "swift": "DEUTDEDBXXX" },
     { "bank_name": "Commerzbank", "bank_code": "10040000", "currency": "EUR", "swift": "COBADEFFXXX" },
     { "bank_name": "DZ Bank", "bank_code": "50060400", "currency": "EUR", "swift": "GENODED1500" },
-    { "bank_name": "HypoVereinsbank (UniCredit)", "bank_code": "70020270", "currency": "EUR", "swift": "HYVEDMMMXXX" }
+    { "bank_name": "HypoVereinsbank (UniCredit)", "bank_code": "70020270", "currency": "EUR", "swift": "HYVEDEMMXXX" }
   ],
   "GB": [
     { "bank_name": "Barclays Bank", "bank_code": "200000", "currency": "GBP", "swift": "BARCGB22XXX" },

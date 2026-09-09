@@ -289,6 +289,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const nrbCountrySelect = document.getElementById("nrbCountry");
   const plBankCodeGroup = document.getElementById("plBankCodeGroup");
   const plIbanPrefixGroup = document.getElementById("plIbanPrefixGroup");
+  const foreignBankModeGroup = document.getElementById("foreignBankModeGroup");
+  const foreignFreeBankCodeCheckbox = document.getElementById(
+    "foreignFreeBankCode",
+  );
 
   if (nrbCountrySelect) {
     nrbCountrySelect.addEventListener("change", (e) => {
@@ -297,6 +301,8 @@ document.addEventListener("DOMContentLoaded", () => {
         plBankCodeGroup.style.display = isPl ? "flex" : "none";
       if (plIbanPrefixGroup)
         plIbanPrefixGroup.style.display = isPl ? "flex" : "none";
+      if (foreignBankModeGroup)
+        foreignBankModeGroup.style.display = isPl ? "none" : "flex";
     });
   }
 
@@ -389,11 +395,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (foreignInfo) {
-      const part1 = document.createTextNode(
-        `Kraj: ${foreignInfo.country_code} | Bank: ${foreignInfo.bank_name} | Waluta: ${foreignInfo.currency} | SWIFT: `,
-      );
-      nrbInfo.appendChild(part1);
-      nrbInfo.appendChild(createCopyableSwift(foreignInfo.swift));
+      const baseText = `Kraj: ${foreignInfo.country_code} | Bank: ${foreignInfo.bank_name} | Waluta: ${foreignInfo.currency}`;
+      if (foreignInfo.swift) {
+        nrbInfo.appendChild(
+          document.createTextNode(`${baseText} | SWIFT: `),
+        );
+        nrbInfo.appendChild(createCopyableSwift(foreignInfo.swift));
+      } else {
+        nrbInfo.appendChild(document.createTextNode(baseText));
+      }
       return;
     }
 
@@ -490,9 +500,30 @@ document.addEventListener("DOMContentLoaded", () => {
     return String(controlNumber).padStart(2, "0");
   }
 
-  function generateInternationalAccount(country, format) {
+  // Długość kodu banku (w cyfrach) w BBAN dla każdego obsługiwanego kraju -
+  // używana też do wygenerowania w pełni losowego kodu banku (tryb "dowolny").
+  const COUNTRY_BANK_CODE_LENGTH = {
+    DE: 8,
+    GB: 6,
+    FR: 5,
+    CZ: 4,
+    SK: 4,
+    CH: 5,
+    US: 9,
+  };
+  const COUNTRY_CURRENCY = {
+    DE: "EUR",
+    GB: "GBP",
+    FR: "EUR",
+    CZ: "CZK",
+    SK: "EUR",
+    CH: "CHF",
+    US: "USD",
+  };
+
+  function generateInternationalAccount(country, format, freeBankCode) {
     const countryBanks = foreignBanksData[country];
-    if (!countryBanks || countryBanks.length === 0) {
+    if (!freeBankCode && (!countryBanks || countryBanks.length === 0)) {
       return {
         iban: `Brak danych dla kraju: ${country}`,
         swift: "",
@@ -502,8 +533,27 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     }
 
-    const bankInfo =
-      countryBanks[Math.floor(Math.random() * countryBanks.length)];
+    const codeLength = COUNTRY_BANK_CODE_LENGTH[country];
+    if (!codeLength) {
+      return {
+        iban: `Logika dla kraju ${country} niezaimplementowana.`,
+        swift: "",
+        currency: "",
+        bank_name: "",
+        country_code: country,
+      };
+    }
+
+    // W trybie "dowolnym" bank nie jest wybierany ze znanej listy - kod banku
+    // jest w pełni losowy (poprawny formatem), więc nazwa i SWIFT są nieznane.
+    const bankInfo = freeBankCode
+      ? {
+          bank_code: randomDigits(codeLength),
+          currency: COUNTRY_CURRENCY[country] || "",
+          bank_name: "Bank nieznany (dowolny kod)",
+          swift: "",
+        }
+      : countryBanks[Math.floor(Math.random() * countryBanks.length)];
 
     let bban = "";
     let accountNumber = "";
@@ -513,11 +563,14 @@ document.addEventListener("DOMContentLoaded", () => {
         accountNumber = randomDigits(10);
         bban = bankInfo.bank_code + accountNumber;
         break;
-      case "GB": // BBAN: 18 (4 bank ID, 6 sort code, 8 account)
+      case "GB": { // BBAN: 18 (4 bank ID, 6 sort code, 8 account)
+        const bankIdLetters = freeBankCode
+          ? randomChars(LETTER_CHARS, 4)
+          : bankInfo.swift.substring(0, 4);
         accountNumber = randomDigits(8);
-        bban =
-          bankInfo.swift.substring(0, 4) + bankInfo.bank_code + accountNumber;
+        bban = bankIdLetters + bankInfo.bank_code + accountNumber;
         break;
+      }
       case "FR": { // BBAN: 23 (5 bank, 5 branch, 11 account, 2 key)
         const branchCode = randomDigits(5);
         accountNumber = randomAlnum(11);
@@ -540,14 +593,6 @@ document.addEventListener("DOMContentLoaded", () => {
         accountNumber = randomDigits(12);
         bban = bankInfo.bank_code + accountNumber; // 9-digit routing + 12-digit account
         break;
-      default:
-        return {
-          iban: `Logika dla kraju ${country} niezaimplementowana.`,
-          swift: "",
-          currency: "",
-          bank_name: "",
-          country_code: country,
-        };
     }
 
     const checksum = calculateGenericIbanChecksum(country, bban);
@@ -634,6 +679,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const result = generateInternationalAccount(
             selectedCountry,
             nrbFormatSelect ? nrbFormatSelect.value : "continuous",
+            foreignFreeBankCodeCheckbox
+              ? foreignFreeBankCodeCheckbox.checked
+              : false,
           );
           nrbOutput.innerText = result.iban;
           displayNrbInfo(result.iban, result);
@@ -819,6 +867,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const result = generateInternationalAccount(
           selectedCountry,
           selectedFormat,
+          foreignFreeBankCodeCheckbox
+            ? foreignFreeBankCodeCheckbox.checked
+            : false,
         );
         if (nrbOutput) nrbOutput.innerText = result.iban;
         displayNrbInfo(result.iban, result);
