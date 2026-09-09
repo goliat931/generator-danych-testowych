@@ -1,11 +1,14 @@
 const weightsPesel = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
-const encodedMonths = {
-  "1800-1899": 80,
-  "1900-1999": 0,
-  "2000-2099": 20,
-  "2100-2199": 40,
-  "2200-2299": 60,
-};
+
+// Zakresy stuleci PESEL: miesiąc urodzenia jest kodowany przesunięciem
+// zależnym od wieku stulecia (patrz też decodeCentury - operacja odwrotna).
+const centuryMonthOffsets = [
+  { minYear: 1800, maxYear: 1899, offset: 80 },
+  { minYear: 1900, maxYear: 1999, offset: 0 },
+  { minYear: 2000, maxYear: 2099, offset: 20 },
+  { minYear: 2100, maxYear: 2199, offset: 40 },
+  { minYear: 2200, maxYear: 2299, offset: 60 },
+];
 
 const letterToNumber = Object.fromEntries(
   Array.from({ length: 26 }, (_, i) => [String.fromCharCode(65 + i), 10 + i]),
@@ -15,18 +18,47 @@ const weightsId = [7, 3, 1, 9, 7, 3, 1, 7, 3];
 const weightsRegon9 = [8, 9, 2, 3, 4, 5, 6, 7];
 const weightsRegon14 = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8];
 
+const DIGIT_CHARS = "0123456789";
+const LETTER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+function randomChars(source, length) {
+  return Array.from({ length }, () =>
+    source.charAt(Math.floor(Math.random() * source.length)),
+  ).join("");
+}
+
+function randomDigits(length) {
+  return randomChars(DIGIT_CHARS, length);
+}
+
+// Znaki alfanumeryczne z niewielką szansą na literę - używane w BBAN-ach
+// kilku krajów (np. FR, CH), które dopuszczają litery w numerze konta.
+function randomAlnum(length, letterProbability = 0.1) {
+  return Array.from({ length }, () =>
+    Math.random() > letterProbability
+      ? DIGIT_CHARS.charAt(Math.floor(Math.random() * DIGIT_CHARS.length))
+      : LETTER_CHARS.charAt(Math.floor(Math.random() * LETTER_CHARS.length)),
+  ).join("");
+}
+
 function getEncodedMonth(year, month) {
-  if (year >= 1800 && year <= 1899)
-    return String(month + encodedMonths["1800-1899"]).padStart(2, "0");
-  if (year >= 1900 && year <= 1999)
-    return String(month + encodedMonths["1900-1999"]).padStart(2, "0");
-  if (year >= 2000 && year <= 2099)
-    return String(month + encodedMonths["2000-2099"]).padStart(2, "0");
-  if (year >= 2100 && year <= 2199)
-    return String(month + encodedMonths["2100-2199"]).padStart(2, "0");
-  if (year >= 2200 && year <= 2299)
-    return String(month + encodedMonths["2200-2299"]).padStart(2, "0");
-  throw new Error("Unsupported year for PESEL generation.");
+  const range = centuryMonthOffsets.find(
+    (r) => year >= r.minYear && year <= r.maxYear,
+  );
+  if (!range) throw new Error("Unsupported year for PESEL generation.");
+  return String(month + range.offset).padStart(2, "0");
+}
+
+// Odwrotność getEncodedMonth: na podstawie zakodowanego miesiąca z PESEL
+// odtwarza rzeczywisty miesiąc i pełny rok urodzenia.
+function decodeCentury(twoDigitYear, encodedMonth) {
+  const range = [...centuryMonthOffsets]
+    .sort((a, b) => b.offset - a.offset)
+    .find((r) => encodedMonth > r.offset);
+  return {
+    year: range.minYear + twoDigitYear,
+    month: encodedMonth - range.offset,
+  };
 }
 
 function calculatePeselChecksum(peselWithoutK) {
@@ -85,22 +117,14 @@ function calculateRegon14Checksum(regon13) {
 }
 
 function generateRegon9() {
-  const digits = "0123456789";
-  let regon8 = "";
-  for (let i = 0; i < 8; i++) {
-    regon8 += digits.charAt(Math.floor(Math.random() * digits.length));
-  }
+  const regon8 = randomDigits(8);
   const controlDigit = calculateRegon9Checksum(regon8);
   return `${regon8}${controlDigit}`;
 }
 
 function generateRegon14() {
   const regon9 = generateRegon9();
-  const digits = "0123456789";
-  let localDigits = "";
-  for (let i = 0; i < 4; i++) {
-    localDigits += digits.charAt(Math.floor(Math.random() * digits.length));
-  }
+  const localDigits = randomDigits(4);
   const regon13 = `${regon9}${localDigits}`;
   const controlDigit = calculateRegon14Checksum(regon13);
   return `${regon13}${controlDigit}`;
@@ -121,17 +145,8 @@ function calculateIdChecksum(fullNumber) {
 }
 
 function generateIdNumber() {
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const digits = "0123456789";
-
-  let letterPart = "";
-  for (let i = 0; i < 3; i++) {
-    letterPart += letters.charAt(Math.floor(Math.random() * letters.length));
-  }
-
-  let digitsPart = Array.from({ length: 5 }, () =>
-    Math.floor(Math.random() * 10),
-  ).join("");
+  const letterPart = randomChars(LETTER_CHARS, 3);
+  const digitsPart = randomDigits(5);
 
   const firstDigit = calculateIdChecksum(letterPart + "0" + digitsPart);
 
@@ -296,6 +311,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000);
   }
 
+  // Kopiuje innerText elementu do schowka po kliknięciu i pokazuje komunikat.
+  function setupCopyOnClick(element, message) {
+    if (!element) return;
+    element.addEventListener("click", () => {
+      const text = element.innerText;
+      if (navigator.clipboard) {
+        navigator.clipboard
+          .writeText(text)
+          .then(() => showCopyMessage(message))
+          .catch((err) => console.error("Błąd podczas kopiowania:", err));
+      } else {
+        showCopyMessage(message);
+      }
+    });
+  }
+
   function displayPeselInfo(pesel) {
     if (!pesel || pesel.length !== 11 || !peselInfo) return;
 
@@ -304,23 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const dd = parseInt(pesel.substring(4, 6));
     const gender = parseInt(pesel[9]) % 2 === 0 ? "Kobieta" : "Mężczyzna";
 
-    let actualMonth = mm;
-    let year = rr;
-    if (mm > 80) {
-      actualMonth = mm - 80;
-      year = 1800 + rr;
-    } else if (mm > 60) {
-      actualMonth = mm - 60;
-      year = 2200 + rr;
-    } else if (mm > 40) {
-      actualMonth = mm - 40;
-      year = 2100 + rr;
-    } else if (mm > 20) {
-      actualMonth = mm - 20;
-      year = 2000 + rr;
-    } else {
-      year = 1900 + rr;
-    }
+    const { year, month: actualMonth } = decodeCentury(rr, mm);
 
     const birthDate = new Date(year, actualMonth - 1, dd);
     const today = new Date();
@@ -352,16 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
     span.style.textDecoration = "underline";
     span.style.fontWeight = "bold";
 
-    span.addEventListener("click", () => {
-      if (navigator.clipboard) {
-        navigator.clipboard
-          .writeText(swiftCode)
-          .then(() => showCopyMessage("SWIFT skopiowany!"))
-          .catch((err) => console.error("Błąd podczas kopiowania:", err));
-      } else {
-        showCopyMessage("SWIFT skopiowany!");
-      }
-    });
+    setupCopyOnClick(span, "SWIFT skopiowany!");
 
     span.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
@@ -499,61 +505,39 @@ document.addEventListener("DOMContentLoaded", () => {
     const bankInfo =
       countryBanks[Math.floor(Math.random() * countryBanks.length)];
 
-    const digits = "0123456789";
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let bban = "";
     let accountNumber = "";
 
     switch (country) {
       case "DE": // BBAN: 18 (8 bank code, 10 account)
-        accountNumber = Array.from({ length: 10 }, () =>
-          digits.charAt(Math.floor(Math.random() * digits.length)),
-        ).join("");
+        accountNumber = randomDigits(10);
         bban = bankInfo.bank_code + accountNumber;
         break;
       case "GB": // BBAN: 18 (4 bank ID, 6 sort code, 8 account)
-        accountNumber = Array.from({ length: 8 }, () =>
-          digits.charAt(Math.floor(Math.random() * digits.length)),
-        ).join("");
+        accountNumber = randomDigits(8);
         bban =
           bankInfo.swift.substring(0, 4) + bankInfo.bank_code + accountNumber;
         break;
-      case "FR": // BBAN: 23 (5 bank, 5 branch, 11 account, 2 key)
-        const branchCode = Array.from({ length: 5 }, () =>
-          digits.charAt(Math.floor(Math.random() * digits.length)),
-        ).join("");
-        accountNumber = Array.from({ length: 11 }, () =>
-          Math.random() > 0.1
-            ? digits.charAt(Math.floor(Math.random() * digits.length))
-            : letters.charAt(Math.floor(Math.random() * letters.length)),
-        ).join("");
-        const ribKey = Array.from({ length: 2 }, () =>
-          digits.charAt(Math.floor(Math.random() * digits.length)),
-        ).join("");
+      case "FR": { // BBAN: 23 (5 bank, 5 branch, 11 account, 2 key)
+        const branchCode = randomDigits(5);
+        accountNumber = randomAlnum(11);
+        const ribKey = randomDigits(2);
         bban = bankInfo.bank_code + branchCode + accountNumber + ribKey;
         break;
+      }
       case "CZ": // BBAN: 20 (4 bank, 6 branch, 10 account)
-      case "SK": // BBAN: 20 (4 bank, 6 branch, 10 account)
-        const branch = Array.from({ length: 6 }, () =>
-          digits.charAt(Math.floor(Math.random() * digits.length)),
-        ).join("");
-        accountNumber = Array.from({ length: 10 }, () =>
-          digits.charAt(Math.floor(Math.random() * digits.length)),
-        ).join("");
+      case "SK": { // BBAN: 20 (4 bank, 6 branch, 10 account)
+        const branch = randomDigits(6);
+        accountNumber = randomDigits(10);
         bban = bankInfo.bank_code + branch + accountNumber;
         break;
+      }
       case "CH": // BBAN: 17 (5 bank, 12 account)
-        accountNumber = Array.from({ length: 12 }, () =>
-          Math.random() > 0.1
-            ? digits.charAt(Math.floor(Math.random() * digits.length))
-            : letters.charAt(Math.floor(Math.random() * letters.length)),
-        ).join("");
+        accountNumber = randomAlnum(12);
         bban = bankInfo.bank_code + accountNumber;
         break;
       case "US": // Mock IBAN for US
-        accountNumber = Array.from({ length: 12 }, () =>
-          digits.charAt(Math.floor(Math.random() * digits.length)),
-        ).join("");
+        accountNumber = randomDigits(12);
         bban = bankInfo.bank_code + accountNumber; // 9-digit routing + 12-digit account
         break;
       default:
@@ -583,22 +567,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function calculateNrbChecksum(bban) {
-    const countryCode = "2521";
-    const numberToCheck = bban + countryCode + "00";
-
-    let remainder = "";
-    let block;
-    for (let i = 0; i < numberToCheck.length; i += 7) {
-      block = remainder + numberToCheck.substring(i, i + 7);
-      remainder = (parseInt(block, 10) % 97).toString();
-    }
-    const controlNumber = 98 - parseInt(remainder, 10);
-    return String(controlNumber).padStart(2, "0");
+    return calculateGenericIbanChecksum("PL", bban);
   }
 
   function generateNrb(selectedBankCode, format, prefix) {
     let bankAndBranchCode;
-    const digits = "0123456789";
 
     if (selectedBankCode === "random") {
       if (validNrbCodes.length === 0) {
@@ -617,12 +590,7 @@ document.addEventListener("DOMContentLoaded", () => {
         filteredCodes[Math.floor(Math.random() * filteredCodes.length)];
     }
 
-    let customerNumber = "";
-    for (let i = 0; i < 16; i++) {
-      customerNumber += digits.charAt(
-        Math.floor(Math.random() * digits.length),
-      );
-    }
+    const customerNumber = randomDigits(16);
 
     const fullNumberWithoutChecksum = bankAndBranchCode + customerNumber;
     const checksum = calculateNrbChecksum(fullNumberWithoutChecksum);
@@ -685,65 +653,52 @@ document.addEventListener("DOMContentLoaded", () => {
     displayNrbInfo("");
   }
 
-  const closePeselModal = () => {
-    if (peselOptionsModal) {
-      peselOptionsModal.style.display = "none";
-      if (openPeselOptionsBtn) openPeselOptionsBtn.focus();
-    }
-  };
+  // Podpina otwieranie/zamykanie modala opcji (przycisk otwierający, "X",
+  // przycisk OK) i zwraca funkcję zamykającą do użycia poza modalem
+  // (klik w tło, klawisz Escape).
+  function setupModal({ openBtn, modal, closeBtn, okBtn }) {
+    const close = () => {
+      if (!modal) return;
+      modal.style.display = "none";
+      if (openBtn) openBtn.focus();
+    };
 
-  const closeNrbModal = () => {
-    if (nrbOptionsModal) {
-      nrbOptionsModal.style.display = "none";
-      if (openNrbOptionsBtn) openNrbOptionsBtn.focus();
-    }
-  };
-
-  if (openPeselOptionsBtn) {
-    openPeselOptionsBtn.addEventListener("click", () => {
-      if (peselOptionsModal) {
-        peselOptionsModal.style.display = "block";
+    if (openBtn) {
+      openBtn.addEventListener("click", () => {
+        if (!modal) return;
+        modal.style.display = "block";
         if (closeBtn) closeBtn.focus();
-      }
-    });
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", close);
+      closeBtn.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          close();
+        }
+      });
+    }
+
+    if (okBtn) okBtn.addEventListener("click", close);
+
+    return close;
   }
 
-  if (closeBtn) {
-    closeBtn.addEventListener("click", closePeselModal);
-    closeBtn.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        closePeselModal();
-      }
-    });
-  }
+  const closePeselModal = setupModal({
+    openBtn: openPeselOptionsBtn,
+    modal: peselOptionsModal,
+    closeBtn,
+    okBtn: peselOkBtn,
+  });
 
-  if (peselOkBtn) {
-    peselOkBtn.addEventListener("click", closePeselModal);
-  }
-
-  if (openNrbOptionsBtn) {
-    openNrbOptionsBtn.addEventListener("click", () => {
-      if (nrbOptionsModal) {
-        nrbOptionsModal.style.display = "block";
-        if (closeNrbBtn) closeNrbBtn.focus();
-      }
-    });
-  }
-
-  if (closeNrbBtn) {
-    closeNrbBtn.addEventListener("click", closeNrbModal);
-    closeNrbBtn.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        closeNrbModal();
-      }
-    });
-  }
-
-  if (nrbOkBtn) {
-    nrbOkBtn.addEventListener("click", closeNrbModal);
-  }
+  const closeNrbModal = setupModal({
+    openBtn: openNrbOptionsBtn,
+    modal: nrbOptionsModal,
+    closeBtn: closeNrbBtn,
+    okBtn: nrbOkBtn,
+  });
 
   window.addEventListener("click", (event) => {
     if (event.target == peselOptionsModal) {
@@ -805,19 +760,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (peselOutput) {
-    peselOutput.addEventListener("click", () => {
-      const peselText = peselOutput.innerText;
-      if (navigator.clipboard) {
-        navigator.clipboard
-          .writeText(peselText)
-          .then(() => showCopyMessage("Numer PESEL skopiowany!"))
-          .catch((err) => console.error("Błąd podczas kopiowania:", err));
-      } else {
-        showCopyMessage("Numer PESEL skopiowany!");
-      }
-    });
-  }
+  setupCopyOnClick(peselOutput, "Numer PESEL skopiowany!");
 
   if (generateIdBtn) {
     generateIdBtn.addEventListener("click", () => {
@@ -825,19 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (idOutput) {
-    idOutput.addEventListener("click", () => {
-      const idText = idOutput.innerText;
-      if (navigator.clipboard) {
-        navigator.clipboard
-          .writeText(idText)
-          .then(() => showCopyMessage("Numer dowodu skopiowany!"))
-          .catch((err) => console.error("Błąd podczas kopiowania:", err));
-      } else {
-        showCopyMessage("Numer dowodu skopiowany!");
-      }
-    });
-  }
+  setupCopyOnClick(idOutput, "Numer dowodu skopiowany!");
 
   if (generateRegonBtn) {
     generateRegonBtn.addEventListener("click", () => {
@@ -861,19 +792,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (regonOutput) {
-    regonOutput.addEventListener("click", () => {
-      const regonText = regonOutput.innerText;
-      if (navigator.clipboard) {
-        navigator.clipboard
-          .writeText(regonText)
-          .then(() => showCopyMessage("REGON skopiowany!"))
-          .catch((err) => console.error("Błąd podczas kopiowania:", err));
-      } else {
-        showCopyMessage("REGON skopiowany!");
-      }
-    });
-  }
+  setupCopyOnClick(regonOutput, "REGON skopiowany!");
 
   if (generateNrbBtn) {
     generateNrbBtn.addEventListener("click", () => {
@@ -907,19 +826,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (nrbOutput) {
-    nrbOutput.addEventListener("click", () => {
-      const nrbText = nrbOutput.innerText;
-      if (navigator.clipboard) {
-        navigator.clipboard
-          .writeText(nrbText)
-          .then(() => showCopyMessage("Numer rachunku skopiowany!"))
-          .catch((err) => console.error("Błąd podczas kopiowania:", err));
-      } else {
-        showCopyMessage("Numer rachunku skopiowany!");
-      }
-    });
-  }
+  setupCopyOnClick(nrbOutput, "Numer rachunku skopiowany!");
 
   const nameOutput = document.getElementById("nameOutput");
   const surnameOutput = document.getElementById("surnameOutput");
@@ -988,33 +895,8 @@ document.addEventListener("DOMContentLoaded", () => {
     generateNameBtn.addEventListener("click", generateRandomName);
   }
 
-  if (nameOutput) {
-    nameOutput.addEventListener("click", () => {
-      const nameText = nameOutput.innerText;
-      if (navigator.clipboard) {
-        navigator.clipboard
-          .writeText(nameText)
-          .then(() => showCopyMessage("Imię skopiowane!"))
-          .catch((err) => console.error("Błąd podczas kopiowania:", err));
-      } else {
-        showCopyMessage("Imię skopiowane!");
-      }
-    });
-  }
-
-  if (surnameOutput) {
-    surnameOutput.addEventListener("click", () => {
-      const surnameText = surnameOutput.innerText;
-      if (navigator.clipboard) {
-        navigator.clipboard
-          .writeText(surnameText)
-          .then(() => showCopyMessage("Nazwisko skopiowane!"))
-          .catch((err) => console.error("Błąd podczas kopiowania:", err));
-      } else {
-        showCopyMessage("Nazwisko skopiowane!");
-      }
-    });
-  }
+  setupCopyOnClick(nameOutput, "Imię skopiowane!");
+  setupCopyOnClick(surnameOutput, "Nazwisko skopiowane!");
 
   loadNameData();
 

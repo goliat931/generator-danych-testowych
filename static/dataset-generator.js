@@ -111,7 +111,9 @@ document.addEventListener("DOMContentLoaded", () => {
   ])
     .then(([codes, mNames, fNames, mSurnames, fSurnames]) => {
       bankCodes = codes;
-      bankCodeKeys = Object.keys(codes);
+      // Tylko pełne kody banku+oddziału (8 cyfr) nadają się do budowy NRB;
+      // plik zawiera też same 3-cyfrowe kody banków.
+      bankCodeKeys = Object.keys(codes).filter((key) => key.length === 8);
       maleNames = mNames;
       femaleNames = fNames;
       surnames = [...new Set([...mSurnames, ...fSurnames])];
@@ -122,101 +124,68 @@ document.addEventListener("DOMContentLoaded", () => {
   // 4. Funkcje generujące
   // ====================================================
 
-  function generatePesel(year, month, day, gender) {
-    const peselMonth = gender === "F" ? month + 20 : month;
-    const peselDate = [
-      String(year).slice(-2).padStart(2, "0"),
-      String(peselMonth).padStart(2, "0"),
-      String(day).padStart(2, "0"),
-      String(Math.floor(Math.random() * 10000)).padStart(4, "0"),
-      String(Math.floor(Math.random() * 10)).padStart(1, "0"),
-    ].join("");
-
-    const weights = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
-    let sum = 0;
-    for (let i = 0; i < 10; i++) sum += parseInt(peselDate[i]) * weights[i];
-    const checksum = (10 - (sum % 10)) % 10;
-
-    return peselDate + checksum;
+  function randomDigits(length) {
+    return Array.from({ length }, () => Math.floor(Math.random() * 10)).join(
+      "",
+    );
   }
 
-  function generateRandomPesel() {
-    const year = Math.floor(Math.random() * 100);
-    const month = Math.floor(Math.random() * 12) + 1;
-    const maxDay = new Date(
-      year === 0 ? 2000 : 1900 + year,
-      month,
-      0,
-    ).getDate();
-    const day = Math.floor(Math.random() * maxDay) + 1;
-    const gender = Math.random() > 0.5 ? "M" : "F";
-    return generatePesel(year, month, day, gender);
-  }
+  const weightsRegon9 = [8, 9, 2, 3, 4, 5, 6, 7];
+  const weightsRegon14 = [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8];
 
+  // Waga i sposób liczenia sumy kontrolnej zgodne z oficjalnym numerem
+  // dowodu osobistego: 3 litery + cyfra kontrolna + 5 cyfr numeru.
   function generateIdNumber() {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const idPrefix = Array.from(
+    const weights = [7, 3, 1, 9, 7, 3, 1, 7, 3];
+
+    const letterPart = Array.from(
       { length: 3 },
       () => letters[Math.floor(Math.random() * letters.length)],
     ).join("");
-    const idNumber = Array.from({ length: 6 }, () =>
-      Math.floor(Math.random() * 10),
-    ).join("");
+    const digitsPart = randomDigits(5);
 
-    const fullId = idPrefix + idNumber;
-    const weights = [7, 3, 1, 7, 3, 1, 7, 3];
-    let sum = 0;
-
-    for (let i = 0; i < 8; i++) {
-      const value = fullId.charCodeAt(i) - 55;
-      sum += value * weights[i];
-    }
-
+    const numericValues = (letterPart + "0" + digitsPart)
+      .split("")
+      .map((char) => (/[A-Z]/.test(char) ? char.charCodeAt(0) - 55 : parseInt(char, 10)));
+    const sum = numericValues.reduce((acc, value, i) => acc + value * weights[i], 0);
     const checksum = sum % 10;
-    return fullId + checksum;
+
+    return letterPart + checksum + digitsPart;
+  }
+
+  // Suma kontrolna REGON: mod 11 wg oficjalnych wag; wynik 10 oznacza 0.
+  function regonChecksum(digits, weights) {
+    const sum = digits
+      .split("")
+      .reduce((acc, digit, i) => acc + parseInt(digit, 10) * weights[i], 0);
+    const mod = sum % 11;
+    return mod === 10 ? 0 : mod;
   }
 
   function generateRegon(type) {
-    if (type === 9) {
-      const regon = Array.from({ length: 8 }, () =>
-        Math.floor(Math.random() * 10),
-      ).join("");
-      const weights = [8, 9, 2, 3, 4, 5, 6, 7];
-      let sum = 0;
-      for (let i = 0; i < 8; i++) sum += parseInt(regon[i]) * weights[i];
-      const checksum = (11 - (sum % 11)) % 10;
-      return regon + checksum;
-    } else {
-      const regon = Array.from({ length: 13 }, () =>
-        Math.floor(Math.random() * 10),
-      ).join("");
-      const weights = [8, 9, 2, 3, 4, 5, 6, 7, 8, 9, 2, 3, 4];
-      let sum = 0;
-      for (let i = 0; i < 13; i++) sum += parseInt(regon[i]) * weights[i];
-      const checksum = (11 - (sum % 11)) % 10;
-      return regon + checksum;
-    }
+    const regon9Digits = randomDigits(8);
+    const regon9 = regon9Digits + regonChecksum(regon9Digits, weightsRegon9);
+    if (type === 9) return regon9;
+
+    const localDigits = randomDigits(4);
+    const regon13 = regon9 + localDigits;
+    return regon13 + regonChecksum(regon13, weightsRegon14);
   }
 
   function generateNrb() {
     const bankCode =
       bankCodeKeys[Math.floor(Math.random() * bankCodeKeys.length)];
-    const accountNumber = Array.from({ length: 16 }, () =>
-      Math.floor(Math.random() * 10),
-    ).join("");
+    const accountNumber = randomDigits(16);
+    const bban = bankCode + accountNumber;
 
-    let iban = "21" + bankCode + accountNumber;
-    const rearranged = iban.slice(4) + iban.slice(0, 4);
-    const digits = rearranged
-      .split("")
-      .map((char) => {
-        const code = char.charCodeAt(0);
-        return code >= 65 ? (code - 55).toString() : char;
-      })
-      .join("");
+    // "2521" to litery kraju PL (P=25, L=21) zakodowane wg standardu IBAN.
+    const numberToCheck = bban + "2521" + "00";
+    const checksum = (98n - (BigInt(numberToCheck) % 97n))
+      .toString()
+      .padStart(2, "0");
 
-    const checksum = (98n - (BigInt(digits) % 97n)).toString().padStart(2, "0");
-    return checksum + bankCode + accountNumber;
+    return checksum + bban;
   }
 
   function getRandomName() {
@@ -299,7 +268,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const monthTwoDigits = String(month).padStart(2, "0");
     const dayTwoDigits = String(day).padStart(2, "0");
 
-    const serial = String(randomInt(0, 9999)).padStart(4, "0");
+    // PESEL koduje płeć w ostatniej z 4 cyfr numeru seryjnego: cyfra
+    // nieparzysta = mężczyzna, parzysta = kobieta.
+    const serial = String(randomInt(0, 999)).padStart(3, "0");
     const genderDigit =
       sex === "M" ? randomInt(0, 4) * 2 + 1 : randomInt(0, 4) * 2;
     const base = `${yearTwoDigits}${monthTwoDigits}${dayTwoDigits}${serial}${genderDigit}`;
@@ -882,79 +853,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   // ====================================================
-  // 7. Generowanie CSV
+  // 7. Podgląd
   // ====================================================
-  function generateCsv(data, fields, separator) {
-    const header = fields.join(separator);
-    const rows = data.map((record) =>
-      fields
-        .map((field) => {
-          const value = record[field];
-          // Escape wartości zawierające separator, cudzysłowy lub nowe linie
-          if (
-            typeof value === "string" &&
-            (value.includes(separator) ||
-              value.includes('"') ||
-              value.includes("\n"))
-          ) {
-            return '"' + value.replace(/"/g, '""') + '"';
-          }
-          return value;
-        })
-        .join(separator),
-    );
-    return [header, ...rows].join("\n");
-  }
-
-  // ====================================================
-  // 8. Generowanie XML
-  // ====================================================
-  function generateXml(data, fields) {
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<records>\n';
-    data.forEach((record) => {
-      xml += "  <record>\n";
-      fields.forEach((field) => {
-        const value = record[field];
-        xml += `    <${field}>${escapeXml(value)}</${field}>\n`;
-      });
-      xml += "  </record>\n";
-    });
-    xml += "</records>";
-    return xml;
-  }
-
-  // ====================================================
-  // 9. Podgląd
-  // ====================================================
+  // generateCsv/generateXml/escapeXml są zdefiniowane na poziomie modułu
+  // (na górze pliku) i dostępne tu przez domknięcie.
   function showPreview(data, fields, format, separator) {
     const previewContent = document.getElementById("previewContent");
     const previewData = data.slice(0, 5);
 
     let preview = "";
     if (format === "csv") {
-      preview = fields.join(separator) + "\n";
-      previewData.forEach((record) => {
-        preview += fields.map((f) => record[f]).join(separator) + "\n";
-      });
+      preview = generateCsv(previewData, fields, separator);
     } else if (format === "json") {
       preview = JSON.stringify(previewData, null, 2);
     } else if (format === "xml") {
-      preview = '<?xml version="1.0" encoding="UTF-8"?>\n<records>\n';
-      previewData.forEach((record) => {
-        preview += "  <record>\n";
-        fields.forEach((field) => {
-          preview += `    <${field}>${escapeXml(record[field])}</${field}>\n`;
-        });
-        preview += "  </record>\n";
-      });
-      preview += "</records>";
+      preview = generateXml(previewData, fields);
     }
 
     previewContent.textContent = preview;
   }
 
   // ====================================================
-  // 10. Pobieranie pliku
+  // 8. Pobieranie pliku
   // ====================================================
   function downloadFile(content, filename, mimeType) {
     const blob = new Blob([content], { type: mimeType });
