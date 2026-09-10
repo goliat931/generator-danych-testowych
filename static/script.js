@@ -768,6 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (generateBtn) {
     generateBtn.addEventListener("click", () => {
+      if (typeof animateCompanion === "function") animateCompanion('david-char', 'lime');
       let year, month, day, gender;
 
       const selectedGender = genderSelect ? genderSelect.value : "random";
@@ -812,6 +813,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (generateIdBtn) {
     generateIdBtn.addEventListener("click", () => {
+      if (typeof animateCompanion === "function") animateCompanion('david-char', 'lime');
       if (idOutput) idOutput.innerText = generateIdNumber();
     });
   }
@@ -820,6 +822,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (generateRegonBtn) {
     generateRegonBtn.addEventListener("click", () => {
+      if (typeof animateCompanion === "function") animateCompanion('david-char', 'lime');
       const regonType = regonTypeSelect ? regonTypeSelect.value : "9";
       if (regonType === "9") {
         if (regonOutput) regonOutput.innerText = generateRegon9();
@@ -844,6 +847,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (generateNrbBtn) {
     generateNrbBtn.addEventListener("click", () => {
+      if (typeof animateCompanion === "function") animateCompanion('david-char', 'lime');
       const selectedCountry = nrbCountrySelect ? nrbCountrySelect.value : "PL";
       const selectedFormat = nrbFormatSelect
         ? nrbFormatSelect.value
@@ -943,7 +947,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (generateNameBtn) {
-    generateNameBtn.addEventListener("click", generateRandomName);
+    generateNameBtn.addEventListener("click", () => {
+      if (typeof animateCompanion === "function") animateCompanion('david-char', 'lime');
+      generateRandomName();
+    });
   }
 
   setupCopyOnClick(nameOutput, "Imię skopiowane!");
