@@ -101,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!input || !button) return;
 
     button.addEventListener("click", () => {
-      if (typeof animateCompanion === "function") animateCompanion('goliath-char', 'fuchsia');
       const value = prepare ? prepare() : input.value.trim();
       if (value) {
         const validationResult = validate(value);
