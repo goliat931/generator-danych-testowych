@@ -76,18 +76,20 @@
     h: "#5a3a1a",
     f: "#e8b98a",
     t: "#3a7ca5",
+    u: "#28587a", // ciemniejszy odcień tuniki (prosty cień dla objętości)
     b: "#4a3418",
     s: "#2b2b2b",
+    e: "#0d0d0d", // oczy
   };
   const DAVID_BODY = [
+    "...h....", // czub włosów
     "..hhhh..",
-    ".hffffh.",
-    ".hffffh.",
+    ".hfefeh.", // oczy
     "..ffff..",
-    ".tttttt.",
-    "sttttttt",
-    ".tttttt.",
-    ".tttttt.",
+    ".tttuuu.",
+    "stttuuuu",
+    ".tttuuu.",
+    ".tttuuu.",
     ".tt..tt.",
   ];
   const DAVID_FRAMES = {
@@ -108,19 +110,23 @@
     H: "#8a8f98",
     f: "#c99770",
     A: "#6b4a2a",
+    a: "#4a331c", // ciemniejszy odcień zbroi (prosty cień dla objętości)
     D: "#b08d57",
     b: "#2e2116",
+    e: "#0d0d0d", // oczy
+    p: "#8a2a2a", // pióropusz hełmu
   };
   const GOLIATH_BODY = [
+    "....pp......", // pióropusz
     "..HHHHHHHH..",
     ".HHHHHHHHHH.",
-    ".HffffffffH.",
+    ".HffefffefH.", // oczy
     "..ffffffff..",
-    ".AAAAAAAAAA.",
-    "AADAAAAAADAA",
-    ".AAAAAAAAAA.",
-    ".AAAAAAAAAA.",
-    ".AAAAAAAAAA.",
+    ".AAAAAaaaaa.",
+    "AADAAAaaaDaa",
+    ".AAAAAaaaaa.",
+    ".AAAAAaaaaa.",
+    ".AAAAAaaaaa.",
     "..AAAAAAAA..",
   ];
   const GOLIATH_FRAMES = {
