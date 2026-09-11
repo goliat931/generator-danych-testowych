@@ -48,11 +48,51 @@ function escapeXml(str) {
   return str.replace(/[&<>"']/g, (char) => map[char]);
 }
 
+function escapeSqlIdentifier(name) {
+  const safe = String(name).replace(/[^a-zA-Z0-9_]/g, "_");
+  return safe || "field";
+}
+
+function escapeSqlValue(value) {
+  if (value === null || value === undefined || value === "") return "NULL";
+  return "'" + String(value).replace(/'/g, "''") + "'";
+}
+
+// Generuje jedną lub więcej instrukcji INSERT INTO (wsadowo, po SQL_BATCH_SIZE
+// wierszy na instrukcję), żeby duże zbiory danych dały czytelny i bezpieczny
+// do wklejenia plik SQL.
+const SQL_BATCH_SIZE = 500;
+
+function generateSql(data, fields, tableName) {
+  const table = escapeSqlIdentifier(tableName || "dane_testowe");
+  const columns = fields.map(escapeSqlIdentifier).join(", ");
+
+  if (data.length === 0) {
+    return `-- Brak danych do wstawienia do tabeli ${table}`;
+  }
+
+  const statements = [];
+  for (let i = 0; i < data.length; i += SQL_BATCH_SIZE) {
+    const batch = data.slice(i, i + SQL_BATCH_SIZE);
+    const valuesList = batch
+      .map(
+        (record) =>
+          "(" + fields.map((field) => escapeSqlValue(record[field])).join(", ") + ")",
+      )
+      .join(",\n  ");
+    statements.push(`INSERT INTO ${table} (${columns}) VALUES\n  ${valuesList};`);
+  }
+  return statements.join("\n\n");
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     generateCsv,
     generateXml,
     escapeXml,
+    generateSql,
+    escapeSqlValue,
+    escapeSqlIdentifier,
   };
 }
 
@@ -454,6 +494,10 @@ document.addEventListener("DOMContentLoaded", () => {
     radio.addEventListener("change", () => {
       const separatorSection = document.getElementById("separatorFieldWrapper");
       separatorSection.style.display = radio.value === "csv" ? "flex" : "none";
+      const sqlTableSection = document.getElementById("sqlTableFieldWrapper");
+      if (sqlTableSection) {
+        sqlTableSection.style.display = radio.value === "sql" ? "flex" : "none";
+      }
     });
   });
 
@@ -815,6 +859,12 @@ document.addEventListener("DOMContentLoaded", () => {
             content = generateXml(data, fields);
             filename = "dane_testowe.xml";
             mimeType = "application/xml;charset=utf-8;";
+          } else if (format === "sql") {
+            const tableName =
+              document.getElementById("sqlTableName")?.value || "dane_testowe";
+            content = generateSql(data, fields, tableName);
+            filename = "dane_testowe.sql";
+            mimeType = "application/sql;charset=utf-8;";
           }
 
           // Przechowaj dane do pobrania
@@ -868,6 +918,10 @@ document.addEventListener("DOMContentLoaded", () => {
       preview = JSON.stringify(previewData, null, 2);
     } else if (format === "xml") {
       preview = generateXml(previewData, fields);
+    } else if (format === "sql") {
+      const tableName =
+        document.getElementById("sqlTableName")?.value || "dane_testowe";
+      preview = generateSql(previewData, fields, tableName);
     }
 
     previewContent.textContent = preview;
@@ -893,5 +947,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.generateXml = generateXml;
     window.escapeXml = escapeXml;
     window.formatDateYMD = formatDateYMD;
+    window.generateSql = generateSql;
   }
 });

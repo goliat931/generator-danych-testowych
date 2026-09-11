@@ -121,7 +121,27 @@
                   <input type="radio" name="export-format" value="xml" />
                   XML
                 </label>
+                <label class="format-option">
+                  <input type="radio" name="export-format" value="sql" />
+                  SQL
+                </label>
               </div>
+            </div>
+
+            <div
+              class="control-field"
+              id="sqlTableFieldWrapper"
+              style="display: none"
+            >
+              <h3 id="sql-table-heading" style="margin: 0 0 8px 0">
+                Nazwa tabeli (SQL)
+              </h3>
+              <input
+                type="text"
+                id="sqlTableName"
+                value="dane_testowe"
+                aria-labelledby="sql-table-heading"
+              />
             </div>
 
             <div class="control-field" id="separatorFieldWrapper">
