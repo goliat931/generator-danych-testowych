@@ -941,7 +941,8 @@ input:focus-visible {
   margin-top: 0;
 }
 
-#previewContent {
+#previewContent,
+.api-output {
   background-color: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -1023,7 +1024,8 @@ input:focus-visible {
     font-size: 0.95rem;
   }
 
-  #previewContent {
+  #previewContent,
+  .api-output {
     max-height: 400px;
     font-size: 0.85rem;
     padding: 12px;
@@ -1086,7 +1088,8 @@ input:focus-visible {
     font-size: 0.85rem;
   }
 
-  #previewContent {
+  #previewContent,
+  .api-output {
     max-height: 300px;
     font-size: 0.8rem;
   }

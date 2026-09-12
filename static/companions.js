@@ -148,12 +148,15 @@
     validate: { g: "#2e7d32" },
     dataset: { d: "#c9a24b" },
     security: { h: "#8a8a8a", k: "#d4af37" },
+    api: { n: "#4fc3f7", w: "#01579b" },
   };
   const ICON_ROWS = {
     documents: ["cccccc", "c.ll.c", "c....c", "c.ll.c", "cccccc"],
     validate: ["......", ".....g", "....g.", ".g.g..", "..g...", "......"],
     dataset: ["ddddddd", ".ddddd.", "ddddddd", ".ddddd.", "ddddddd"],
     security: [".hhhh.", "h....h", "kkkkkk", "kkkkkk", "kk..kk", "kkkkkk"],
+    // Węzły sieci połączone liniami - nawiązuje do wywołań API.
+    api: ["n.n.n", ".www.", "n.w.n", ".www.", "n.n.n"],
     // Iskierka pokazywana, gdy Dawid i Goliat się spotkają (patrz encounter).
     spark: ["..y..", ".yyy.", "yyyyy", ".yyy.", "..y.."],
   };
@@ -172,6 +175,7 @@
     "validator.html": "validate",
     "dataset-generator.html": "dataset",
     "passwords.html": "security",
+    "api.html": "api",
   };
   const pageName = location.pathname.split("/").pop() || "index.html";
   const theme = THEME_BY_PAGE[pageName] || "documents";
