@@ -901,6 +901,13 @@ input:focus-visible {
   color: var(--text-secondary);
   margin-right: 8px;
   font-size: 0.9rem;
+  cursor: grab;
+}
+
+.drag-handle:focus-visible {
+  outline: 2px solid var(--icon-fill-hover);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .format-selection,
