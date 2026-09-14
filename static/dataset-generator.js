@@ -139,6 +139,31 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".draggable-item").forEach((item) => {
     item.setAttribute("draggable", "true");
 
+    const handle = item.querySelector(".drag-handle");
+    if (handle) {
+      handle.setAttribute("tabindex", "0");
+      handle.setAttribute("role", "button");
+      handle.setAttribute(
+        "aria-label",
+        "Przenieś element w górę lub w dół używając strzałek / Move item up or down using arrows",
+      );
+      handle.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          if (item.previousElementSibling) {
+            item.parentNode.insertBefore(item, item.previousElementSibling);
+            handle.focus();
+          }
+        } else if (e.key === "ArrowDown") {
+          e.preventDefault();
+          if (item.nextElementSibling) {
+            item.parentNode.insertBefore(item.nextElementSibling, item);
+            handle.focus();
+          }
+        }
+      });
+    }
+
     item.addEventListener("dragstart", function () {
       draggedElement = this;
       this.style.opacity = "0.5";
