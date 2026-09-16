@@ -114,6 +114,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const separatorWrapper = document.getElementById("apiSeparatorWrapper");
   const tableWrapper = document.getElementById("apiTableWrapper");
   const errorDiv = document.getElementById("apiError");
+  const invalidToggle = document.getElementById("apiInvalidToggle");
+  const invalidRateInput = document.getElementById("apiInvalidRate");
+  const invalidRateWrapper = document.getElementById("apiInvalidRateWrapper");
 
   function showApiError(message) {
     errorDiv.textContent = "❌ " + message;
@@ -180,6 +183,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     tableInput.value = params.get("table") || "dane_testowe";
 
+    const invalidRateParam = parseInt(params.get("invalidRate"), 10);
+    if (Number.isFinite(invalidRateParam) && invalidRateParam > 0) {
+      invalidToggle.checked = true;
+      invalidRateInput.value = Math.min(Math.max(invalidRateParam, 1), 100);
+    } else {
+      invalidToggle.checked = false;
+    }
+
     updateConditionalFields();
   }
 
@@ -187,6 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const format = getFormat();
     separatorWrapper.style.display = format === "csv" ? "flex" : "none";
     tableWrapper.style.display = format === "sql" ? "flex" : "none";
+    invalidRateWrapper.style.display = invalidToggle.checked ? "block" : "none";
   }
 
   function buildQueryParams() {
@@ -204,6 +216,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (format === "sql") {
       params.set("table", tableInput.value.trim() || "dane_testowe");
+    }
+    if (invalidToggle.checked) {
+      params.set(
+        "invalidRate",
+        String(Math.min(Math.max(parseInt(invalidRateInput.value, 10) || 0, 1), 100)),
+      );
     }
     return { params, selectedKeys, format };
   }
@@ -234,27 +252,43 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const fieldsInfo = selectedKeys.map((key) => ({ key, name: key }));
+
+    if (invalidToggle.checked && !DataGenerators.hasCorruptibleField(fieldsInfo)) {
+      showApiError(
+        "Zaznacz przynajmniej jedno pole z sumą kontrolną (PESEL/ID/REGON/NIP/rachunek bankowy), aby wygenerować błędne dane.",
+      );
+      outputEl.textContent = "";
+      currentContent = "";
+      return;
+    }
+
     const count = Math.min(
       Math.max(parseInt(countInput.value, 10) || 10, 1),
       MAX_COUNT,
     );
+    const invalidRate = invalidToggle.checked
+      ? Math.min(Math.max(parseInt(invalidRateInput.value, 10) || 0, 1), 100)
+      : 0;
 
-    const fieldsInfo = selectedKeys.map((key) => ({ key, name: key }));
-    const data = DataGenerators.generateDataset(fieldsInfo, count);
+    const data = DataGenerators.generateDataset(fieldsInfo, count, {
+      invalidRate,
+    });
+    const columns = invalidRate > 0 ? [...selectedKeys, "_dataQuality"] : selectedKeys;
 
     let content, filename, mimeType;
     if (format === "csv") {
-      content = DataGenerators.generateCsv(data, selectedKeys, getSeparator());
+      content = DataGenerators.generateCsv(data, columns, getSeparator());
       filename = "dane.csv";
       mimeType = "text/csv;charset=utf-8;";
     } else if (format === "xml") {
-      content = DataGenerators.generateXml(data, selectedKeys);
+      content = DataGenerators.generateXml(data, columns);
       filename = "dane.xml";
       mimeType = "application/xml;charset=utf-8;";
     } else if (format === "sql") {
       content = DataGenerators.generateSql(
         data,
-        selectedKeys,
+        columns,
         tableInput.value.trim() || "dane_testowe",
       );
       filename = "dane.sql";
@@ -315,6 +349,11 @@ document.addEventListener("DOMContentLoaded", () => {
   getFieldCheckboxes().forEach((cb) =>
     cb.addEventListener("change", generateAndRender),
   );
+  invalidToggle.addEventListener("change", () => {
+    updateConditionalFields();
+    generateAndRender();
+  });
+  invalidRateInput.addEventListener("input", generateAndRender);
 
   // ====================================================
   // 8. Start: załaduj dane referencyjne, zastosuj parametry z URL i

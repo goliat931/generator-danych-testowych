@@ -214,6 +214,33 @@
               aria-labelledby="api-fields-heading"
             ></div>
           </div>
+
+          <div class="control-field">
+            <label class="checkbox-label">
+              <input type="checkbox" id="apiInvalidToggle" />
+              Dołącz celowo błędne dane (do testowania walidatorów)
+            </label>
+            <p class="field-hint">
+              Psuje sumę kontrolną albo długość pól PESEL/ID/REGON/NIP/rachunek
+              bankowy w wybranym procencie rekordów. Do wyniku dodawane jest
+              pole <code>_dataQuality</code> (<code>valid</code>/<code>invalid</code>)
+              jako ground truth.
+            </p>
+            <div
+              id="apiInvalidRateWrapper"
+              style="display: none; margin-top: 8px;"
+            >
+              <label for="apiInvalidRate">% błędnych rekordów:</label>
+              <input
+                type="number"
+                id="apiInvalidRate"
+                min="1"
+                max="100"
+                value="20"
+                placeholder="1-100"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -253,6 +280,7 @@
           <li><code>format</code> - <code>json</code> (domyślnie), <code>csv</code>, <code>xml</code> lub <code>sql</code>.</li>
           <li><code>separator</code> - separator kolumn dla CSV: <code>,</code>, <code>;</code>, <code>tab</code> lub <code>|</code>.</li>
           <li><code>table</code> - nazwa tabeli dla formatu SQL, domyślnie <code>dane_testowe</code>.</li>
+          <li><code>invalidRate</code> - procent celowo błędnych rekordów (1-100, do testowania walidatorów). Gdy podany, do wyniku dodawane jest pole <code>_dataQuality</code> (<code>valid</code>/<code>invalid</code>).</li>
         </ul>
         <p class="field-hint">Przykład:</p>
         <pre id="apiExample" class="api-output"></pre>

@@ -101,6 +101,11 @@ describe('Validator PESEL', () => {
         test('powinno zdekodować datę dla roku 1800-1899', () => {
             expect(decodePeselDate('05851401234')).toEqual({ year: 1805, month: 5, day: 14 });
         });
+
+        test('nie powinno rzucić wyjątku, gdy miesiąc to 00 (np. sam ciąg zer)', () => {
+            expect(() => decodePeselDate('00000000000')).not.toThrow();
+            expect(decodePeselDate('00000000000')).toEqual({ year: NaN, month: 0, day: 0 });
+        });
     });
 
     describe('calculateAge', () => {
@@ -161,6 +166,15 @@ describe('Validator PESEL', () => {
             expect(validatePesel('44051401359').message).toContain('Data urodzenia: 14-05-1944');
             expect(validatePesel('44051401359').message).toContain('Wiek: 80 lat');
 
+        });
+
+        test('powinno odrzucić sam ciąg zer bez wyjątku (miesiąc 00 nie pasuje do żadnego stulecia)', () => {
+            // "00000000000" ma poprawną (trywialną) sumę kontrolną, ale
+            // miesiąc "00" wcześniej powodował nieobsłużony wyjątek w
+            // decodePeselDate (century.find() zwracało undefined).
+            expect(() => validatePesel('00000000000')).not.toThrow();
+            expect(validatePesel('00000000000')).toEqual(expect.objectContaining({ isValid: false }));
+            expect(validatePesel('00000000000').message).toBe('❌ Numer PESEL jest niepoprawny (miesiąc)');
         });
 
         test('powinno poprawnie zidentyfikować kobietę', () => {

@@ -424,10 +424,55 @@
     companyname: "Nazwa firmy",
   };
 
+  // ====================================================
+  // Celowo błędne dane - do testowania walidatorów po stronie odbiorcy.
+  // Dla pól z sumą kontrolną psuje albo checksumę (zmienia cyfrę
+  // kontrolną), albo długość (usuwa losowy znak) - jedna z dwóch metod
+  // losowana niezależnie dla każdego pola.
+  // ====================================================
+  // Indeks cyfry kontrolnej w poprawnej wartości pola (ujemny = licz od
+  // końca). "bankaccount" (NRB) ma sumę kontrolną na początku (2 cyfry).
+  const CHECKSUM_DIGIT_INDEX = {
+    pesel: 10,
+    id: 3,
+    dok_tozs: 3,
+    regon: -1,
+    nip: -1,
+    bankaccount: 0,
+  };
+  const CHECKSUM_FIELD_KEYS = Object.keys(CHECKSUM_DIGIT_INDEX);
+
+  function flipDigitAt(value, index) {
+    const idx = index < 0 ? value.length + index : index;
+    const ch = value[idx];
+    if (!/\d/.test(ch)) return value;
+    const flipped = (parseInt(ch, 10) + 1) % 10;
+    return value.slice(0, idx) + flipped + value.slice(idx + 1);
+  }
+
+  function dropRandomChar(value) {
+    if (value.length <= 1) return value;
+    const idx = randomInt(0, value.length - 1);
+    return value.slice(0, idx) + value.slice(idx + 1);
+  }
+
+  // Zwraca wartość pola celowo błędną (zła suma kontrolna albo zła
+  // długość) - albo oryginalną wartość, jeśli pole nie ma sumy kontrolnej.
+  function corruptFieldValue(key, value) {
+    if (typeof value !== "string" || !(key in CHECKSUM_DIGIT_INDEX)) {
+      return value;
+    }
+    return Math.random() < 0.5
+      ? flipDigitAt(value, CHECKSUM_DIGIT_INDEX[key])
+      : dropRandomChar(value);
+  }
+
   // Generuje jeden rekord danych testowych dla podanej listy pól.
   // fieldsInfo: [{ key, name }] - key to klucz z AVAILABLE_FIELDS, name to
   // nazwa docelowego pola/kolumny w wyniku (może być zmieniona przez usera).
-  function generateRecord(fieldsInfo) {
+  // options.forceInvalid: gdy true, wszystkie zaznaczone pola z sumą
+  // kontrolną (patrz CHECKSUM_FIELD_KEYS) zostają celowo popsute.
+  function generateRecord(fieldsInfo, options = {}) {
     const record = {};
 
     // Podstawowe wartości używane w wielu polach, żeby np. imię i PESEL
@@ -559,13 +604,37 @@
       }
     });
 
+    if (options.forceInvalid) {
+      fieldsInfo.forEach((fieldObj) => {
+        const fieldName = fieldObj.name.replace(/\s+/g, "_");
+        record[fieldName] = corruptFieldValue(fieldObj.key, record[fieldName]);
+      });
+    }
+
     return record;
   }
 
-  function generateDataset(fieldsInfo, count) {
+  // Czy fieldsInfo zawiera przynajmniej jedno pole z sumą kontrolną, na
+  // którym generowanie błędnych danych może faktycznie coś zepsuć.
+  function hasCorruptibleField(fieldsInfo) {
+    return fieldsInfo.some((f) => CHECKSUM_FIELD_KEYS.includes(f.key));
+  }
+
+  // options.invalidRate (0-100): procent rekordów celowo błędnych - do
+  // testowania walidatorów po stronie odbiorcy. options.markInvalid
+  // (domyślnie true): gdy invalidRate > 0, dodaje do każdego rekordu pole
+  // "_dataQuality" ("valid"/"invalid") jako ground truth.
+  function generateDataset(fieldsInfo, count, options = {}) {
+    const invalidRate = Math.min(Math.max(options.invalidRate || 0, 0), 100);
+    const markInvalid = options.markInvalid !== false;
     const data = [];
     for (let i = 0; i < count; i++) {
-      data.push(generateRecord(fieldsInfo));
+      const forceInvalid = invalidRate > 0 && Math.random() * 100 < invalidRate;
+      const record = generateRecord(fieldsInfo, { forceInvalid });
+      if (invalidRate > 0 && markInvalid) {
+        record._dataQuality = forceInvalid ? "invalid" : "valid";
+      }
+      data.push(record);
     }
     return data;
   }
@@ -667,6 +736,8 @@
     loadReferenceData,
     generateRecord,
     generateDataset,
+    hasCorruptibleField,
+    CHECKSUM_FIELD_KEYS,
     generateCsv,
     generateXml,
     escapeXml,

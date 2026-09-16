@@ -86,6 +86,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  const invalidDataToggle = document.getElementById("invalidDataToggle");
+  const invalidRateWrapper = document.getElementById("invalidRateWrapper");
+  if (invalidDataToggle) {
+    invalidDataToggle.addEventListener("change", () => {
+      invalidRateWrapper.style.display = invalidDataToggle.checked
+        ? "block"
+        : "none";
+    });
+  }
+
   // ====================================================
   // 5. Drag & Drop (zmiana kolejności) i Podgląd nazwy
   // ====================================================
@@ -291,9 +301,31 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
 
+          const invalidDataEnabled = invalidDataToggle?.checked || false;
+          if (
+            invalidDataEnabled &&
+            !DataGenerators.hasCorruptibleField(fieldsInfo)
+          ) {
+            showDatasetError(
+              "Zaznacz przynajmniej jedno pole z sumą kontrolną (PESEL/ID/REGON/NIP/rachunek bankowy), aby wygenerować błędne dane.",
+            );
+            return;
+          }
+          const invalidRate = invalidDataEnabled
+            ? Math.min(
+                Math.max(parseInt(document.getElementById("invalidRate").value, 10) || 0, 1),
+                100,
+              )
+            : 0;
+          if (invalidDataEnabled) {
+            fields.push("_dataQuality");
+          }
+
           // Generuj dane (logika generatorów pól żyje we wspólnym module
           // static/data-generators.js, współdzielonym ze stroną API)
-          const data = DataGenerators.generateDataset(fieldsInfo, recordCount);
+          const data = DataGenerators.generateDataset(fieldsInfo, recordCount, {
+            invalidRate,
+          });
 
           // Przygotuj export
           let content, filename, mimeType;

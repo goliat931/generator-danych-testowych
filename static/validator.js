@@ -150,7 +150,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const mm = parseInt(pesel.substring(2, 4));
     const dd = parseInt(pesel.substring(4, 6));
 
+    // mm=0 (np. sam ciąg zer) nie pasuje do żadnego przedziału stulecia -
+    // zwróć miesiąc bez przesunięcia, żeby wywołujący mógł go odrzucić jako
+    // spoza zakresu 1-12, zamiast wywalać się na century.yearBase.
     const century = centuryMonthOffsets.find((c) => mm > c.threshold);
+    if (!century) {
+      return { year: NaN, month: mm, day: dd };
+    }
 
     return {
       year: century.yearBase + rr,
