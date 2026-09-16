@@ -141,20 +141,34 @@ describe('Validator PESEL', () => {
 
         });
 
-        test('powinno odrzucić PESEL z nieprawidłowym miesiącem', () => {
+        test('powinno odrzucić PESEL z nieprawidłowym miesiącem i zaznaczyć, że suma kontrolna jest poprawna', () => {
             // Month 13 -> 1900s, month 13 -> invalid
             // The checksum must be correct to reach the month validation
             // 0013010123 with weights [1, 3, 7, 9, 1, 3, 7, 9, 1, 3] -> checksum 3
             expect(validatePesel('00130101233')).toEqual(expect.objectContaining({ isValid: false }));
-            expect(validatePesel('00130101233').message).toBe('❌ Numer PESEL jest niepoprawny (miesiąc)');
+            expect(validatePesel('00130101233').message).toBe(
+                '❌ Numer PESEL jest niepoprawny (nieprawidłowy miesiąc: 13) — suma kontrolna jest poprawna, ale zakodowana data urodzenia nie istnieje, więc to nie jest prawdziwy PESEL',
+            );
 
         });
 
-        test('powinno odrzucić PESEL z nieprawidłowym dniem', () => {
+        test('powinno odrzucić PESEL z nieprawidłowym dniem i zaznaczyć, że suma kontrolna jest poprawna', () => {
             // 0001320123 with weights -> checksum 2
             expect(validatePesel('00013201232')).toEqual(expect.objectContaining({ isValid: false }));
-            expect(validatePesel('00013201232').message).toBe('❌ Numer PESEL jest niepoprawny (dzień)');
+            expect(validatePesel('00013201232').message).toBe(
+                '❌ Numer PESEL jest niepoprawny (nieprawidłowy dzień: 32) — suma kontrolna jest poprawna, ale zakodowana data urodzenia nie istnieje, więc to nie jest prawdziwy PESEL',
+            );
 
+        });
+
+        test('powinno odrzucić PESEL z błędną sumą kontrolną ORAZ nieprawidłową datą, bez mylącej wzmianki o poprawnej sumie', () => {
+            // "99999999999": checksum is wrong AND month (19) / day (99) are out of range.
+            const result = validatePesel('99999999999');
+            expect(result).toEqual(expect.objectContaining({ isValid: false }));
+            expect(result.message).toBe(
+                '❌ Numer PESEL jest niepoprawny (błędna suma kontrolna, nieprawidłowy miesiąc: 19, nieprawidłowy dzień: 99)',
+            );
+            expect(result.message).not.toContain('suma kontrolna jest poprawna');
         });
 
         test('powinno zaakceptować prawidłowy PESEL i wyświetlić metadane', () => {
@@ -168,13 +182,18 @@ describe('Validator PESEL', () => {
 
         });
 
-        test('powinno odrzucić sam ciąg zer bez wyjątku (miesiąc 00 nie pasuje do żadnego stulecia)', () => {
+        test('powinno odrzucić sam ciąg zer bez wyjątku i zaznaczyć, że suma kontrolna jest (trywialnie) poprawna', () => {
             // "00000000000" ma poprawną (trywialną) sumę kontrolną, ale
             // miesiąc "00" wcześniej powodował nieobsłużony wyjątek w
-            // decodePeselDate (century.find() zwracało undefined).
+            // decodePeselDate (century.find() zwracało undefined) i wcześniej
+            // komunikat mówił tylko o miesiącu, nie wspominając wcale, że
+            // suma kontrolna faktycznie się zgadza.
             expect(() => validatePesel('00000000000')).not.toThrow();
-            expect(validatePesel('00000000000')).toEqual(expect.objectContaining({ isValid: false }));
-            expect(validatePesel('00000000000').message).toBe('❌ Numer PESEL jest niepoprawny (miesiąc)');
+            const result = validatePesel('00000000000');
+            expect(result).toEqual(expect.objectContaining({ isValid: false }));
+            expect(result.message).toBe(
+                '❌ Numer PESEL jest niepoprawny (nieprawidłowy miesiąc: 0, nieprawidłowy dzień: 0) — suma kontrolna jest poprawna, ale zakodowana data urodzenia nie istnieje, więc to nie jest prawdziwy PESEL',
+            );
         });
 
         test('powinno poprawnie zidentyfikować kobietę', () => {

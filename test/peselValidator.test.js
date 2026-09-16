@@ -91,14 +91,16 @@ describe('Walidacja PESEL', () => {
     test('powinno odrzucić PESEL z nieprawidłowym miesiącem', () => {
         peselInput.value = '44131401350';
         peselValidateBtn.click();
-        expect(peselResult.textContent).toContain('niepoprawny (miesiąc)');
+        expect(peselResult.textContent).toContain('nieprawidłowy miesiąc');
+        expect(peselResult.textContent).toContain('suma kontrolna jest poprawna');
         expect(peselResult.className).toContain('invalid');
     });
 
     test('powinno odrzucić PESEL z nieprawidłowym dniem', () => {
         peselInput.value = '44053201353';
         peselValidateBtn.click();
-        expect(peselResult.textContent).toContain('niepoprawny (dzień)');
+        expect(peselResult.textContent).toContain('nieprawidłowy dzień');
+        expect(peselResult.textContent).toContain('suma kontrolna jest poprawna');
         expect(peselResult.className).toContain('invalid');
     });
 

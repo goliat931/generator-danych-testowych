@@ -187,23 +187,33 @@ document.addEventListener("DOMContentLoaded", () => {
         isValid: false,
         message: "❌ Numer PESEL może zawierać tylko cyfry",
       };
-    if (!isValidPeselChecksum(pesel))
-      return {
-        isValid: false,
-        message: "❌ Numer PESEL jest niepoprawny (błędna suma kontrolna)",
-      };
 
+    // Sprawdzamy sumę kontrolną i zakodowaną datę niezależnie od siebie
+    // (zamiast przerywać na pierwszym błędzie), żeby komunikat mógł
+    // wprost powiedzieć, gdy suma kontrolna jest poprawna, a mimo to numer
+    // jest nieprawdziwy - np. "00000000000" ma trywialnie poprawną sumę
+    // kontrolną (same zera), ale nie koduje żadnej istniejącej daty.
+    const checksumOk = isValidPeselChecksum(pesel);
     const { year, month: actualMonth, day: dd } = decodePeselDate(pesel);
-    if (actualMonth < 1 || actualMonth > 12)
+    const monthOk = actualMonth >= 1 && actualMonth <= 12;
+    const dayOk = dd >= 1 && dd <= 31;
+
+    if (!checksumOk || !monthOk || !dayOk) {
+      const problems = [];
+      if (!checksumOk) problems.push("błędna suma kontrolna");
+      if (!monthOk) problems.push(`nieprawidłowy miesiąc: ${actualMonth}`);
+      if (!dayOk) problems.push(`nieprawidłowy dzień: ${dd}`);
+
+      const checksumNote =
+        checksumOk && (!monthOk || !dayOk)
+          ? " — suma kontrolna jest poprawna, ale zakodowana data urodzenia nie istnieje, więc to nie jest prawdziwy PESEL"
+          : "";
+
       return {
         isValid: false,
-        message: "❌ Numer PESEL jest niepoprawny (miesiąc)",
+        message: `❌ Numer PESEL jest niepoprawny (${problems.join(", ")})${checksumNote}`,
       };
-    if (dd < 1 || dd > 31)
-      return {
-        isValid: false,
-        message: "❌ Numer PESEL jest niepoprawny (dzień)",
-      };
+    }
 
     const gender = parseInt(pesel[9]) % 2 === 0 ? "Kobieta" : "Mężczyzna";
     const age = calculateAge(year, actualMonth, dd);
