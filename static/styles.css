@@ -148,6 +148,11 @@ h2 {
   transition: color 0.3s ease;
 }
 
+.output-info.invalid-warning {
+  color: #b45309;
+  font-weight: 700;
+}
+
 /* Ikona schowka (📋) */
 .generated-output::after {
   content: " 📋";

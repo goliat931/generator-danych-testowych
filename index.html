@@ -86,6 +86,11 @@
         </div>
         <div class="output-info" id="peselInfo"></div>
 
+        <label class="checkbox-label">
+          <input type="checkbox" id="peselInvalidToggle" />
+          Generuj błędne dane (do testów walidatora)
+        </label>
+
         <div class="button-group">
           <button type="button" id="openPeselOptionsBtn">Ustawienia</button>
           <button type="button" id="generateBtn">Generuj</button>
@@ -104,6 +109,11 @@
         >
           QFL626390
         </div>
+        <div class="output-info" id="idInfo"></div>
+        <label class="checkbox-label">
+          <input type="checkbox" id="idInvalidToggle" />
+          Generuj błędne dane (do testów walidatora)
+        </label>
         <button type="button" id="generateIdBtn">Generuj</button>
       </div>
 
@@ -119,6 +129,7 @@
         >
           717113746
         </div>
+        <div class="output-info" id="regonInfo"></div>
         <div class="generator-options">
           <div class="option-group">
             <label for="regonType">Typ REGON:</label>
@@ -128,6 +139,10 @@
             </select>
           </div>
         </div>
+        <label class="checkbox-label">
+          <input type="checkbox" id="regonInvalidToggle" />
+          Generuj błędne dane (do testów walidatora)
+        </label>
         <button type="button" id="generateRegonBtn">Generuj</button>
       </div>
 
@@ -144,6 +159,10 @@
           87968100020552006260082412
         </div>
         <div class="output-info" id="nrbInfo"></div>
+        <label class="checkbox-label">
+          <input type="checkbox" id="nrbInvalidToggle" />
+          Generuj błędne dane (do testów walidatora)
+        </label>
         <div class="button-group">
           <button type="button" id="openNrbOptionsBtn">Ustawienia</button>
           <button type="button" id="generateNrbBtn">Generuj</button>

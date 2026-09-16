@@ -153,6 +153,56 @@ function generateIdNumber() {
   return letterPart + firstDigit + digitsPart;
 }
 
+// ====================================================
+// Celowo błędne dane - do testowania walidatorów po stronie odbiorcy.
+// Psuje albo sumę kontrolną (zmienia cyfrę kontrolną), albo długość
+// (usuwa losowy znak) - jedna z dwóch metod losowana niezależnie za
+// każdym razem.
+// ====================================================
+function flipDigitAt(value, index) {
+  const idx = index < 0 ? value.length + index : index;
+  const ch = value[idx];
+  if (!/\d/.test(ch)) return value;
+  const flipped = (parseInt(ch, 10) + 1) % 10;
+  return value.slice(0, idx) + flipped + value.slice(idx + 1);
+}
+
+function dropRandomChar(value) {
+  if (value.length <= 1) return value;
+  const idx = Math.floor(Math.random() * value.length);
+  return value.slice(0, idx) + value.slice(idx + 1);
+}
+
+function corruptChecksumValue(value, checksumIndex) {
+  return Math.random() < 0.5
+    ? flipDigitAt(value, checksumIndex)
+    : dropRandomChar(value);
+}
+
+// Psuje sformatowany numer rachunku (NRB/IBAN), niezależnie od tego, czy
+// jest ze spacjami i/lub 2-literowym prefiksem kraju - po zepsuciu
+// odtwarza to samo formatowanie. Numery, które w rzeczywistości są
+// komunikatami błędu (np. "Brak poprawnych kodów..."), zostają bez zmian.
+function corruptAccountNumber(formattedValue) {
+  const hasSpaces = formattedValue.includes(" ");
+  const compact = formattedValue.replace(/\s/g, "");
+  // Prawdziwe numery kont składają się tylko z cyfr i wielkich liter (kod
+  // kraju, ew. litery w BBAN). Komunikaty błędów (zdania po polsku) mają
+  // małe litery, więc ten test bezpiecznie je pomija zamiast psuć tekst.
+  if (!/^[A-Z0-9]+$/.test(compact) || compact.length < 9) {
+    return formattedValue;
+  }
+
+  const hasLetterPrefix = /^[A-Z]{2}/.test(compact);
+  const checksumIndex = hasLetterPrefix ? 2 : 0;
+  const corrupted = corruptChecksumValue(compact, checksumIndex);
+
+  return hasSpaces ? corrupted.replace(/(.{4})/g, "$1 ").trim() : corrupted;
+}
+
+const INVALID_DATA_NOTE =
+  "⚠️ Celowo błędne dane (zepsuta suma kontrolna lub długość) — do testów walidatora";
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     generateRegon9,
@@ -168,6 +218,10 @@ if (typeof module !== "undefined" && module.exports) {
     generatePesel,
     getEncodedMonth,
     calculatePeselChecksum,
+    flipDigitAt,
+    dropRandomChar,
+    corruptChecksumValue,
+    corruptAccountNumber,
   };
 }
 
@@ -239,6 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   const peselOutput = document.getElementById("peselOutput");
   const peselInfo = document.getElementById("peselInfo");
+  const peselInvalidToggle = document.getElementById("peselInvalidToggle");
   const openPeselOptionsBtn = document.getElementById("openPeselOptionsBtn");
   const generateBtn = document.getElementById("generateBtn");
   const peselOptionsModal = document.getElementById("peselOptionsModal");
@@ -275,13 +330,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const generateIdBtn = document.getElementById("generateIdBtn");
   const idOutput = document.getElementById("idOutput");
+  const idInfo = document.getElementById("idInfo");
+  const idInvalidToggle = document.getElementById("idInvalidToggle");
 
   const generateRegonBtn = document.getElementById("generateRegonBtn");
   const regonOutput = document.getElementById("regonOutput");
+  const regonInfo = document.getElementById("regonInfo");
+  const regonInvalidToggle = document.getElementById("regonInvalidToggle");
   const regonTypeSelect = document.getElementById("regonType");
 
   const generateNrbBtn = document.getElementById("generateNrbBtn");
   const nrbInfo = document.getElementById("nrbInfo");
+  const nrbInvalidToggle = document.getElementById("nrbInvalidToggle");
   const nrbOutput = document.getElementById("nrbOutput");
   const bankCodeSelect = document.getElementById("bankCode");
   const nrbFormatSelect = document.getElementById("nrbFormat");
@@ -438,6 +498,59 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // ====================================================
+  // Wyświetlenie wyniku generowania z opcjonalnym trybem "błędne dane" -
+  // gdy odpowiedni checkbox jest zaznaczony, wynik zostaje celowo popsuty
+  // (zła suma kontrolna albo długość), a zamiast normalnych metadanych
+  // (np. wieku, banku) pokazywane jest ostrzeżenie, żeby nie sugerować, że
+  // to prawdziwe, spójne dane.
+  // ====================================================
+  function applyPeselResult(pesel) {
+    const isInvalid = peselInvalidToggle && peselInvalidToggle.checked;
+    const finalValue = isInvalid ? corruptChecksumValue(pesel, 10) : pesel;
+    if (peselOutput) peselOutput.innerText = finalValue;
+    if (peselInfo) peselInfo.classList.toggle("invalid-warning", isInvalid);
+    if (isInvalid) {
+      if (peselInfo) peselInfo.textContent = INVALID_DATA_NOTE;
+    } else {
+      displayPeselInfo(finalValue);
+    }
+  }
+
+  function applyIdResult(idNumber) {
+    const isInvalid = idInvalidToggle && idInvalidToggle.checked;
+    const finalValue = isInvalid ? corruptChecksumValue(idNumber, 3) : idNumber;
+    if (idOutput) idOutput.innerText = finalValue;
+    if (idInfo) {
+      idInfo.textContent = isInvalid ? INVALID_DATA_NOTE : "";
+      idInfo.classList.toggle("invalid-warning", isInvalid);
+    }
+  }
+
+  function applyRegonResult(regonValue) {
+    const isInvalid = regonInvalidToggle && regonInvalidToggle.checked;
+    const finalValue = isInvalid
+      ? corruptChecksumValue(regonValue, -1)
+      : regonValue;
+    if (regonOutput) regonOutput.innerText = finalValue;
+    if (regonInfo) {
+      regonInfo.textContent = isInvalid ? INVALID_DATA_NOTE : "";
+      regonInfo.classList.toggle("invalid-warning", isInvalid);
+    }
+  }
+
+  function applyNrbResult(value, foreignInfo = null) {
+    const isInvalid = nrbInvalidToggle && nrbInvalidToggle.checked;
+    const finalValue = isInvalid ? corruptAccountNumber(value) : value;
+    if (nrbOutput) nrbOutput.innerText = finalValue;
+    if (nrbInfo) nrbInfo.classList.toggle("invalid-warning", isInvalid);
+    if (isInvalid) {
+      if (nrbInfo) nrbInfo.textContent = INVALID_DATA_NOTE;
+    } else {
+      displayNrbInfo(finalValue, foreignInfo);
+    }
+  }
+
   function generateRandomPesel() {
     const year = Math.floor(Math.random() * (2025 - 1900) + 1900);
     const month = Math.floor(Math.random() * 12) + 1;
@@ -446,8 +559,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const newPesel = generatePesel(year, month, day, gender);
-      if (peselOutput) peselOutput.innerText = newPesel;
-      displayPeselInfo(newPesel);
+      applyPeselResult(newPesel);
     } catch (error) {
       console.error("Błąd podczas generowania PESEL:", error);
       if (peselOutput) peselOutput.innerText = "Błąd: " + error.message;
@@ -669,12 +781,13 @@ document.addEventListener("DOMContentLoaded", () => {
           ? nrbCountrySelect.value
           : "PL";
         if (selectedCountry === "PL") {
-          nrbOutput.innerText = generateNrb(
-            bankCodeSelect ? bankCodeSelect.value : "random",
-            nrbFormatSelect ? nrbFormatSelect.value : "continuous",
-            ibanPrefixSelect ? ibanPrefixSelect.value : "no-prefix",
+          applyNrbResult(
+            generateNrb(
+              bankCodeSelect ? bankCodeSelect.value : "random",
+              nrbFormatSelect ? nrbFormatSelect.value : "continuous",
+              ibanPrefixSelect ? ibanPrefixSelect.value : "no-prefix",
+            ),
           );
-          displayNrbInfo(nrbOutput.innerText);
         } else {
           const result = generateInternationalAccount(
             selectedCountry,
@@ -683,8 +796,7 @@ document.addEventListener("DOMContentLoaded", () => {
               ? foreignFreeBankCodeCheckbox.checked
               : false,
           );
-          nrbOutput.innerText = result.iban;
-          displayNrbInfo(result.iban, result);
+          applyNrbResult(result.iban, result);
         }
       }
     })
@@ -694,8 +806,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   generateRandomPesel();
-  if (idOutput) idOutput.innerText = generateIdNumber();
-  if (regonOutput) regonOutput.innerText = generateRegon9();
+  applyIdResult(generateIdNumber());
+  applyRegonResult(generateRegon9());
   if (nrbOutput && nrbOutput.innerText === "Trwa ładowanie...") {
     nrbOutput.innerText = "Trwa ładowanie...";
     displayNrbInfo("");
@@ -798,8 +910,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const newPesel = generatePesel(year, month, day, gender);
-        if (peselOutput) peselOutput.innerText = newPesel;
-        displayPeselInfo(newPesel);
+        applyPeselResult(newPesel);
       } catch (error) {
         console.error("Błąd podczas generowania PESEL:", error);
         if (peselOutput) peselOutput.innerText = "Błąd: " + error.message;
@@ -812,7 +923,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (generateIdBtn) {
     generateIdBtn.addEventListener("click", () => {
-      if (idOutput) idOutput.innerText = generateIdNumber();
+      applyIdResult(generateIdNumber());
     });
   }
 
@@ -821,22 +932,14 @@ document.addEventListener("DOMContentLoaded", () => {
   if (generateRegonBtn) {
     generateRegonBtn.addEventListener("click", () => {
       const regonType = regonTypeSelect ? regonTypeSelect.value : "9";
-      if (regonType === "9") {
-        if (regonOutput) regonOutput.innerText = generateRegon9();
-      } else {
-        if (regonOutput) regonOutput.innerText = generateRegon14();
-      }
+      applyRegonResult(regonType === "9" ? generateRegon9() : generateRegon14());
     });
   }
 
   if (regonTypeSelect) {
     regonTypeSelect.addEventListener("change", () => {
       const regonType = regonTypeSelect.value;
-      if (regonType === "9") {
-        if (regonOutput) regonOutput.innerText = generateRegon9();
-      } else {
-        if (regonOutput) regonOutput.innerText = generateRegon14();
-      }
+      applyRegonResult(regonType === "9" ? generateRegon9() : generateRegon14());
     });
   }
 
@@ -861,8 +964,7 @@ document.addEventListener("DOMContentLoaded", () => {
           selectedFormat,
           selectedPrefix,
         );
-        if (nrbOutput) nrbOutput.innerText = newNrb;
-        displayNrbInfo(newNrb);
+        applyNrbResult(newNrb);
       } else {
         const result = generateInternationalAccount(
           selectedCountry,
@@ -871,8 +973,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ? foreignFreeBankCodeCheckbox.checked
             : false,
         );
-        if (nrbOutput) nrbOutput.innerText = result.iban;
-        displayNrbInfo(result.iban, result);
+        applyNrbResult(result.iban, result);
       }
     });
   }
