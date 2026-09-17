@@ -149,6 +149,37 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".draggable-item").forEach((item) => {
     item.setAttribute("draggable", "true");
 
+    const dragHandle = item.querySelector(".drag-handle");
+    if (dragHandle) {
+      dragHandle.setAttribute("role", "button");
+      dragHandle.setAttribute("tabindex", "0");
+      dragHandle.setAttribute(
+        "aria-label",
+        "Zmień kolejność (użyj strzałek góra/dół)",
+      );
+      dragHandle.removeAttribute("aria-hidden");
+
+      dragHandle.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+          e.preventDefault();
+          const parent = item.parentElement;
+          const allItems = [...parent.querySelectorAll(".draggable-item")];
+          const currentIndex = allItems.indexOf(item);
+
+          if (e.key === "ArrowUp" && currentIndex > 0) {
+            parent.insertBefore(item, allItems[currentIndex - 1]);
+            dragHandle.focus();
+          } else if (
+            e.key === "ArrowDown" &&
+            currentIndex < allItems.length - 1
+          ) {
+            parent.insertBefore(item, allItems[currentIndex + 1].nextSibling);
+            dragHandle.focus();
+          }
+        }
+      });
+    }
+
     item.addEventListener("dragstart", function () {
       draggedElement = this;
       this.style.opacity = "0.5";
@@ -313,7 +344,11 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           const invalidRate = invalidDataEnabled
             ? Math.min(
-                Math.max(parseInt(document.getElementById("invalidRate").value, 10) || 0, 1),
+                Math.max(
+                  parseInt(document.getElementById("invalidRate").value, 10) ||
+                    0,
+                  1,
+                ),
                 100,
               )
             : 0;

@@ -54,3 +54,6 @@
 
 **Learning:** Relying solely on separate text elements below an input for validation errors leaves screen reader users unaware of the error when interacting directly with the input, and leaving stale visual error styles after user correction degrades UX.
 **Action:** Always link form inputs to their error message containers using `aria-describedby` (even when empty). Dynamically set `aria-invalid="true"` or `"false"` via JavaScript during validation to communicate state. Clear both the error text and the `aria-invalid` attribute immediately on the `input` event to provide responsive real-time feedback.
+## 2026-09-17 - Drag and Drop Keyboard Accessibility
+**Learning:** The drag and drop functionality for reordering fields in the dataset generator was entirely inaccessible to keyboard users, as the drag handle was hidden from screen readers and native drag-and-drop requires mouse interaction.
+**Action:** Added `role="button"`, `tabindex="0"`, and `aria-label` to the drag handles, along with keyboard event listeners to support `ArrowUp` and `ArrowDown` for moving items. Ensured focus stays on the handle after moving, and added explicit `:focus-visible` outlines for clear visual indication.
