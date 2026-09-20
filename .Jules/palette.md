@@ -54,3 +54,8 @@
 
 **Learning:** Relying solely on separate text elements below an input for validation errors leaves screen reader users unaware of the error when interacting directly with the input, and leaving stale visual error styles after user correction degrades UX.
 **Action:** Always link form inputs to their error message containers using `aria-describedby` (even when empty). Dynamically set `aria-invalid="true"` or `"false"` via JavaScript during validation to communicate state. Clear both the error text and the `aria-invalid` attribute immediately on the `input` event to provide responsive real-time feedback.
+
+## 2025-02-23 - Keyboard Accessible Drag and Drop
+
+**Learning:** Drag-and-drop lists are inherently inaccessible to keyboard users unless explicitly supported. The visual 'drag handles' are often ignored by screen readers and unreachable via the Tab key.
+**Action:** Always make drag handles keyboard accessible by adding `tabindex="0"`, `role="button"`, a descriptive `aria-label`, and handling `keydown` events (like `ArrowUp` and `ArrowDown`) to reorder the items natively in the DOM and maintain focus.
