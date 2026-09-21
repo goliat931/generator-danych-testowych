@@ -191,6 +191,30 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  document.querySelectorAll(".drag-handle").forEach((handle) => {
+    handle.addEventListener("keydown", function (e) {
+      const item = this.closest(".draggable-item");
+      if (!item) return;
+      const parent = item.parentElement;
+      const allItems = [...parent.querySelectorAll(".draggable-item")];
+      const currentIndex = allItems.indexOf(item);
+
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (currentIndex > 0) {
+          parent.insertBefore(item, allItems[currentIndex - 1]);
+          this.focus();
+        }
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (currentIndex < allItems.length - 1) {
+          parent.insertBefore(item, allItems[currentIndex + 1].nextSibling);
+          this.focus();
+        }
+      }
+    });
+  });
+
   // ====================================================
   // 6. Generowanie i export (oddzielnie)
   // ====================================================
@@ -313,7 +337,11 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           const invalidRate = invalidDataEnabled
             ? Math.min(
-                Math.max(parseInt(document.getElementById("invalidRate").value, 10) || 0, 1),
+                Math.max(
+                  parseInt(document.getElementById("invalidRate").value, 10) ||
+                    0,
+                  1,
+                ),
                 100,
               )
             : 0;
