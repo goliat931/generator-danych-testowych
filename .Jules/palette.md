@@ -54,3 +54,7 @@
 
 **Learning:** Relying solely on separate text elements below an input for validation errors leaves screen reader users unaware of the error when interacting directly with the input, and leaving stale visual error styles after user correction degrades UX.
 **Action:** Always link form inputs to their error message containers using `aria-describedby` (even when empty). Dynamically set `aria-invalid="true"` or `"false"` via JavaScript during validation to communicate state. Clear both the error text and the `aria-invalid` attribute immediately on the `input` event to provide responsive real-time feedback.
+
+## 2024-05-28 - Adding keyboard reordering to drag-and-drop handles
+**Learning:** Drag-and-drop handles in lists often exclude keyboard-only or screen reader users if they lack `tabindex`, roles, or keyboard event handlers. They must also manage focus explicitly after moving items so users don't lose their place in the list.
+**Action:** Always add `role="button"`, `tabindex="0"`, and meaningful `aria-label`s to drag handles, and implement `keydown` handlers (ArrowUp/ArrowDown) to perform the reordering operation while calling `.focus()` on the handle after the DOM element is moved.
