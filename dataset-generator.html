@@ -59,12 +59,15 @@
           </button>
         </label>
       </div>
-      <div class="nav-links">
+      <nav class="nav-links" aria-label="Strony aplikacji">
         <a href="index.html" class="nav-button">Generatory Danych</a>
         <a href="validator.html" class="nav-button">Walidatory Danych</a>
+        <a href="dataset-generator.html" class="nav-button" aria-current="page"
+          >Generator Zbiorów</a
+        >
         <a href="passwords.html" class="nav-button">Generator Haseł</a>
         <a href="api.html" class="nav-button">API</a>
-      </div>
+      </nav>
     </div>
 
     <div class="container">
@@ -231,6 +234,14 @@
                 >⋮⋮</span
               >
               <input type="text" class="field-name-input" value="PESEL" />
+              <button
+                type="button"
+                class="infotip-btn"
+                data-infotip="pesel"
+                aria-label="Jak zbudowany jest numer PESEL?"
+              >
+                i
+              </button>
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="id" checked />
@@ -245,6 +256,14 @@
                 class="field-name-input"
                 value="Dowód Osobisty"
               />
+              <button
+                type="button"
+                class="infotip-btn"
+                data-infotip="id"
+                aria-label="Jak zbudowany jest numer dowodu osobistego?"
+              >
+                i
+              </button>
             </div>
             <div class="draggable-item">
               <input type="checkbox" name="data-field" value="regon" checked />
@@ -255,6 +274,14 @@
                 >⋮⋮</span
               >
               <input type="text" class="field-name-input" value="REGON" />
+              <button
+                type="button"
+                class="infotip-btn"
+                data-infotip="regon"
+                aria-label="Jak zbudowany jest numer REGON?"
+              >
+                i
+              </button>
             </div>
             <div class="draggable-item">
               <input
@@ -614,6 +641,14 @@
                 class="field-name-input"
                 value="rachunek bankowy"
               />
+              <button
+                type="button"
+                class="infotip-btn"
+                data-infotip="nrb"
+                aria-label="Jak zbudowany jest numer rachunku bankowego (NRB/IBAN)?"
+              >
+                i
+              </button>
             </div>
             <div class="draggable-item">
               <input
@@ -677,6 +712,7 @@ Podgląd pojawi się tutaj po kliknięciu "Generuj"</pre
     <script src="https://cdn.jsdelivr.net/npm/@faker-js/faker@latest/dist/faker.min.js"></script>
     <script src="static/data-generators.js"></script>
     <script src="static/dataset-generator.js"></script>
+    <script src="static/infotips.js"></script>
     <script src="static/companions.js"></script>
   </body>
 </html>

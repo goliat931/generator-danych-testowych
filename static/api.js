@@ -99,8 +99,17 @@ document.addEventListener("DOMContentLoaded", () => {
     label.appendChild(
       document.createTextNode(` ${FIELD_LABELS[key] || key} (${key})`),
     );
+    if (window.Infotips && window.Infotips.has(key)) {
+      const info = document.createElement("button");
+      info.type = "button";
+      info.className = "infotip-btn";
+      info.dataset.infotip = key;
+      info.textContent = "i";
+      label.appendChild(info);
+    }
     fieldsListEl.appendChild(label);
   });
+  if (window.Infotips) window.Infotips.attach(fieldsListEl);
 
   function getFieldCheckboxes() {
     return Array.from(fieldsListEl.querySelectorAll('input[type="checkbox"]'));

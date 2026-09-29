@@ -153,6 +153,230 @@ h2 {
   font-weight: 700;
 }
 
+/* --- INFOTIPY: struktura generowanych danych (static/infotips.js) --- */
+/* Selektory z nazwą tagu (button.infotip-btn) celowo - muszą wygrać z
+   ogólnym `button { width: 100%; ... }` i `button:last-of-type`. */
+button.infotip-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35em;
+  height: 1.35em;
+  margin: 0 0 0 10px;
+  padding: 0;
+  vertical-align: middle;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 0.8em;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--icon-fill-hover);
+  background: transparent;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  cursor: help;
+  opacity: 0.85;
+  transition:
+    opacity 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+button.infotip-btn:hover,
+button.infotip-btn[aria-expanded="true"] {
+  opacity: 1;
+  color: #fff;
+  background-color: var(--icon-fill-hover);
+  filter: none;
+  transform: scale(1.08);
+}
+
+.draggable-item button.infotip-btn,
+.format-option button.infotip-btn {
+  font-size: 0.75rem;
+  margin-left: 8px;
+}
+
+.infotip-popover {
+  position: fixed;
+  z-index: 900;
+  width: min(430px, calc(100vw - 24px));
+  padding: 16px 18px 14px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px var(--shadow-color), 0 2px 8px var(--shadow-color);
+  text-align: left;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
+  pointer-events: auto;
+}
+
+.infotip-popover.infotip-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.infotip-popover[data-placement="above"] {
+  transform: translateY(4px);
+}
+
+.infotip-popover[data-placement="above"].infotip-visible {
+  transform: translateY(0);
+}
+
+/* Strzałka wskazująca przycisk "i" (pozycja z --arrow-x ustawiana w JS). */
+.infotip-popover::before {
+  content: "";
+  position: absolute;
+  left: var(--arrow-x, 50%);
+  width: 12px;
+  height: 12px;
+  background-color: var(--bg-secondary);
+  border-left: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
+  transform: translate(-50%, -50%) rotate(45deg);
+  top: 0;
+}
+
+.infotip-popover[data-placement="above"]::before {
+  top: auto;
+  bottom: 0;
+  transform: translate(-50%, 50%) rotate(225deg);
+}
+
+.infotip-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.infotip-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+button.infotip-close {
+  width: 28px;
+  height: 28px;
+  margin: -4px -6px 0 0;
+  padding: 0;
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+button.infotip-close:hover {
+  color: var(--text-primary);
+  background-color: var(--hover-bg);
+  filter: none;
+  transform: none;
+}
+
+.infotip-subtitle {
+  margin: 0 0 12px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.infotip-segments {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 4px;
+  margin: 0 0 12px;
+  padding: 12px 10px 8px;
+  background-color: var(--bg-primary);
+  border-radius: 10px;
+}
+
+.infotip-seg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.infotip-seg-chars {
+  --seg-bg: rgba(127, 127, 127, 0.16);
+  --seg-bg: color-mix(in srgb, var(--seg-color) 18%, transparent);
+  padding: 6px 8px;
+  font-family: "Courier New", monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--seg-color);
+  background-color: var(--seg-bg);
+  border-bottom: 3px solid var(--seg-color);
+  border-radius: 6px 6px 3px 3px;
+  white-space: nowrap;
+}
+
+.infotip-seg-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--seg-color);
+  white-space: nowrap;
+}
+
+.infotip-points {
+  margin: 0 0 12px;
+  padding-left: 18px;
+}
+
+.infotip-points li {
+  margin-bottom: 4px;
+}
+
+.infotip-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+.infotip-link {
+  color: var(--icon-fill-hover);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.infotip-link::after {
+  content: " ↗";
+  font-weight: 400;
+}
+
+.infotip-link:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .infotip-popover,
+  button.infotip-btn {
+    transition: none;
+  }
+}
+
 /* Ikona schowka (📋) */
 .generated-output::after {
   content: " 📋";
@@ -640,6 +864,20 @@ input:focus-visible {
 .nav-button:hover {
   background-color: #555;
   transform: scale(1.02);
+}
+
+/* Bieżąca strona w nawigacji - wyróżniona kolorem akcentu i nieklikalna
+   wizualnie, żeby od razu było widać, gdzie się jest. */
+.nav-button[aria-current="page"] {
+  background-color: #1976d2;
+  box-shadow: inset 0 -3px 0 rgba(255, 255, 255, 0.45);
+  cursor: default;
+  pointer-events: none;
+}
+
+.nav-button[aria-current="page"]:hover {
+  background-color: #1976d2;
+  transform: none;
 }
 
 /* --- GENERATOR ZBIORÓW DANYCH --- */

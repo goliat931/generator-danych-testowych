@@ -61,19 +61,32 @@
           </button>
         </label>
       </div>
-      <div class="nav-links">
+      <nav class="nav-links" aria-label="Strony aplikacji">
+        <a href="index.html" class="nav-button" aria-current="page"
+          >Generatory Danych</a
+        >
         <a href="validator.html" class="nav-button">Walidatory Danych</a>
         <a href="dataset-generator.html" class="nav-button"
           >Generator Zbiorów</a
         >
         <a href="passwords.html" class="nav-button">Generator Haseł</a>
         <a href="api.html" class="nav-button">API</a>
-      </div>
+      </nav>
     </div>
 
     <div class="container">
       <div class="generator-tile">
-        <h2>Generator PESEL</h2>
+        <h2>
+          Generator PESEL
+          <button
+            type="button"
+            class="infotip-btn"
+            data-infotip="pesel"
+            aria-label="Jak zbudowany jest numer PESEL?"
+          >
+            i
+          </button>
+        </h2>
         <div
           class="generated-output"
           id="peselOutput"
@@ -98,7 +111,17 @@
       </div>
 
       <div class="generator-tile">
-        <h2>Generator Dowodu Osobistego</h2>
+        <h2>
+          Generator Dowodu Osobistego
+          <button
+            type="button"
+            class="infotip-btn"
+            data-infotip="id"
+            aria-label="Jak zbudowany jest numer dowodu osobistego?"
+          >
+            i
+          </button>
+        </h2>
         <div
           class="generated-output"
           id="idOutput"
@@ -118,7 +141,17 @@
       </div>
 
       <div class="generator-tile regon-tile">
-        <h2>Generator REGON</h2>
+        <h2>
+          Generator REGON
+          <button
+            type="button"
+            class="infotip-btn"
+            data-infotip="regon"
+            aria-label="Jak zbudowany jest numer REGON?"
+          >
+            i
+          </button>
+        </h2>
         <div
           class="generated-output"
           id="regonOutput"
@@ -147,7 +180,17 @@
       </div>
 
       <div class="generator-tile nrb-tile">
-        <h2>Generator Rachunku Bankowego (NRB)</h2>
+        <h2>
+          Generator Rachunku Bankowego (NRB)
+          <button
+            type="button"
+            class="infotip-btn"
+            data-infotip="nrb"
+            aria-label="Jak zbudowany jest numer rachunku bankowego (NRB/IBAN)?"
+          >
+            i
+          </button>
+        </h2>
         <div
           class="generated-output"
           id="nrbOutput"
@@ -369,6 +412,7 @@
     </footer>
 
     <script src="static/script.js"></script>
+    <script src="static/infotips.js"></script>
     <script src="static/companions.js"></script>
   </body>
 </html>
