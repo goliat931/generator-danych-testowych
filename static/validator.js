@@ -358,6 +358,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const bban = iban.substring(4);
+
+    // Polski NRB to wyłącznie cyfry; litery w części krajowej byłyby po cichu
+    // przeliczone na liczby w kroku mod 97 i zgłoszone jako błąd sumy
+    // kontrolnej, co myli - nazwijmy prawdziwą przyczynę.
+    if (country === "PL" && !/^\d+$/.test(bban)) {
+      return {
+        isValid: false,
+        message:
+          "❌ Polski numer rachunku może zawierać tylko cyfry (po prefiksie PL).",
+      };
+    }
+
     const rearranged = bban + country + checksum;
 
     const numericIban = rearranged

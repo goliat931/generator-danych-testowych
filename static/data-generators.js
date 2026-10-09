@@ -110,26 +110,21 @@
     return checksum + bban;
   }
 
+  // Słowniki imion/nazwisk ładowane są z własnych plików JSON (ten sam
+  // origin); poniższe stałe to tylko awaryjny fallback, gdyby fetch się nie
+  // powiódł - bez zależności od zewnętrznych skryptów.
   function getRandomMaleName() {
     if (maleNames.length > 0) {
       return maleNames[Math.floor(Math.random() * maleNames.length)];
     }
-    try {
-      return faker.person?.firstName("male") || "Jan";
-    } catch {
-      return "Jan";
-    }
+    return "Jan";
   }
 
   function getRandomFemaleName() {
     if (femaleNames.length > 0) {
       return femaleNames[Math.floor(Math.random() * femaleNames.length)];
     }
-    try {
-      return faker.person?.firstName("female") || "Maria";
-    } catch {
-      return "Maria";
-    }
+    return "Maria";
   }
 
   function getRandomName() {
@@ -140,11 +135,7 @@
     if (surnames.length > 0) {
       return surnames[Math.floor(Math.random() * surnames.length)];
     }
-    try {
-      return faker.person?.lastName() || "Nowak";
-    } catch {
-      return "Nowak";
-    }
+    return "Nowak";
   }
 
   function formatDateYMD(date) {
@@ -221,16 +212,7 @@
   ];
 
   function getRandomCity() {
-    if (Math.random() > 0.4) {
-      return polishCities[Math.floor(Math.random() * polishCities.length)];
-    }
-    try {
-      return faker.location.city
-        ? faker.location.city()
-        : polishCities[Math.floor(Math.random() * polishCities.length)];
-    } catch {
-      return polishCities[Math.floor(Math.random() * polishCities.length)];
-    }
+    return polishCities[Math.floor(Math.random() * polishCities.length)];
   }
 
   const streetNames = [
@@ -252,22 +234,9 @@
   ];
 
   function getRandomStreetName() {
-    if (Math.random() > 0.4) {
-      const name = streetNames[Math.floor(Math.random() * streetNames.length)];
-      const prefix = Math.random() > 0.5 ? "ul." : "";
-      return `${prefix} ${name}`.trim();
-    }
-    try {
-      const fakerStreet = faker.location.streetName
-        ? faker.location.streetName()
-        : streetNames[Math.floor(Math.random() * streetNames.length)];
-      const prefix = Math.random() > 0.5 ? "ul." : "";
-      return `${prefix} ${fakerStreet}`.trim();
-    } catch {
-      const name = streetNames[Math.floor(Math.random() * streetNames.length)];
-      const prefix = Math.random() > 0.5 ? "ul." : "";
-      return `${prefix} ${name}`.trim();
-    }
+    const name = streetNames[Math.floor(Math.random() * streetNames.length)];
+    const prefix = Math.random() > 0.5 ? "ul." : "";
+    return `${prefix} ${name}`.trim();
   }
 
   function generatePhoneNumber() {
@@ -642,8 +611,34 @@
   // ====================================================
   // Formaty eksportu (CSV/XML/SQL) - używane przez generator zbiorów i API.
   // ====================================================
+  // Nazwy kolumn pochodzą od użytkownika: cytujemy je jak wartości i
+  // neutralizujemy znaki, od których arkusze kalkulacyjne zaczynają formułę
+  // (= + - @, tabulator, CR), żeby plik nie wykonał niczego po otwarciu.
+  function escapeCsvHeader(name, separator) {
+    let cell = String(name);
+    if (/^[=+\-@\t\r]/.test(cell)) cell = "'" + cell;
+    if (
+      cell.includes(separator) ||
+      cell.includes('"') ||
+      cell.includes("\n")
+    ) {
+      cell = '"' + cell.replace(/"/g, '""') + '"';
+    }
+    return cell;
+  }
+
+  // Nazwa znacznika XML: litery (także polskie), cyfry, _ . - ; pierwszy
+  // znak musi być literą lub podkreśleniem.
+  function escapeXmlTagName(name) {
+    let tag = String(name).replace(/[^\p{L}\p{N}_.\-]/gu, "_");
+    if (!/^[\p{L}_]/u.test(tag)) tag = "_" + tag;
+    return tag;
+  }
+
   function generateCsv(data, fields, separator) {
-    const header = fields.join(separator);
+    const header = fields
+      .map((field) => escapeCsvHeader(field, separator))
+      .join(separator);
     const rows = data.map((record) =>
       fields
         .map((field) => {
@@ -681,7 +676,8 @@
       xml += "  <record>\n";
       fields.forEach((field) => {
         const value = record[field];
-        xml += `    <${field}>${escapeXml(value)}</${field}>\n`;
+        const tag = escapeXmlTagName(field);
+        xml += `    <${tag}>${escapeXml(value)}</${tag}>\n`;
       });
       xml += "  </record>\n";
     });
@@ -739,8 +735,10 @@
     hasCorruptibleField,
     CHECKSUM_FIELD_KEYS,
     generateCsv,
+    escapeCsvHeader,
     generateXml,
     escapeXml,
+    escapeXmlTagName,
     generateSql,
     escapeSqlValue,
     escapeSqlIdentifier,

@@ -70,7 +70,7 @@ describe('validateNrb', () => {
 
         expect(result).toEqual(expect.objectContaining({ isValid: false }));
 
-        expect(result.message).toContain('Numer rachunku musi mieć 26 cyfr');
+        expect(result.message).toContain('Nieprawidłowa długość numeru IBAN');
     });
 
     it('should return false for non-numeric characters', () => {
@@ -79,7 +79,7 @@ describe('validateNrb', () => {
 
         expect(result).toEqual(expect.objectContaining({ isValid: false }));
 
-        expect(result.message).toContain('Numer rachunku może zawierać tylko cyfry');
+        expect(result.message).toContain('może zawierać tylko cyfry');
     });
 
     it('should return false for invalid checksum', () => {
@@ -100,7 +100,7 @@ describe('validateNrb', () => {
 
         expect(result).toEqual(expect.objectContaining({ isValid: true }));
 
-        expect(result.message).toContain('Numer rachunku bankowego jest poprawny!');
+        expect(result.message).toContain('Polski numer IBAN jest poprawny!');
         expect(result.message).toContain('Test Bank'); // 9681 is Bank
     });
 
@@ -112,7 +112,7 @@ describe('validateNrb', () => {
 
         expect(result).toEqual(expect.objectContaining({ isValid: true }));
 
-        expect(result.message).toContain('Numer rachunku bankowego jest poprawny!');
+        expect(result.message).toContain('Polski numer IBAN jest poprawny!');
     });
 
     it('should normalize whitespace in the input field and allow a country-code prefix', () => {
@@ -124,7 +124,7 @@ describe('validateNrb', () => {
         nrbValidateBtn.click();
 
         expect(nrbInput.value).toBe('PL87968100020552006260082412');
-        expect(nrbResult.textContent).toContain('Numer rachunku bankowego jest poprawny!');
+        expect(nrbResult.textContent).toContain('Polski numer IBAN jest poprawny!');
         expect(nrbInput.maxLength).toBe(34);
     });
 

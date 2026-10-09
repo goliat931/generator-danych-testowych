@@ -172,22 +172,23 @@ document.addEventListener("DOMContentLoaded", () => {
         ? Math.min(count, MAX_COUNT)
         : 10;
 
-    const format = params.get("format") || "json";
-    const formatRadio = document.querySelector(
+    // Parametry z URL trafiają do selektora CSS, więc najpierw allowlista -
+    // nieznana wartość (np. format="]) nie może wywołać wyjątku w
+    // querySelector ani zepsuć strony.
+    const FORMATS = ["json", "csv", "xml", "sql"];
+    const SEPARATORS = [",", ";", "tab", "|"];
+    const format = FORMATS.includes(params.get("format"))
+      ? params.get("format")
+      : "json";
+    document.querySelector(
       `input[name="api-format"][value="${format}"]`,
-    );
-    (
-      formatRadio ||
-      document.querySelector('input[name="api-format"][value="json"]')
     ).checked = true;
 
-    const separator = params.get("separator") || ",";
-    const separatorRadio = document.querySelector(
+    const separator = SEPARATORS.includes(params.get("separator"))
+      ? params.get("separator")
+      : ",";
+    document.querySelector(
       `input[name="api-csv-separator"][value="${separator}"]`,
-    );
-    (
-      separatorRadio ||
-      document.querySelector('input[name="api-csv-separator"][value=","]')
     ).checked = true;
 
     tableInput.value = params.get("table") || "dane_testowe";

@@ -172,8 +172,8 @@ Polskie imiona i nazwiska z rzeczywistych baz danych.
 ✅ Export zbiorów w CSV/JSON/XML/SQL
 ✅ Drag & drop do zmiany kolejności pól
 ✅ Strona API do pobierania zestawów danych przez parametry URL (tryb przeglądarki)
-✅ Zintegrowana biblioteka **Faker.js** dla realistycznych danych testowych
-✅ Bez wymaganych zewnętrznych zależności (vanilla JS + Faker z CDN)
+✅ Zero zależności produkcyjnych i zero skryptów z zewnętrznych CDN (vanilla JS, własne słowniki)
+✅ Content-Security-Policy na każdej stronie, testy i CodeQL w CI
 
 ## Baza danych bankowych
 
@@ -200,12 +200,18 @@ Logika generatorów pól i formatów eksportu (CSV/XML/SQL) żyje we wspólnym m
 - **Imiona** - maleNames, femaleNames (rzeczywiste imiona polskie)
 - **Nazwiska** - polskie nazwiska z bazy danych
 
-### Dane z biblioteki Faker.js (CDN):
+### Dane z wbudowanych list (bez zewnętrznych bibliotek):
 
-- **Miasta** - kombinacja polskich miast + Faker (60% polskie, 40% od Faker)
-- **Ulice** - kombinacja polskich nazw ulic + Faker
-- **Telefony** - format polski za pomocą Faker
-- **Email** - domeny polskie (wp.pl, onet.pl, o2.pl, interia.pl, gazeta.pl, tlen.pl)
-- **Nazwy firm** - Faker + polskie sufiksy (Sp. z o.o., S.A., Sp. k., Sp. j.)
+- **Miasta** - lista największych polskich miast
+- **Ulice** - lista popularnych polskich nazw ulic (z losowym prefiksem „ul.")
+- **Telefony** - 9-cyfrowy format polski (prefiksy 500-899)
+- **Email** - imię.nazwisko + losowy sufiks, domeny polskie (wp.pl, onet.pl, o2.pl, interia.pl, gazeta.pl, tlen.pl)
+- **Nazwy firm** - nazwisko z bazy + polskie sufiksy (Sp. z o.o., S.A., Sp. k., Sp. j.)
 - **Daty** - losowe daty między wstawionymi przedziałami
 - **Inne** - komentarze, sezonowe dane itp.
+
+## Bezpieczeństwo i proces
+
+- Zgłaszanie podatności: patrz [SECURITY.md](SECURITY.md)
+- Zasady współpracy (gałąź + PR, testy przed wysłaniem): [CONTRIBUTING.md](CONTRIBUTING.md)
+- CI: każdy push i PR uruchamia testy Jest (`npm test`) oraz analizę CodeQL; Dependabot pilnuje zależności npm i akcji GitHub

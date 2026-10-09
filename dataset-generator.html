@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>Generator Zbiorów Danych</title>
     <link rel="stylesheet" href="static/styles.css" />
     <link rel="icon" type="image/x-icon" href="static/logo.ico" />
@@ -703,13 +708,16 @@ Podgląd pojawi się tutaj po kliknięciu "Generuj"</pre
     </div>
 
     <footer>
-      <p>
-        © 2025 Generator Danych Testowych •
-        <a href="https://github.com" target="_blank">GitHub</a>
-      </p>
+      Stworzony przez: <strong>Dawid Karczewski</strong>
+      <a
+        href="https://github.com/goliat931/generator-danych-testowych"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Projekt na GitHub
+      </a>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@faker-js/faker@latest/dist/faker.min.js"></script>
     <script src="static/data-generators.js"></script>
     <script src="static/dataset-generator.js"></script>
     <script src="static/infotips.js"></script>

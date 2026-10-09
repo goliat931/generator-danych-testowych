@@ -1,4 +1,12 @@
-@import "https://unpkg.com/open-props/easings.min.css";
+/* Krzywe easingu używane w animacjach - skopiowane z open-props
+   (easings.css, v1.x), żeby nie ładować CSS z zewnętrznego hosta. */
+:root {
+  --ease-3: cubic-bezier(0.25, 0, 0.3, 1);
+  --ease-out-5: cubic-bezier(0, 0, 0, 1);
+  --ease-elastic-3: cubic-bezier(0.5, 1.25, 0.75, 1.25);
+  --ease-elastic-4: cubic-bezier(0.5, 1.5, 0.75, 1.25);
+}
+
 /* --- FUNDAMENTY --- */
 * {
   box-sizing: border-box;
