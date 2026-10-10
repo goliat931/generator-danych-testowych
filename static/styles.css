@@ -1591,3 +1591,120 @@ a:focus-visible {
     transition: none;
   }
 }
+
+/* --- NAWIGACJA MOBILNA: hamburger + mały przełącznik motywu (static/nav.js) --- */
+button.nav-hamburger {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .button-group {
+    position: relative;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    margin: 8px 0 16px;
+  }
+
+  .theme-switch {
+    flex: 0 0 auto;
+    flex-basis: auto;
+  }
+
+  /* Przełącznik motywu: mała pigułka, a ikona słońca/księżyca to gałka. */
+  button.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 52px;
+    height: 28px;
+    margin: 0;
+    padding: 2px;
+    background: var(--border-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    transition: background-color 0.25s ease, justify-content 0.25s ease;
+  }
+
+  [data-theme="dark"] button.theme-toggle {
+    justify-content: flex-end;
+    background: #1976d2;
+    color: #fff;
+  }
+
+  button.theme-toggle .sun-and-moon {
+    width: 22px;
+    height: 22px;
+    padding: 2px;
+    background: var(--bg-secondary);
+    color: #b45309;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px var(--shadow-color);
+  }
+
+  [data-theme="dark"] button.theme-toggle .sun-and-moon {
+    color: #1976d2;
+  }
+
+  button.nav-hamburger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    background: #666;
+    border-radius: 8px;
+  }
+
+  button.nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .button-group.nav-open button.nav-hamburger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .button-group.nav-open button.nav-hamburger span:nth-child(2) {
+    opacity: 0;
+  }
+  .button-group.nav-open button.nav-hamburger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Menu jako rozwijany panel pod paskiem. */
+  .button-group .nav-links {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 800;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 12px 28px var(--shadow-color);
+  }
+
+  .button-group.nav-open .nav-links {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.theme-toggle,
+  button.nav-hamburger span {
+    transition: none;
+  }
+}
