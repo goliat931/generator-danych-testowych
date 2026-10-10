@@ -2,7 +2,7 @@
 
 Ten projekt to prosta aplikacja webowa do generowania i walidacji losowych danych testowych Polski, takich jak numery PESEL, dowody osobiste, numery REGON, numery NRB/IBAN (w tym zagraniczne rachunki), hasła oraz całe zbiory danych testowych.
 
-https://goliat931.github.io/generator-danych-testowych/
+https://generator.goliat.dev/
 
 ## Strony aplikacji
 
