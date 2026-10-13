@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/goliat931/generator-danych-testowych#readme",
   "devDependencies": {
-    "jest": "^30.4.2",
-    "jest-environment-jsdom": "^30.4.1"
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2"
   }
 }
